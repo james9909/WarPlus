@@ -7,7 +7,7 @@ import org.bukkit.entity.Player
 class Team(
     val name: String,
     val spawns: List<Location>,
-    val warzone: com.github.james9909.warplus.Warzone,
+    val warzone: Warzone,
     val settings: ConfigurationSection
 ) {
     private val players = mutableSetOf<Player>()
