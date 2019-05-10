@@ -8,3 +8,5 @@ before_install:
 script:
   - ./ktlint
   - ./gradlew test build
+notifications:
+  email: false
