@@ -1,0 +1,10 @@
+language: java
+jdk:
+  - oraclejdk8
+before_install:
+  - chmod +x gradlew
+  - chmod +x gradle/wrapper/gradle-wrapper.jar
+  - curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.32.0/ktlint && chmod a+x ktlint
+script:
+  - ./ktlint
+  - ./gradlew test build
