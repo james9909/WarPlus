@@ -1,0 +1,27 @@
+info:
+  world: flat
+  p1: flat:0,0,0
+  p2: flat:100,100,100
+settings:
+  enabled: true
+team-settings:
+  lives: 20
+classes:
+  - class1
+  - class2
+  - class3
+teams:
+  navy:
+    settings:
+      lives: 30
+    classes:
+      - class1
+    spawns:
+      - flat:50,50,50
+  red:
+    settings:
+      lives: 5
+    classes:
+      - class2
+    spawns:
+      - flat:25,25,25

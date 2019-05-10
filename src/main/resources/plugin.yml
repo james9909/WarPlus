@@ -1,0 +1,6 @@
+name: warplus
+main: com.github.james9909.warplus.WarPlus
+version: 0.1.0
+author: james9909
+softdepend: []
+depend: []
