@@ -126,4 +126,14 @@ class WarzoneManager(val plugin: WarPlus) {
 
         return Ok(warzone)
     }
+
+    fun getWarzoneByName(name: String) : Warzone? {
+        return getWarzoneByName(this.warzones, name)
+    }
+
+    fun getWarzoneByName(warzones: Collection<Warzone>, name: String) : Warzone? {
+        return warzones.firstOrNull {
+            it.name.equals(name, ignoreCase = true)
+        }
+    }
 }

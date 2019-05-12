@@ -3,7 +3,7 @@ package com.github.james9909.warplus.extensions
 import org.bukkit.entity.Player
 import org.bukkit.potion.PotionEffect
 
-fun Player.clearPotionEffects() = {
+fun Player.clearPotionEffects() {
     for (effect in activePotionEffects) {
         removePotionEffect(effect.type)
     }

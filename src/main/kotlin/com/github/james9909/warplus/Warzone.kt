@@ -1,14 +1,20 @@
 package com.github.james9909.warplus
 
+import com.github.james9909.warplus.extensions.clearPotionEffects
 import com.github.james9909.warplus.region.Region
 import com.github.james9909.warplus.util.Message
+import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.World
+import org.bukkit.attribute.Attribute
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Player
 
-const val DEFAULT_MIN_PLAYERS = 2
-const val DEFAULT_MAX_PLAYERS = 20
+enum class WarzoneState {
+    IDLING,
+    RUNNING,
+    EDITING
+}
 
 class Warzone(
     val plugin: WarPlus,
@@ -18,8 +24,8 @@ class Warzone(
     val teamSettings: ConfigurationSection,
     val warzoneSettings: ConfigurationSection
 ) {
-    val enabled: Boolean = warzoneSettings.getBoolean("enabled", true)
-    var running: Boolean = false
+    val enabled = warzoneSettings.getBoolean("enabled", true)
+    var state = WarzoneState.IDLING
     val teams = mutableListOf<Team>()
 
     fun addTeam(team: Team) = teams.add(team)
@@ -31,14 +37,14 @@ class Warzone(
     }
 
     fun start() {
-        if (!enabled || running) {
+        if (!enabled || state != WarzoneState.IDLING) {
             return
         }
         if (numPlayers() < warzoneSettings.getInt("min-players", DEFAULT_MIN_PLAYERS)) {
             return
         }
 
-        running = true
+        state = WarzoneState.RUNNING
     }
 
     fun join(player: Player): Boolean {
@@ -64,10 +70,47 @@ class Warzone(
         }
 
         toJoin.addPlayer(player)
-
+        plugin.playerManager.savePlayerState(player, toJoin)
+        if ("max-health" in warzoneSettings) {
+            player.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.baseValue = warzoneSettings.getDouble("max-health")
+        }
+        respawn(player)
         return true
     }
 
     fun respawn(player: Player) {
+        val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
+
+        // Reset the player
+        player.apply {
+            inventory.clear()
+            clearPotionEffects()
+
+            // Restore health
+            val healthAttr = player.getAttribute(Attribute.GENERIC_MAX_HEALTH)
+            health = if (healthAttr == null) {
+                DEFAULT_MAX_HEALTH
+            } else {
+                for (modifier in healthAttr.modifiers) {
+                    healthAttr.removeModifier(modifier)
+                }
+                healthAttr.baseValue
+            }
+            remainingAir = maximumAir
+            foodLevel = MAX_FOOD_LEVEL
+            saturation = DEFAULT_SATURATION
+            exhaustion = 0F
+            fallDistance = 0F
+            level = 0
+            exp = 0F
+            isFlying = false
+            allowFlight = false
+            fireTicks = 0
+            gameMode = GameMode.SURVIVAL
+        }
+
+        // Pick a random spawn
+        val spawn = playerInfo.team?.spawns?.random() ?: return
+        player.teleport(spawn)
     }
 }

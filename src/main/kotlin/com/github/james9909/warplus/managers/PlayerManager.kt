@@ -7,14 +7,15 @@ import com.github.james9909.warplus.util.PlayerState
 import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import java.util.concurrent.ConcurrentHashMap
 
 data class PlayerInfo(
-    val team: Team?,
-    val state: PlayerState
+    var team: Team?,
+    var state: PlayerState
 )
 
 class PlayerManager(plugin: WarPlus) {
-    private val players = mutableMapOf<Player, PlayerInfo>()
+    private val players = ConcurrentHashMap<Player, PlayerInfo>()
     private val chatPrefix: String
 
     init {
@@ -41,10 +42,11 @@ class PlayerManager(plugin: WarPlus) {
         return players[player]
     }
 
-    fun savePlayerState(player: Player) {
+    fun savePlayerState(player: Player, team: Team?) {
         if (!players.containsKey(player)) {
-            players[player] = PlayerInfo(null, PlayerState(player))
+            players[player] = PlayerInfo(team, PlayerState(player))
         } else {
+            players[player]?.team = team
             players[player]?.state?.update()
         }
     }
