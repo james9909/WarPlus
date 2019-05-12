@@ -43,7 +43,7 @@ class Warzone(
 
     fun join(player: Player): Boolean {
         if (numPlayers() == warzoneSettings.getInt("max-players", DEFAULT_MAX_PLAYERS)) {
-            plugin.playerManager.sendMessage(player, Message.TOO_MANY_PLAYERS.msg)
+            plugin.playerManager.sendMessage(player, Message.TOO_MANY_PLAYERS)
             return false
         }
 
@@ -59,7 +59,7 @@ class Warzone(
         }
 
         if (toJoin == null) {
-            plugin.playerManager.sendMessage(player, Message.TOO_MANY_PLAYERS.msg)
+            plugin.playerManager.sendMessage(player, Message.TOO_MANY_PLAYERS)
             return false
         }
 

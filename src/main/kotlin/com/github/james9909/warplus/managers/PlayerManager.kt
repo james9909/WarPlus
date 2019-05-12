@@ -2,6 +2,7 @@ package com.github.james9909.warplus.managers
 
 import com.github.james9909.warplus.Team
 import com.github.james9909.warplus.WarPlus
+import com.github.james9909.warplus.util.Message
 import com.github.james9909.warplus.util.PlayerState
 import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
@@ -30,6 +31,10 @@ class PlayerManager(plugin: WarPlus) {
         } else {
             sender.sendMessage(message)
         }
+    }
+
+    fun sendMessage(sender: CommandSender, message: Message) {
+        sendMessage(sender, message.msg)
     }
 
     fun getPlayerInfo(player: Player): PlayerInfo? {
