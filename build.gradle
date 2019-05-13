@@ -1,3 +1,6 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestLogEvent
+
 plugins {
     id 'idea'
     id 'org.jetbrains.kotlin.jvm' version '1.3.0'
@@ -42,6 +45,17 @@ compileTestKotlin {
 test {
     useJUnitPlatform()
     testLogging {
-        events "passed", "skipped", "failed"
+        afterTest { desc, result ->
+            logger.quiet "${desc.className} > ${desc.name}: ${result.resultType}"
+        }
+        // Taken from https://stackoverflow.com/a/36130467
+        afterSuite { desc, result ->
+            if (!desc.parent) {
+                def output = "Results: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} successes, ${result.failedTestCount} failures, ${result.skippedTestCount} skipped)"
+                def startItem = '|  ', endItem = '  |'
+                def repeatLength = startItem.length() + output.length() + endItem.length()
+                println('\n' + ('-' * repeatLength) + '\n' + startItem + output + endItem + '\n' + ('-' * repeatLength))
+            }
+        }
     }
 }
