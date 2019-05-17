@@ -4,7 +4,6 @@ package com.github.james9909.warplus.extensions
 
 import org.bukkit.Bukkit
 import org.bukkit.Location
-import java.lang.NumberFormatException
 
 class LocationFormatException(message: String) : IllegalArgumentException(message)
 

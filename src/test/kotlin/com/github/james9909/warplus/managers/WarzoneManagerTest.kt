@@ -60,5 +60,7 @@ class WarzoneManagerTest {
                 }
             }
         }
+        assert(warzone.minPlayers() == 2)
+        assert(warzone.maxPlayers() == 40)
     }
 }

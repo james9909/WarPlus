@@ -6,6 +6,8 @@ settings:
   enabled: true
 team-settings:
   lives: 20
+  min-players: 1
+  max-players: 20
 classes:
   - class1
   - class2

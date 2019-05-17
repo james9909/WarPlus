@@ -30,6 +30,16 @@ class Warzone(
 
     fun addTeam(team: Team) = teams.add(team)
 
+    fun minPlayers(): Int =
+        teams.fold(0) { acc, team ->
+            acc + team.settings.getInt("min-players", teamSettings.getInt("min-players"))
+        }
+
+    fun maxPlayers(): Int =
+        teams.fold(0) { acc, team ->
+            acc + team.settings.getInt("max-players", teamSettings.getInt("max-players"))
+        }
+
     fun contains(location: Location): Boolean = region.contains(location)
 
     fun numPlayers(): Int = teams.fold(0) { acc, team ->
@@ -37,18 +47,12 @@ class Warzone(
     }
 
     fun start() {
-        if (!enabled || state != WarzoneState.IDLING) {
-            return
-        }
-        if (numPlayers() < warzoneSettings.getInt("min-players", DEFAULT_MIN_PLAYERS)) {
-            return
-        }
-
         state = WarzoneState.RUNNING
     }
 
+    @Synchronized
     fun join(player: Player): Boolean {
-        if (numPlayers() == warzoneSettings.getInt("max-players", DEFAULT_MAX_PLAYERS)) {
+        if (numPlayers() == maxPlayers()) {
             plugin.playerManager.sendMessage(player, Message.TOO_MANY_PLAYERS)
             return false
         }
@@ -75,6 +79,11 @@ class Warzone(
             player.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.baseValue = warzoneSettings.getDouble("max-health")
         }
         respawn(player)
+
+        if (state != WarzoneState.RUNNING && numPlayers() >= minPlayers()) {
+            start()
+        }
+
         return true
     }
 
