@@ -38,5 +38,4 @@ class WarzoneTest {
         assert(playerInfo.team != null)
         assert(playerInfo.team?.warzone == warzone)
     }
-
 }
