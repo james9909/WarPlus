@@ -4,7 +4,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 plugins {
     id 'idea'
     id 'org.jetbrains.kotlin.jvm' version '1.3.0'
-    id 'com.github.johnrengelman.shadow' version '2.0.4'
+    id 'com.github.johnrengelman.shadow' version '4.0.2'
 }
 
 group 'com.github.james9909'
@@ -12,6 +12,15 @@ version '0.1.0'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
+
+// Disable the regular jar task, since we only want the shadow jar
+jar.enabled = false
+tasks.build.dependsOn tasks.shadowJar
+
+shadowJar {
+    minimize()
+    archiveName = "${baseName}-${version}.${extension}"
+}
 
 idea {
     module {
