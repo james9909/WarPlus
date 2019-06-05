@@ -19,7 +19,6 @@ enum class WarzoneState {
 class Warzone(
     val plugin: WarPlus,
     val name: String,
-    val world: World,
     val region: Region,
     val teamSettings: ConfigurationSection,
     val warzoneSettings: ConfigurationSection

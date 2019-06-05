@@ -76,7 +76,6 @@ class WarzoneManager(val plugin: WarPlus) {
         val warzone = Warzone(
             plugin = plugin,
             name = name,
-            world = world,
             region = region,
             teamSettings = teamSettings,
             warzoneSettings = zoneSettings
