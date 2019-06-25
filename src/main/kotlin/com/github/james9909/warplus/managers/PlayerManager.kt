@@ -10,8 +10,8 @@ import org.bukkit.entity.Player
 import java.util.concurrent.ConcurrentHashMap
 
 data class PlayerInfo(
-    var team: Team?,
-    var state: PlayerState
+    val team: Team?,
+    val state: PlayerState
 )
 
 class PlayerManager(plugin: WarPlus) {
@@ -43,15 +43,13 @@ class PlayerManager(plugin: WarPlus) {
     }
 
     fun savePlayerState(player: Player, team: Team?) {
-        if (!players.containsKey(player)) {
-            players[player] = PlayerInfo(team, PlayerState(player))
-        } else {
-            players[player]?.team = team
-            players[player]?.state?.update()
-        }
+        // Override any existing PlayerInfo objects
+        players[player] = PlayerInfo(team, PlayerState(player))
     }
 
     fun restorePlayerState(player: Player) {
         players[player]?.state?.restore()
     }
+
+    fun removePlayer(player: Player) = players.remove(player)
 }

@@ -36,7 +36,6 @@ class WarzoneManagerTest {
         val warzone = result.get()
         assert(warzone.name == "valid")
         assert(warzone.enabled)
-        assert(warzone.world == server.getWorld("flat"))
         assert(warzone.teams.size == 2)
         warzone.teams.apply {
             this[0].apply {

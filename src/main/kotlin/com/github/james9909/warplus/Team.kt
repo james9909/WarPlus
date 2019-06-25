@@ -14,6 +14,8 @@ class Team(
 
     fun addPlayer(player: Player) = players.add(player)
 
+    fun removePlayer(player: Player) = players.remove(player)
+
     fun size(): Int = players.size
 
     fun isFull(): Boolean = size() == settings.getInt("max-players", 5)

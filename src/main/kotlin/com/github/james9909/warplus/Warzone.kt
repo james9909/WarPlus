@@ -50,7 +50,13 @@ class Warzone(
     }
 
     @Synchronized
-    fun join(player: Player): Boolean {
+    fun removePlayer(player: Player, team: Team) {
+        team.removePlayer(player)
+        plugin.playerManager.restorePlayerState(player)
+    }
+
+    @Synchronized
+    fun addPlayer(player: Player): Boolean {
         if (numPlayers() == maxPlayers()) {
             plugin.playerManager.sendMessage(player, Message.TOO_MANY_PLAYERS)
             return false
