@@ -34,3 +34,6 @@ gradle-app.setting
 # IntelliJ files
 .idea/
 out/
+
+# Database files
+*.db

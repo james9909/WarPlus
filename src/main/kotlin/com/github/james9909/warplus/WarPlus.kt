@@ -1,6 +1,7 @@
 package com.github.james9909.warplus
 
 import com.github.james9909.warplus.command.CommandHandler
+import com.github.james9909.warplus.managers.DatabaseManager
 import com.github.james9909.warplus.managers.PlayerManager
 import com.github.james9909.warplus.managers.WarzoneManager
 import org.bukkit.command.Command
@@ -13,6 +14,7 @@ import java.io.File
 class WarPlus : JavaPlugin {
     val warzoneManager = WarzoneManager(this)
     val playerManager = PlayerManager(this)
+    val databaseManager = DatabaseManager(this, "jdbc:sqlite:$dataFolder/war.db")
     val commandHandler = CommandHandler()
 
     constructor() : super()
@@ -38,6 +40,7 @@ class WarPlus : JavaPlugin {
         }
         reloadConfig()
         warzoneManager.loadWarzones()
+        databaseManager.createTables()
     }
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
