@@ -12,7 +12,7 @@ class DatabaseManager(private val plugin: WarPlus, private val database: String)
 
     private fun getConnection(): Result<Connection, WarSqlException> {
         return try {
-            Class.forName("org.sqlite.JDBC");
+            Class.forName("org.sqlite.JDBC")
             Ok(DriverManager.getConnection(database))
         } catch (e: Exception) {
             Err(WarSqlException("Failed to connect to the database: $e"))

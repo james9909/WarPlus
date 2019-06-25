@@ -5,7 +5,6 @@ import com.github.james9909.warplus.region.Region
 import com.github.james9909.warplus.util.Message
 import org.bukkit.GameMode
 import org.bukkit.Location
-import org.bukkit.World
 import org.bukkit.attribute.Attribute
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Player
