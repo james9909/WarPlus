@@ -21,7 +21,7 @@ class WarzoneManager(val plugin: WarPlus) {
     private val warzones = mutableListOf<Warzone>()
 
     fun loadWarzones() {
-        plugin.dataFolder.listFiles().forEach {
+        plugin.dataFolder.listFiles()?.forEach {
             if (!it.startsWith("warzone-") || it.extension != "yml") {
                 return
             }
