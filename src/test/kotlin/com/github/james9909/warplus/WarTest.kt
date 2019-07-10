@@ -24,7 +24,7 @@ class WarTest {
     @Test
     fun `plugin loads correctly`() {
         server.pluginManager.assertEventFired(PluginEnableEvent::class.java) { event: PluginEnableEvent -> event.plugin == plugin }
-        assertNotNull(server.pluginManager.getPlugin("warplus"))
+        assertNotNull(server.pluginManager.getPlugin("WarPlus"))
         assert(plugin.isEnabled)
     }
 }
