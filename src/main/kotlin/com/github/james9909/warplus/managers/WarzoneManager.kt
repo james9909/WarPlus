@@ -18,11 +18,12 @@ import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.YamlConfiguration
 
 class WarzoneManager(val plugin: WarPlus) {
-    private val warzones = mutableListOf<Warzone>()
+    private val warzones = mutableMapOf<String, Warzone>()
 
     fun loadWarzones() {
         plugin.dataFolder.listFiles()?.forEach {
-            if (!it.startsWith("warzone-") || it.extension != "yml") {
+            System.out.println(it)
+            if (!it.name.startsWith("warzone-") || it.extension != "yml") {
                 return
             }
             val name = it.nameWithoutExtension.substring(8)
@@ -30,7 +31,7 @@ class WarzoneManager(val plugin: WarPlus) {
             val result = loadWarzone(name, YamlConfiguration.loadConfiguration(it))
             when (result) {
                 is Ok -> {
-                    warzones.add(result.value)
+                    warzones[name.toLowerCase()] = result.value
                     plugin.logger.info("Loaded zone $name")
                 }
                 is Err -> plugin.logger.warning("Failed to load warzone $name: ${result.error}")
@@ -71,8 +72,8 @@ class WarzoneManager(val plugin: WarPlus) {
                 )
             )
         }
-        val region = Region(world, p1, p2)
 
+        val region = Region(world, p1, p2)
         val warzone = Warzone(
             plugin = plugin,
             name = name,
@@ -126,13 +127,7 @@ class WarzoneManager(val plugin: WarPlus) {
         return Ok(warzone)
     }
 
-    fun getWarzoneByName(name: String): Warzone? {
-        return getWarzoneByName(this.warzones, name)
-    }
-
-    fun getWarzoneByName(warzones: Collection<Warzone>, name: String): Warzone? {
-        return warzones.firstOrNull {
-            it.name.equals(name, ignoreCase = true)
-        }
+    fun getWarzone(name: String): Warzone? {
+        return this.warzones[name.toLowerCase()]
     }
 }

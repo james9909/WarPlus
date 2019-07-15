@@ -24,3 +24,11 @@ fun ConfigurationSection.getLocationList(path: String): List<Location> {
     }
     return locations
 }
+
+fun ConfigurationSection.merge(other: ConfigurationSection) {
+    for (key in other.getKeys(false)) {
+        if (!contains(key)) {
+            set(key, other.get(key))
+        }
+    }
+}

@@ -3,6 +3,7 @@
 package com.github.james9909.warplus.extensions
 
 import org.bukkit.Bukkit
+import org.bukkit.ChatColor
 import org.bukkit.Location
 
 class LocationFormatException(message: String) : IllegalArgumentException(message)
@@ -27,4 +28,8 @@ fun String.toLocation(): Location {
     } catch (e: NumberFormatException) {
         throw LocationFormatException("Invalid coordinates: $coords")
     }
+}
+
+fun String.color(): String {
+    return ChatColor.translateAlternateColorCodes('&', this)
 }

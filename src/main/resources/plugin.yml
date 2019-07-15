@@ -1,6 +1,12 @@
 name: WarPlus
 main: com.github.james9909.warplus.WarPlus
+api-version: 1.13
 version: 0.1.0
 author: james9909
 softdepend: []
 depend: []
+commands:
+  war:
+    description: Base command for WarPlus
+    usage: The /war command allows you to run several other subcommands. Ex -
+      | /war setup <name>

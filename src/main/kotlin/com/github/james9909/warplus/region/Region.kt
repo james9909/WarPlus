@@ -3,7 +3,11 @@ package com.github.james9909.warplus.region
 import org.bukkit.Location
 import org.bukkit.World
 
-data class Region(val world: World, var p1: Location, val p2: Location) {
+data class Region(
+    val world: World,
+    var p1: Location = Location(world, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY),
+    var p2: Location = Location(world, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY)
+) {
 
     fun contains(location: Location): Boolean {
         if (world.name != location.world?.name) {
