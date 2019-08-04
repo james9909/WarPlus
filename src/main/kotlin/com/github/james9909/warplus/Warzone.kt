@@ -1,13 +1,16 @@
 package com.github.james9909.warplus
 
 import com.github.james9909.warplus.extensions.clearPotionEffects
+import com.github.james9909.warplus.extensions.format
 import com.github.james9909.warplus.region.Region
 import com.github.james9909.warplus.util.Message
 import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.attribute.Attribute
 import org.bukkit.configuration.ConfigurationSection
+import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
+import java.io.File
 
 enum class WarzoneState {
     IDLING,
@@ -19,8 +22,8 @@ class Warzone(
     val plugin: WarPlus,
     val name: String,
     val region: Region,
-    val teamSettings: ConfigurationSection,
-    val warzoneSettings: ConfigurationSection
+    val teamSettings: ConfigurationSection = Team.defaultTeamConfiguration(),
+    val warzoneSettings: ConfigurationSection = defaultWarzoneConfiguration()
 ) {
     val enabled = warzoneSettings.getBoolean("enabled", true)
     var state = WarzoneState.IDLING
@@ -124,6 +127,35 @@ class Warzone(
 
         // Pick a random spawn
         val spawn = playerInfo.team?.spawns?.random() ?: return
-        player.teleport(spawn)
+        player.teleport(spawn.origin)
+    }
+
+    fun save() {
+        val file = File("${plugin.dataFolder}/warzone-$name.yml")
+        val config = YamlConfiguration()
+
+        config.createSection("info")
+        config.set("info.world", region.world.name)
+        config.set("info.p1", region.p1.format())
+        config.set("info.p2", region.p2.format())
+
+        config.set("settings", warzoneSettings)
+        config.set("team-settings", teamSettings)
+        val teamsSection = config.createSection("teams")
+        for (team in teams) {
+            val teamSection = teamsSection.createSection(team.name.toLowerCase())
+            team.save(teamSection)
+        }
+        config.save(file)
+    }
+
+    companion object {
+        fun defaultWarzoneConfiguration(): YamlConfiguration {
+            val config = YamlConfiguration()
+            config.apply {
+                set("enabled", false)
+            }
+            return config
+        }
     }
 }

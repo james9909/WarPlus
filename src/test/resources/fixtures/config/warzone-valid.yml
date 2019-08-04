@@ -16,13 +16,18 @@ teams:
   navy:
     settings:
       lives: 30
+      spawnstyle: small
     classes:
       - class1
     spawns:
       - flat:50,50,50
+    flags:
+      - flat:60,50,50
+      - flat:50,50,60
   red:
     settings:
       lives: 5
+      spawnstyle: large
     classes:
       - class2
     spawns:

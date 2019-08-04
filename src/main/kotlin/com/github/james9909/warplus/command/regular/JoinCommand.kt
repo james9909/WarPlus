@@ -19,7 +19,7 @@ class JoinCommand(plugin: WarPlus, sender: CommandSender, args: List<String>) :
             return true
         }
 
-        val warzone = plugin.warzoneManager.getWarzoneByName(args[0])
+        val warzone = plugin.warzoneManager.getWarzone(args[0])
         if (warzone == null) {
             plugin.playerManager.sendMessage(sender, Message.NO_SUCH_WARZONE)
             return true

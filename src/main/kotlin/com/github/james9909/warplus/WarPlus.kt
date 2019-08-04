@@ -43,11 +43,8 @@ class WarPlus : JavaPlugin {
         databaseManager.createTables()
     }
 
-    override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
-        val candidates = commandHandler.getCommands(args)
-        if (candidates.isEmpty()) {
-            return false
-        }
-        return candidates[0].handle()
+    override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<String>): Boolean {
+        val warCommand = commandHandler.getCommand(this, sender, args) ?: return true
+        return warCommand.handle()
     }
 }

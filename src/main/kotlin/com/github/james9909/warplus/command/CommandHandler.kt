@@ -1,11 +1,25 @@
 package com.github.james9909.warplus.command
 
+import com.github.james9909.warplus.WarPlus
+import com.github.james9909.warplus.command.zonemaker.CreateWarzoneCommand
+import com.github.james9909.warplus.command.zonemaker.SetupWarzoneCommand
+import org.bukkit.command.CommandSender
+
 class CommandHandler {
 
-    fun getCommands(command: Array<out String>): List<AbstractCommand> {
-        val command = command[0]
-        val args = command.drop(1)
+    fun getCommand(plugin: WarPlus, sender: CommandSender, args: Array<String>): AbstractCommand? {
+        if (args.isEmpty()) {
+            return null
+        }
 
-        return listOf()
+        val subCommand = args[0]
+        val rest = args.drop(1)
+
+        val command = when (subCommand) {
+            "setup" -> SetupWarzoneCommand(plugin, sender, rest)
+            "create" -> CreateWarzoneCommand(plugin, sender, rest)
+            else -> null
+        }
+        return command
     }
 }

@@ -42,20 +42,20 @@ class WarzoneManagerTest {
                 assert(name == "navy")
                 assert(spawns.size == 1)
                 spawns[0].apply {
-                    assert(x == 50.0)
-                    assert(y == 50.0)
-                    assert(z == 50.0)
-                    assert(world?.name == "flat")
+                    assert(origin.x == 50.0)
+                    assert(origin.y == 50.0)
+                    assert(origin.z == 50.0)
+                    assert(origin.world?.name == "flat")
                 }
             }
             this[1].apply {
                 assert(name == "red")
                 assert(spawns.size == 1)
                 spawns[0].apply {
-                    assert(x == 25.0)
-                    assert(y == 25.0)
-                    assert(z == 25.0)
-                    assert(world?.name == "flat")
+                    assert(origin.x == 25.0)
+                    assert(origin.y == 25.0)
+                    assert(origin.z == 25.0)
+                    assert(origin.world?.name == "flat")
                 }
             }
         }
