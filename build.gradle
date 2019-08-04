@@ -34,12 +34,14 @@ repositories {
     jcenter()
     maven { url = "https://hub.spigotmc.org/nexus/content/repositories/snapshots/" }
     maven { url = "https://oss.sonatype.org/content/repositories/snapshots" }
+    maven { url = "http://maven.sk89q.com/repo/" }
 }
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     compile "com.github.kittinunf.result:result:2.1.0"
     compile "org.xerial:sqlite-jdbc:3.7.2"
+    compileOnly "com.sk89q.worldedit:worldedit-bukkit:7.0.0-SNAPSHOT"
     compileOnly "org.spigotmc:spigot-api:1.13.2-R0.1-SNAPSHOT"
     testCompile "org.junit.jupiter:junit-jupiter:5.4.2"
     testCompile "com.github.seeseemelk:MockBukkit-v1.13:0.2.0"

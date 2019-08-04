@@ -6,7 +6,8 @@ import com.github.james9909.warplus.Warzone
 import com.github.james9909.warplus.WarzoneState
 import com.github.james9909.warplus.command.AbstractCommand
 import com.github.james9909.warplus.extensions.color
-import com.github.james9909.warplus.region.Region
+import com.github.james9909.warplus.structure.SpawnStyle
+import com.github.james9909.warplus.structure.TeamSpawnStructure
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.command.CommandSender
@@ -38,11 +39,11 @@ class SetupWarzoneCommand(plugin: WarPlus, sender: CommandSender, args: List<Str
             plugin.playerManager.sendMessage(sender, "Only in-game players may do that")
             return true
         }
-        val warzone = plugin.warzoneManager.getWarzone(args[0]) ?: Warzone(
-            plugin,
-            args[0],
-            Region(sender.world)
-        )
+        val warzone = plugin.warzoneManager.getWarzone(args[0])
+        if (warzone == null) {
+            plugin.playerManager.sendMessage(sender, "That warzone doesn't exist")
+            return true
+        }
         warzone.state = WarzoneState.EDITING
         val prompt = SetupWarzonePrompt(sender)
         val conversation = Conversation(plugin, sender, prompt)
@@ -145,11 +146,16 @@ class SetupWarzoneCommand(plugin: WarPlus, sender: CommandSender, args: List<Str
                 if (!isTool(it)) {
                     return
                 }
+                print("onPlayerInteract ${it.itemMeta?.displayName}")
                 when (it.itemMeta?.displayName) {
-                    TOOL_NAME.CORNERS.display -> setCorners(event.action, event.clickedBlock!!) // clickedBlock must be non-null, as guaranteed by the conditions above
+                    TOOL_NAME.CORNERS.display -> setCorners(
+                        event.action,
+                        event.clickedBlock!!
+                    ) // clickedBlock must be non-null, as guaranteed by the conditions above
                     TOOL_NAME.SPAWN.display -> handleSpawn(event)
                 }
             }
+            player.sendRawMessage(prompt.text)
         }
 
         @EventHandler
@@ -186,7 +192,7 @@ class SetupWarzoneCommand(plugin: WarPlus, sender: CommandSender, args: List<Str
             val block = event.clickedBlock ?: return
             val location = block.location
             val spawn = warzone.teams.flatMap { it.spawns }.firstOrNull {
-                it.blockX == location.blockX && it.blockY == location.blockY && it.blockZ == location.blockZ
+                it.contains(location)
             }
             when (event.action) {
                 Action.LEFT_CLICK_BLOCK -> {
@@ -197,15 +203,40 @@ class SetupWarzoneCommand(plugin: WarPlus, sender: CommandSender, args: List<Str
                     }
                     prompt.text = "Input the team name:"
                     prompt.action = { s: String ->
-                        val team = warzone.teams.firstOrNull {
+                        var team = warzone.teams.firstOrNull {
                             it.name == s
-                        } ?: Team(s, mutableListOf(), warzone)
-                        team.spawns.add(location)
+                        }
+                        if (team == null) {
+                            team = Team(s, mutableListOf(), warzone, mutableListOf())
+                            warzone.addTeam(team)
+                        }
+
+                        team.addTeamSpawn(
+                            TeamSpawnStructure(
+                                plugin,
+                                location,
+                                team.kind,
+                                SpawnStyle.valueOf(
+                                    (team.settings.getString("spawnstyle") ?: "flat").toString().toUpperCase()
+                                )
+                            )
+                        )
                         prompt.text = "Spawn created!"
                     }
                 }
                 Action.RIGHT_CLICK_BLOCK -> {
+                    if (spawn == null) {
+                        print("No spawn")
+                        return
+                    }
                     // Remove spawn
+                    val team = warzone.teams.firstOrNull { team ->
+                        team.spawns.firstOrNull { spawn ->
+                            spawn.contains(location)
+                        } != null
+                    } ?: return
+                    team.removeTeamSpawn(spawn)
+                    prompt.text = "Spawn removed!"
                 }
                 else -> {
                 }

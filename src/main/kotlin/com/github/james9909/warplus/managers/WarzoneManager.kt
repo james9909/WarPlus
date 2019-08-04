@@ -4,6 +4,7 @@ import com.github.james9909.warplus.Err
 import com.github.james9909.warplus.IllegalWarzoneException
 import com.github.james9909.warplus.Ok
 import com.github.james9909.warplus.Team
+import com.github.james9909.warplus.TeamKind
 import com.github.james9909.warplus.WarException
 import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.Warzone
@@ -11,7 +12,10 @@ import com.github.james9909.warplus.extensions.LocationFormatException
 import com.github.james9909.warplus.extensions.getLocation
 import com.github.james9909.warplus.extensions.getLocationList
 import com.github.james9909.warplus.extensions.getOrCreateSection
+import com.github.james9909.warplus.extensions.toLocation
 import com.github.james9909.warplus.region.Region
+import com.github.james9909.warplus.structure.SpawnStyle
+import com.github.james9909.warplus.structure.TeamSpawnStructure
 import com.github.kittinunf.result.Result
 import org.bukkit.Location
 import org.bukkit.configuration.ConfigurationSection
@@ -22,7 +26,6 @@ class WarzoneManager(val plugin: WarPlus) {
 
     fun loadWarzones() {
         plugin.dataFolder.listFiles()?.forEach {
-            System.out.println(it)
             if (!it.name.startsWith("warzone-") || it.extension != "yml") {
                 return
             }
@@ -86,12 +89,25 @@ class WarzoneManager(val plugin: WarPlus) {
         val teamNames = teamsSection.getKeys(false)
         val teams = mutableListOf<Team>()
         for (teamName in teamNames) {
-            val spawns: MutableList<Location>
+            val spawns: MutableList<TeamSpawnStructure> = mutableListOf()
+            val flags: MutableList<Location>
 
             // Should never happen, but just in case...
             val teamSection = teamsSection.getConfigurationSection(teamName) ?: continue
             try {
-                spawns = teamSection.getLocationList("spawns") as MutableList<Location>
+                for (spawnLocation in teamSection.getStringList("spawns")) {
+                    spawns.add(
+                        TeamSpawnStructure(
+                            plugin,
+                            spawnLocation.toLocation(),
+                            TeamKind.valueOf(teamName.toUpperCase()),
+                            SpawnStyle.valueOf(
+                                (teamSection.getString("spawnstyle") ?: teamSettings.getString("spawnstyle")
+                                ?: "SMALL").toUpperCase()
+                            )
+                        )
+                    )
+                }
             } catch (e: LocationFormatException) {
                 return Err(
                     IllegalWarzoneException(
@@ -107,17 +123,27 @@ class WarzoneManager(val plugin: WarPlus) {
                 )
             }
             spawns.retainAll {
-                val contains = region.contains(it)
+                val contains = region.contains(it.origin)
                 if (!contains) {
                     plugin.logger.warning("Spawn for team $teamName is out of bounds!")
                 }
                 contains
+            }
+            try {
+                flags = teamSection.getLocationList("flags") as MutableList<Location>
+            } catch (e: LocationFormatException) {
+                return Err(
+                    IllegalWarzoneException(
+                        "Error when parsing flags:\n$e"
+                    )
+                )
             }
 
             val team = Team(
                 name = teamName,
                 spawns = spawns,
                 warzone = warzone,
+                flags = flags,
                 settings = teamSection.getConfigurationSection("settings") ?: teamSettings
             )
             teams.add(team)
@@ -129,5 +155,9 @@ class WarzoneManager(val plugin: WarPlus) {
 
     fun getWarzone(name: String): Warzone? {
         return this.warzones[name.toLowerCase()]
+    }
+
+    fun addWarzone(warzone: Warzone) {
+        this.warzones[warzone.name.toLowerCase()] = warzone
     }
 }

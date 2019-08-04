@@ -2,7 +2,6 @@ package com.github.james9909.warplus
 
 import com.github.james9909.warplus.extensions.clearPotionEffects
 import com.github.james9909.warplus.extensions.format
-import com.github.james9909.warplus.extensions.merge
 import com.github.james9909.warplus.region.Region
 import com.github.james9909.warplus.util.Message
 import org.bukkit.GameMode
@@ -128,7 +127,7 @@ class Warzone(
 
         // Pick a random spawn
         val spawn = playerInfo.team?.spawns?.random() ?: return
-        player.teleport(spawn)
+        player.teleport(spawn.origin)
     }
 
     fun save() {
@@ -142,6 +141,11 @@ class Warzone(
 
         config.set("settings", warzoneSettings)
         config.set("team-settings", teamSettings)
+        val teamsSection = config.createSection("teams")
+        for (team in teams) {
+            val teamSection = teamsSection.createSection(team.name.toLowerCase())
+            team.save(teamSection)
+        }
         config.save(file)
     }
 
@@ -149,7 +153,7 @@ class Warzone(
         fun defaultWarzoneConfiguration(): YamlConfiguration {
             val config = YamlConfiguration()
             config.apply {
-                set("enabled", true)
+                set("enabled", false)
             }
             return config
         }

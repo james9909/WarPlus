@@ -1,6 +1,7 @@
 package com.github.james9909.warplus.command
 
 import com.github.james9909.warplus.WarPlus
+import com.github.james9909.warplus.command.zonemaker.CreateWarzoneCommand
 import com.github.james9909.warplus.command.zonemaker.SetupWarzoneCommand
 import org.bukkit.command.CommandSender
 
@@ -16,6 +17,7 @@ class CommandHandler {
 
         val command = when (subCommand) {
             "setup" -> SetupWarzoneCommand(plugin, sender, rest)
+            "create" -> CreateWarzoneCommand(plugin, sender, rest)
             else -> null
         }
         return command

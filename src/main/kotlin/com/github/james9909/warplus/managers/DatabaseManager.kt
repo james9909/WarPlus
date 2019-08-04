@@ -42,7 +42,8 @@ class DatabaseManager(private val plugin: WarPlus, private val database: String)
         return runSql { conn ->
             val statement = conn.createStatement()
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS players (uuid BINARY(16) NOT NULL, PRIMARY KEY (uuid))")
-            statement.executeUpdate("""
+            statement.executeUpdate(
+                """
                 CREATE TABLE IF NOT EXISTS heals (
                     date DATETIME NOT NULL,
                     healer_id BINARY(16) NOT NULL,
@@ -52,8 +53,10 @@ class DatabaseManager(private val plugin: WarPlus, private val database: String)
                     FOREIGN KEY (healer_id) REFERENCES players(uuid),
                     FOREIGN KEY (target_id) REFERENCES players(uuid)
                 )
-            """.trimIndent())
-            statement.executeUpdate("""
+            """.trimIndent()
+            )
+            statement.executeUpdate(
+                """
                 CREATE TABLE IF NOT EXISTS kills (
                     date DATETIME NOT NULL,
                     attacker_id BINARY(16) NOT NULL,
@@ -63,7 +66,8 @@ class DatabaseManager(private val plugin: WarPlus, private val database: String)
                     FOREIGN KEY (attacker_id) REFERENCES players(uuid),
                     FOREIGN KEY (defender_id) REFERENCES players(uuid)
                 )
-            """.trimIndent())
+            """.trimIndent()
+            )
             statement.executeUpdate("CREATE INDEX idx_attacker on kills(attacker_id)")
             statement.executeUpdate("CREATE INDEX idx_defender on kills(defender_id)")
             statement.close()

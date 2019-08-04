@@ -1,2 +1,5 @@
 global: {}
 classes: {}
+extensions:
+  worldedit:
+    enabled: true
