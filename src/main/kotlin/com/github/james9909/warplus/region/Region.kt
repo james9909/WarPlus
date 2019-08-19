@@ -2,6 +2,9 @@ package com.github.james9909.warplus.region
 
 import org.bukkit.Location
 import org.bukkit.World
+import org.bukkit.block.Block
+import kotlin.math.max
+import kotlin.math.min
 
 data class Region(
     val world: World,
@@ -17,7 +20,31 @@ data class Region(
         return contains(location.blockX, location.blockY, location.blockZ)
     }
 
-    fun contains(x: Int, y: Int, z: Int): Boolean = (x >= p1.blockX && x <= p2.blockX) &&
-        (y >= p1.blockY && y <= p2.blockY) &&
-        (z >= p1.blockZ && y <= p2.blockZ)
+    fun contains(x: Int, y: Int, z: Int): Boolean = (x >= getMinX() && x <= getMaxX()) &&
+        (y >= getMinY() && y <= getMaxY()) &&
+        (z >= getMinZ() && z <= getMaxZ())
+
+    fun getMaxX(): Int {
+        return max(p1.blockX, p2.blockX)
+    }
+
+    fun getMaxY(): Int {
+        return max(p1.blockY, p2.blockY)
+    }
+
+    fun getMaxZ(): Int {
+        return max(p1.blockZ, p2.blockZ)
+    }
+
+    fun getMinX(): Int {
+        return min(p1.blockX, p2.blockX)
+    }
+
+    fun getMinY(): Int {
+        return min(p1.blockY, p2.blockY)
+    }
+
+    fun getMinZ(): Int {
+        return min(p1.blockZ, p2.blockZ)
+    }
 }

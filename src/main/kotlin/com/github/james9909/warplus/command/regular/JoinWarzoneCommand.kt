@@ -6,8 +6,7 @@ import com.github.james9909.warplus.util.Message
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
-// Format: /addPlayer <warzone>
-class JoinCommand(plugin: WarPlus, sender: CommandSender, args: List<String>) :
+class JoinWarzoneCommand(plugin: WarPlus, sender: CommandSender, args: List<String>) :
     AbstractCommand(plugin, sender, args) {
 
     override fun handle(): Boolean {
@@ -15,7 +14,7 @@ class JoinCommand(plugin: WarPlus, sender: CommandSender, args: List<String>) :
             return false
         }
         if (sender !is Player) {
-            // Only players can addPlayer warzones
+            // Only players can join warzones
             return true
         }
 

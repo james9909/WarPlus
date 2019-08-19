@@ -27,7 +27,7 @@ class WarzoneManager(val plugin: WarPlus) {
     fun loadWarzones() {
         plugin.dataFolder.listFiles()?.forEach {
             if (!it.name.startsWith("warzone-") || it.extension != "yml") {
-                return
+                return@forEach
             }
             val name = it.nameWithoutExtension.substring(8)
             plugin.logger.info("Loading zone $name")
@@ -115,13 +115,6 @@ class WarzoneManager(val plugin: WarPlus) {
                     )
                 )
             }
-            if (spawns.isEmpty()) {
-                return Err(
-                    IllegalWarzoneException(
-                        "No spawns defined for team $teamName!"
-                    )
-                )
-            }
             spawns.retainAll {
                 val contains = region.contains(it.origin)
                 if (!contains) {
@@ -159,5 +152,11 @@ class WarzoneManager(val plugin: WarPlus) {
 
     fun addWarzone(warzone: Warzone) {
         this.warzones[warzone.name.toLowerCase()] = warzone
+    }
+
+    fun getWarzoneByLocation(location: Location): Warzone? {
+        return warzones.values.firstOrNull {
+            it.contains(location)
+        }
     }
 }

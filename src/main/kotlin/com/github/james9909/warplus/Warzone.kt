@@ -126,7 +126,7 @@ class Warzone(
         }
 
         // Pick a random spawn
-        val spawn = playerInfo.team?.spawns?.random() ?: return
+        val spawn = playerInfo.team.spawns.random()
         player.teleport(spawn.origin)
     }
 

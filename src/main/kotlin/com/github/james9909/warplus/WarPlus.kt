@@ -1,6 +1,8 @@
 package com.github.james9909.warplus
 
 import com.github.james9909.warplus.command.CommandHandler
+import com.github.james9909.warplus.listeners.EntityListener
+import com.github.james9909.warplus.listeners.PlayerListener
 import com.github.james9909.warplus.managers.DatabaseManager
 import com.github.james9909.warplus.managers.PlayerManager
 import com.github.james9909.warplus.managers.WarzoneManager
@@ -28,12 +30,14 @@ class WarPlus : JavaPlugin {
     ) : super(loader, description, dataFolder, file ?: File(".")) /* Workaround for MockBukkit */
 
     override fun onEnable() {
-        logger.info("Initializing warplus")
+        logger.info("Initializing WarPlus")
         initialize()
         logger.info("Done initializing")
     }
 
     private fun initialize() {
+        setupListeners()
+
         val dataFolder = dataFolder
         if (!dataFolder.exists()) {
             dataFolder.mkdir()
@@ -41,6 +45,12 @@ class WarPlus : JavaPlugin {
         reloadConfig()
         warzoneManager.loadWarzones()
         databaseManager.createTables()
+    }
+
+    private fun setupListeners() {
+        val pluginManager = server.pluginManager
+        pluginManager.registerEvents(EntityListener(this), this)
+        pluginManager.registerEvents(PlayerListener(this), this)
     }
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<String>): Boolean {
