@@ -6,7 +6,7 @@ before_install:
   - chmod +x gradle/wrapper/gradle-wrapper.jar
   - curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.32.0/ktlint && chmod a+x ktlint
 script:
-  - ./ktlint
+  - ./ktlint "src/**/*.kt"
   - ./gradlew test build
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock

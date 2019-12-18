@@ -2,7 +2,6 @@ package com.github.james9909.warplus.region
 
 import org.bukkit.Location
 import org.bukkit.World
-import org.bukkit.block.Block
 import kotlin.math.max
 import kotlin.math.min
 
