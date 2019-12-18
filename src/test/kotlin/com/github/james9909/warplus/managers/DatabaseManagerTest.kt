@@ -1,8 +1,8 @@
 package com.github.james9909.warplus.managers
 
 import be.seeseemelk.mockbukkit.MockBukkit
-import com.github.james9909.warplus.Ok
 import com.github.james9909.warplus.WarPlus
+import com.github.michaelbull.result.Ok
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance

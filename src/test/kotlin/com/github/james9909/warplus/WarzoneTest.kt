@@ -2,6 +2,7 @@ package com.github.james9909.warplus
 
 import be.seeseemelk.mockbukkit.MockBukkit
 import be.seeseemelk.mockbukkit.entity.PlayerMock
+import com.github.michaelbull.result.unwrap
 import org.bukkit.configuration.file.YamlConfiguration
 import org.junit.Ignore
 import org.junit.jupiter.api.AfterAll
@@ -21,7 +22,7 @@ class WarzoneTest {
 
         val configFile = File("src/test/resources/fixtures/config/warzone-valid.yml")
         val config = YamlConfiguration.loadConfiguration(configFile)
-        warzone = plugin.warzoneManager.loadWarzone("valid", config).get()
+        warzone = plugin.warzoneManager.loadWarzone("valid", config).unwrap()
     }
 
     @AfterAll

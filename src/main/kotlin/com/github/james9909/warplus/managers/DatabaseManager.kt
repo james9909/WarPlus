@@ -1,44 +1,48 @@
 package com.github.james9909.warplus.managers
 
-import com.github.james9909.warplus.Err
-import com.github.james9909.warplus.Ok
 import com.github.james9909.warplus.WarPlus
-import com.github.james9909.warplus.WarSqlException
-import com.github.kittinunf.result.Result
+import com.github.james9909.warplus.WarSqlError
+import com.github.michaelbull.result.Err
+import com.github.michaelbull.result.Ok
+import com.github.michaelbull.result.Result
+import com.github.michaelbull.result.unwrap
 import java.sql.Connection
 import java.sql.DriverManager
 
 class DatabaseManager(private val plugin: WarPlus, private val database: String) {
 
-    private fun getConnection(): Result<Connection, WarSqlException> {
+    private fun getConnection(): Result<Connection, WarSqlError> {
         return try {
             Class.forName("org.sqlite.JDBC")
             Ok(DriverManager.getConnection(database))
         } catch (e: Exception) {
-            Err(WarSqlException("Failed to connect to the database: $e"))
+            Err(WarSqlError("Failed to connect to the database: $e"))
         }
     }
 
-    fun runSql(func: (conn: Connection) -> Unit): Result<Boolean, WarSqlException> {
+    fun runSql(func: (conn: Connection) -> Unit): Result<Boolean, WarSqlError> {
         val connResult = getConnection()
-        if (connResult is Err) {
-            plugin.logger.info(connResult.error.toString())
-            return connResult
+        return when (connResult) {
+            is Err -> {
+                plugin.logger.info(connResult.error.toString())
+                connResult
+            }
+            is Ok -> {
+                val conn = connResult.unwrap()
+                try {
+                    func(conn)
+                } catch (e: Exception) {
+                    conn.close()
+                    plugin.logger.info("Failed to execute SQL: $e")
+                    return Err(WarSqlError("Failed to execute SQL: $e"))
+                }
+                conn.close()
+                Ok(true)
+            }
         }
-
-        val conn = connResult.get()
-        try {
-            func(conn)
-        } catch (e: Exception) {
-            conn.close()
-            plugin.logger.info("Failed to execute SQL: $e")
-            return Err(WarSqlException("Failed to execute SQL: $e"))
-        }
-        conn.close()
-        return Ok(true)
     }
 
-    fun createTables(): Result<Boolean, WarSqlException> {
+    fun createTables(): Result<Boolean, WarSqlError> {
         return runSql { conn ->
             val statement = conn.createStatement()
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS players (uuid BINARY(16) NOT NULL, PRIMARY KEY (uuid))")
@@ -74,7 +78,7 @@ class DatabaseManager(private val plugin: WarPlus, private val database: String)
         }
     }
 
-    fun dropTables(): Result<Boolean, WarSqlException> {
+    fun dropTables(): Result<Boolean, WarSqlError> {
         return runSql { conn ->
             val statement = conn.createStatement()
             statement.execute("DROP TABLE kills")

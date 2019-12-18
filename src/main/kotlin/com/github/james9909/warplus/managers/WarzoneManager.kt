@@ -1,11 +1,9 @@
 package com.github.james9909.warplus.managers
 
-import com.github.james9909.warplus.Err
-import com.github.james9909.warplus.IllegalWarzoneException
-import com.github.james9909.warplus.Ok
+import com.github.james9909.warplus.IllegalWarzoneError
 import com.github.james9909.warplus.Team
 import com.github.james9909.warplus.TeamKind
-import com.github.james9909.warplus.WarException
+import com.github.james9909.warplus.WarError
 import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.Warzone
 import com.github.james9909.warplus.extensions.LocationFormatException
@@ -16,7 +14,9 @@ import com.github.james9909.warplus.extensions.toLocation
 import com.github.james9909.warplus.region.Region
 import com.github.james9909.warplus.structure.SpawnStyle
 import com.github.james9909.warplus.structure.TeamSpawnStructure
-import com.github.kittinunf.result.Result
+import com.github.michaelbull.result.Err
+import com.github.michaelbull.result.Ok
+import com.github.michaelbull.result.Result
 import org.bukkit.Location
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.YamlConfiguration
@@ -45,7 +45,7 @@ class WarzoneManager(val plugin: WarPlus) {
     fun loadWarzone(
         name: String,
         config: ConfigurationSection
-    ): Result<Warzone, WarException> {
+    ): Result<Warzone, WarError> {
         val infoSection = config.getOrCreateSection("info")
         val zoneSettings = config.getOrCreateSection("settings")
         val teamSettings = config.getOrCreateSection("team-settings")
@@ -59,18 +59,18 @@ class WarzoneManager(val plugin: WarPlus) {
         val p2: Location
         try {
             p1 = infoSection.getLocation("p1") ?: return Err(
-                IllegalWarzoneException(
+                IllegalWarzoneError(
                     "No p1 defined"
                 )
             )
             p2 = infoSection.getLocation("p2") ?: return Err(
-                IllegalWarzoneException(
+                IllegalWarzoneError(
                     "No p2 defined"
                 )
             )
         } catch (e: LocationFormatException) {
             return Err(
-                IllegalWarzoneException(
+                IllegalWarzoneError(
                     "Invalid p1 or p2"
                 )
             )
@@ -110,7 +110,7 @@ class WarzoneManager(val plugin: WarPlus) {
                 }
             } catch (e: LocationFormatException) {
                 return Err(
-                    IllegalWarzoneException(
+                    IllegalWarzoneError(
                         "Error when parsing spawns:\n$e"
                     )
                 )
@@ -126,7 +126,7 @@ class WarzoneManager(val plugin: WarPlus) {
                 flags = teamSection.getLocationList("flags") as MutableList<Location>
             } catch (e: LocationFormatException) {
                 return Err(
-                    IllegalWarzoneException(
+                    IllegalWarzoneError(
                         "Error when parsing flags:\n$e"
                     )
                 )

@@ -1,8 +1,9 @@
 package com.github.james9909.warplus.managers
 
 import be.seeseemelk.mockbukkit.MockBukkit
-import com.github.james9909.warplus.Ok
 import com.github.james9909.warplus.WarPlus
+import com.github.michaelbull.result.Ok
+import com.github.michaelbull.result.unwrap
 import org.bukkit.configuration.file.YamlConfiguration
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Test
@@ -33,7 +34,7 @@ class WarzoneManagerTest {
         val result = warzoneManager.loadWarzone("valid", config)
         assert(result is Ok)
 
-        val warzone = result.get()
+        val warzone = result.unwrap()
         assert(warzone.name == "valid")
         assert(warzone.enabled)
         assert(warzone.teams.size == 2)
