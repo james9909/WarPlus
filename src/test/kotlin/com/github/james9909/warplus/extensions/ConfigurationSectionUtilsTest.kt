@@ -5,8 +5,8 @@ import com.github.james9909.warplus.WarPlus
 import org.bukkit.Material
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.inventory.meta.LeatherArmorMeta
-import org.junit.Ignore
 import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import java.io.File
@@ -51,7 +51,7 @@ class ConfigurationSectionUtilsTest {
     }
 
     @Test
-    @Ignore("not ready yet")
+    @Disabled("not ready yet")
     fun `handles color correctly`() {
         val configFile = File("src/test/resources/fixtures/config/predefined_items/sorLegs.yml")
         val config = YamlConfiguration.loadConfiguration(configFile)
@@ -65,7 +65,7 @@ class ConfigurationSectionUtilsTest {
     }
 
     @Test
-    @Ignore("not ready yet")
+    @Disabled("not ready yet")
     fun `handles Spigot ItemStack serialization`() {
         val configFile = File("src/test/resources/fixtures/config/predefined_items/demAxe.yml")
         val config = YamlConfiguration.loadConfiguration(configFile)

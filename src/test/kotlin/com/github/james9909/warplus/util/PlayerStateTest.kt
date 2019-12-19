@@ -4,9 +4,9 @@ import be.seeseemelk.mockbukkit.MockBukkit
 import be.seeseemelk.mockbukkit.entity.PlayerMock
 import com.github.james9909.warplus.WarPlus
 import org.bukkit.Location
-import org.junit.Ignore
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import java.util.UUID
@@ -32,7 +32,7 @@ class PlayerStateTest {
     }
 
     @Test
-    @Ignore("not ready yet")
+    @Disabled("not ready yet")
     fun `saves and restores player state`() {
         val location = Location(null, 1.0, 2.0, 3.0, 4F, 5F)
         player.teleport(location)

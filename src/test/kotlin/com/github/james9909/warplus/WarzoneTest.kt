@@ -4,8 +4,8 @@ import be.seeseemelk.mockbukkit.MockBukkit
 import be.seeseemelk.mockbukkit.entity.PlayerMock
 import com.github.michaelbull.result.unwrap
 import org.bukkit.configuration.file.YamlConfiguration
-import org.junit.Ignore
 import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import java.io.File
@@ -31,7 +31,7 @@ class WarzoneTest {
     }
 
     @Test
-    @Ignore("not ready yet")
+    @Disabled("not ready yet")
     fun `joining correctly assigns a player to a team`() {
         val player = PlayerMock(server, "test", UUID.randomUUID())
         warzone.addPlayer(player)
