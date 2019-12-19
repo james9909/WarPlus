@@ -1,0 +1,29 @@
+demAxe:
+  data:
+    ==: org.bukkit.inventory.ItemStack
+    v: 1631
+    type: STONE_AXE
+    meta:
+      ==: ItemMeta
+      meta-type: UNSPECIFIC
+      display-name: §4Doom Axe
+      lore:
+      - §9[§bL§9] §aVoidstrike §f- §aAxetoss §9[§bR§9]
+      - ''
+      - '§7When in main hand:'
+      - §e §e 5 Attack damage
+      attribute-modifiers:
+        GENERIC_ATTACK_DAMAGE:
+        - ==: org.bukkit.attribute.AttributeModifier
+          amount: 4.0
+          name: attr2
+          slot: HAND
+          uuid: 558dfb89-6d20-4db5-abb6-a7cf4fc53266
+          operation: 0
+      ItemFlags:
+      - HIDE_ENCHANTS
+      - HIDE_ATTRIBUTES
+      - HIDE_UNBREAKABLE
+      - HIDE_DESTROYS
+      - HIDE_PLACED_ON
+      - HIDE_POTION_EFFECTS
