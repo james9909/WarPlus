@@ -37,10 +37,10 @@ class PlayerStateTest {
         val location = Location(null, 1.0, 2.0, 3.0, 4F, 5F)
         player.teleport(location)
 
-        val state = PlayerState(player)
+        val state = PlayerState.fromPlayer(player)
         player.teleport(location.zero())
 
-        state.restore()
+        state.restore(player)
         assert(player.location == location)
     }
 }
