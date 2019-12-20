@@ -2,6 +2,7 @@ package com.github.james9909.warplus
 
 import com.github.james9909.warplus.extensions.format
 import com.github.james9909.warplus.structure.TeamSpawnStructure
+import com.google.common.collect.ImmutableList
 import org.bukkit.ChatColor
 import org.bukkit.Location
 import org.bukkit.Material
@@ -46,15 +47,9 @@ class Team(
 
     fun isFull(): Boolean = size() == settings.getInt("max-players", 5)
 
-    companion object {
-        fun defaultTeamConfiguration(): YamlConfiguration {
-            val config = YamlConfiguration()
-            config.apply {
-                set("lives", 20)
-                set("min-players", 1)
-                set("max-players", 20)
-            }
-            return config
+    fun reset() {
+        for (player in ImmutableList.copyOf(players)) {
+            removePlayer(player)
         }
     }
 
@@ -80,5 +75,17 @@ class Team(
             flagsStringList.add(flag.format())
         }
         teamSection.set("flags", flagsStringList)
+    }
+
+    companion object {
+        fun defaultTeamConfiguration(): YamlConfiguration {
+            val config = YamlConfiguration()
+            config.apply {
+                set("lives", 20)
+                set("min-players", 1)
+                set("max-players", 20)
+            }
+            return config
+        }
     }
 }

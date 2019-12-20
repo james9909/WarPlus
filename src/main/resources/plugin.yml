@@ -9,4 +9,4 @@ commands:
   war:
     description: Base command for WarPlus
     usage: The /war command allows you to run several other subcommands. Ex -
-      | /war setup <name>
+      | /war setup <warzone>

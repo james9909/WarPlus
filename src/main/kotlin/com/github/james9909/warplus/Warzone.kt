@@ -143,6 +143,12 @@ class Warzone(
         config.save(file)
     }
 
+    fun unload() {
+        for (team in teams) {
+            team.reset()
+        }
+    }
+
     companion object {
         fun defaultWarzoneConfiguration(): YamlConfiguration {
             val config = YamlConfiguration()

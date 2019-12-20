@@ -8,16 +8,19 @@ import com.github.james9909.warplus.managers.PlayerManager
 import com.github.james9909.warplus.managers.WarzoneManager
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
+import org.bukkit.event.HandlerList
 import org.bukkit.plugin.PluginDescriptionFile
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.plugin.java.JavaPluginLoader
 import java.io.File
+import java.util.concurrent.atomic.AtomicBoolean
 
 class WarPlus : JavaPlugin {
     val warzoneManager = WarzoneManager(this)
     val playerManager = PlayerManager(this)
     val databaseManager = DatabaseManager(this, "jdbc:sqlite:$dataFolder/war.db")
     val commandHandler = CommandHandler()
+    var loaded = AtomicBoolean()
 
     constructor() : super()
 
@@ -35,9 +38,17 @@ class WarPlus : JavaPlugin {
         logger.info("Done initializing")
     }
 
-    private fun initialize() {
-        setupListeners()
+    override fun onDisable() {
+        logger.info("Disabling WarPlus")
+        disable()
+        logger.info("Done disabling")
+    }
 
+    fun initialize() {
+        if (loaded.get()) {
+            return
+        }
+        setupListeners()
         val dataFolder = dataFolder
         if (!dataFolder.exists()) {
             dataFolder.mkdir()
@@ -45,6 +56,17 @@ class WarPlus : JavaPlugin {
         reloadConfig()
         warzoneManager.loadWarzones()
         databaseManager.createTables()
+        loaded.set(true)
+    }
+
+    fun disable() {
+        if (!loaded.get()) {
+            return
+        }
+        HandlerList.unregisterAll(this)
+        server.scheduler.cancelTasks(this)
+        warzoneManager.unloadWarzones()
+        loaded.set(false)
     }
 
     private fun setupListeners() {
@@ -54,7 +76,7 @@ class WarPlus : JavaPlugin {
     }
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<String>): Boolean {
-        val warCommand = commandHandler.getCommand(this, sender, args) ?: return true
+        val warCommand = commandHandler.getCommand(this, sender, args) ?: return false
         return warCommand.handle()
     }
 }

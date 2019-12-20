@@ -1,6 +1,8 @@
 package com.github.james9909.warplus.command
 
 import com.github.james9909.warplus.WarPlus
+import com.github.james9909.warplus.command.admin.LoadCommand
+import com.github.james9909.warplus.command.admin.UnloadCommand
 import com.github.james9909.warplus.command.regular.JoinWarzoneCommand
 import com.github.james9909.warplus.command.zonemaker.CreateWarzoneCommand
 import com.github.james9909.warplus.command.zonemaker.SetupWarzoneCommand
@@ -20,6 +22,8 @@ class CommandHandler {
             "setup" -> SetupWarzoneCommand(plugin, sender, rest)
             "create" -> CreateWarzoneCommand(plugin, sender, rest)
             "join" -> JoinWarzoneCommand(plugin, sender, rest)
+            "load" -> LoadCommand(plugin, sender, rest)
+            "unload" -> UnloadCommand(plugin, sender, rest)
             else -> null
         }
         return command

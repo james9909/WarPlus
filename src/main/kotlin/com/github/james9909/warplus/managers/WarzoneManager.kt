@@ -159,4 +159,11 @@ class WarzoneManager(val plugin: WarPlus) {
             it.contains(location)
         }
     }
+
+    fun unloadWarzones() {
+        for (warzone in warzones) {
+            warzone.value.unload()
+        }
+        this.warzones.clear()
+    }
 }
