@@ -72,8 +72,8 @@ class DatabaseManager(private val plugin: WarPlus, private val database: String)
                 )
             """.trimIndent()
             )
-            statement.executeUpdate("CREATE INDEX idx_attacker on kills(attacker_id)")
-            statement.executeUpdate("CREATE INDEX idx_defender on kills(defender_id)")
+            statement.executeUpdate("CREATE INDEX IF NOT EXISTS idx_attacker on kills(attacker_id)")
+            statement.executeUpdate("CREATE INDEX IF NOT EXISTS idx_defender on kills(defender_id)")
             statement.close()
         }
     }
