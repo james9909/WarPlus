@@ -38,7 +38,7 @@ private fun getSmallCorners(origin: Location): Pair<Location, Location> {
     return Pair(topLeft.location, bottomRight.location)
 }
 
-private fun getSmallSpawn(kind: TeamKind, origin: Location): Array<Array<Array<Material>>> {
+private fun getSmallSpawn(kind: TeamKind): Array<Array<Array<Material>>> {
     val wool = kind.material
     val air = Material.AIR
     val glowstone = Material.GLOWSTONE
@@ -73,7 +73,7 @@ private fun getFlatCorners(origin: Location): Pair<Location, Location> {
     return Pair(topLeft.location, bottomRight.location)
 }
 
-private fun getFlatSpawn(kind: TeamKind, origin: Location): Array<Array<Array<Material>>> {
+private fun getFlatSpawn(kind: TeamKind): Array<Array<Array<Material>>> {
     val wool = kind.material
     val air = Material.AIR
     val glowstone = Material.GLOWSTONE
@@ -221,8 +221,8 @@ class TeamSpawnStructure(plugin: WarPlus, origin: Location, private val kind: Te
     override fun getStructure(): Array<Array<Array<Material>>> {
         return when (style) {
             SpawnStyle.INVISIBLE -> getInvisibleSpawn()
-            SpawnStyle.FLAT -> getFlatSpawn(kind, origin)
-            SpawnStyle.SMALL -> getSmallSpawn(kind, origin)
+            SpawnStyle.FLAT -> getFlatSpawn(kind)
+            SpawnStyle.SMALL -> getSmallSpawn(kind)
             SpawnStyle.LARGE -> getLargeSpawn(kind, origin)
         }
     }
