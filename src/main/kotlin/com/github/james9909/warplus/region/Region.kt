@@ -23,27 +23,35 @@ data class Region(
         (y >= getMinY() && y <= getMaxY()) &&
         (z >= getMinZ() && z <= getMaxZ())
 
-    fun getMaxX(): Int {
+    private fun getMaxX(): Int {
         return max(p1.blockX, p2.blockX)
     }
 
-    fun getMaxY(): Int {
+    private fun getMaxY(): Int {
         return max(p1.blockY, p2.blockY)
     }
 
-    fun getMaxZ(): Int {
+    private fun getMaxZ(): Int {
         return max(p1.blockZ, p2.blockZ)
     }
 
-    fun getMinX(): Int {
+    private fun getMinX(): Int {
         return min(p1.blockX, p2.blockX)
     }
 
-    fun getMinY(): Int {
+    private fun getMinY(): Int {
         return min(p1.blockY, p2.blockY)
     }
 
-    fun getMinZ(): Int {
+    private fun getMinZ(): Int {
         return min(p1.blockZ, p2.blockZ)
+    }
+
+    fun getMinimumPoint(): Triple<Int, Int, Int> {
+        return Triple(getMinX(), getMinY(), getMinZ())
+    }
+
+    fun getMaximumPoint(): Triple<Int, Int, Int> {
+        return Triple(getMaxX(), getMaxY(), getMaxZ())
     }
 }

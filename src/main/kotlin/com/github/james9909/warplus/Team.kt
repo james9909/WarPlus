@@ -1,10 +1,10 @@
 package com.github.james9909.warplus
 
 import com.github.james9909.warplus.extensions.format
+import com.github.james9909.warplus.structure.FlagStructure
 import com.github.james9909.warplus.structure.TeamSpawnStructure
 import com.google.common.collect.ImmutableList
 import org.bukkit.ChatColor
-import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.YamlConfiguration
@@ -33,11 +33,13 @@ class Team(
     val name: String,
     val spawns: MutableList<TeamSpawnStructure>,
     val warzone: Warzone,
-    val flags: MutableList<Location>,
     val settings: ConfigurationSection = defaultTeamConfiguration()
 ) {
     val kind = TeamKind.valueOf(name.toUpperCase())
-    private val players = mutableSetOf<Player>()
+    val players = mutableSetOf<Player>()
+    val flagStructures = mutableListOf<FlagStructure>()
+
+    fun addFlag(flagStructure: FlagStructure) = flagStructures.add(flagStructure)
 
     fun addPlayer(player: Player) = players.add(player)
 
@@ -50,6 +52,12 @@ class Team(
     fun reset() {
         for (player in ImmutableList.copyOf(players)) {
             removePlayer(player)
+        }
+        for (flagStructure in flagStructures) {
+            flagStructure.build()
+        }
+        for (spawn in spawns) {
+            spawn.build()
         }
     }
 
@@ -71,8 +79,8 @@ class Team(
         teamSection.set("spawns", spawnsStringList)
 
         val flagsStringList = mutableListOf<String>()
-        for (flag in flags) {
-            flagsStringList.add(flag.format())
+        for (flag in flagStructures) {
+            flagsStringList.add(flag.origin.format())
         }
         teamSection.set("flags", flagsStringList)
     }

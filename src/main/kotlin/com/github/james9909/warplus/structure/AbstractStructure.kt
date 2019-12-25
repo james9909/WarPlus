@@ -1,67 +1,89 @@
 package com.github.james9909.warplus.structure
 
+import com.github.james9909.warplus.WarError
 import com.github.james9909.warplus.WarPlus
-import com.sk89q.worldedit.EditSession
-import com.sk89q.worldedit.WorldEdit
+import com.github.james9909.warplus.region.Region
+import com.github.james9909.warplus.util.Orientation
+import com.github.james9909.warplus.util.copyRegion
+import com.github.james9909.warplus.util.loadSchematic
+import com.github.james9909.warplus.util.pasteSchematic
+import com.github.james9909.warplus.util.saveClipboard
+import com.github.michaelbull.result.Err
+import com.github.michaelbull.result.Ok
+import com.github.michaelbull.result.Result
+import com.github.michaelbull.result.unwrap
 import com.sk89q.worldedit.bukkit.BukkitAdapter
-import com.sk89q.worldedit.extent.clipboard.Clipboard
-import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats
-import com.sk89q.worldedit.function.operation.Operations
 import com.sk89q.worldedit.math.BlockVector3
-import com.sk89q.worldedit.session.ClipboardHolder
+import com.sk89q.worldedit.regions.CuboidRegion
 import org.bukkit.Location
-import java.io.File
-import java.io.FileInputStream
+import org.bukkit.Material
+import org.bukkit.block.BlockFace
 
 abstract class AbstractStructure(val plugin: WarPlus, val origin: Location) {
-    abstract val schematicFile: String
-    protected val schematic by lazy {
-        loadSchematic("${plugin.dataFolder}/schematics", schematicFile)
-    }
-    private val original by lazy {
-        // loadSchematic("${plugin.dataFolder}/volumes", "$name-original.schem")
-    }
-
-    fun reset() {
-        val editSession =
-            WorldEdit.getInstance().editSessionFactory.getEditSession(BukkitAdapter.adapt(origin.world), -1)
-        beforePaste(editSession)
-        val operation = ClipboardHolder(schematic)
-            .createPaste(editSession)
-            .to(BlockVector3.at(origin.blockX, origin.blockY + 1, origin.blockZ))
-            .build()
-        Operations.complete(operation)
-        afterPaste()
-        editSession.flushSession()
+    private val region by lazy {
+        val (p1, p2) = corners
+        Region(
+            origin.world ?: plugin.server.worlds[0],
+            p1,
+            p2
+        )
     }
 
-    abstract fun beforePaste(editSession: EditSession)
+    abstract val prefix: String
+    abstract val corners: Pair<Location, Location>
+    abstract fun getStructure(): Array<Array<Array<Material>>>
 
-    abstract fun afterPaste()
-
-    /*
-    fun restore() {
-        val editSession =
-            WorldEdit.getInstance().editSessionFactory.getEditSession(BukkitAdapter.adapt(origin.world), -1)
-        val operation = ClipboardHolder(original)
-            .createPaste(editSession)
-            .to(BlockVector3.at(origin.blockX, origin.blockY + 1, origin.blockZ))
-            .build()
-        Operations.complete(operation)
-        editSession.flushSession()
+    fun getFolder(): String {
+        return "${plugin.dataFolder.absolutePath}/volumes/$prefix"
     }
-    */
+
+    fun getVolumePath(): String {
+        return "${getFolder()}/${origin.blockX}-${origin.blockY}-${origin.blockZ}.schem"
+    }
 
     fun contains(location: Location): Boolean {
-        return origin == location
+        return region.contains(location)
     }
 
-    fun loadSchematic(folderName: String, fileName: String): Clipboard {
-        val folder = File(folderName)
-        if (!folder.exists()) folder.mkdirs()
-        val file = File(folder, fileName)
-        val format = ClipboardFormats.findByFile(file)!!
-        val reader = format.getReader(FileInputStream(file))
-        return reader.read()
+    fun save(): Result<Unit, WarError> {
+        val (pos1, pos2) = corners
+        val region = CuboidRegion(
+            BukkitAdapter.adapt(pos1.world ?: plugin.server.worlds[0]),
+            BlockVector3.at(pos1.blockX, pos1.blockY, pos1.blockZ),
+            BlockVector3.at(pos2.blockX, pos2.blockY, pos2.blockZ)
+        )
+        val clipboard = copyRegion(region)
+        if (clipboard is Err) {
+            return clipboard
+        }
+        saveClipboard(clipboard.unwrap(), getVolumePath())
+        return Ok(Unit)
+    }
+
+    fun restore(): Result<Unit, WarError> {
+        val clipboard = loadSchematic(getVolumePath())
+        if (clipboard is Err) {
+            return clipboard
+        }
+        val (x, y, z) = region.getMinimumPoint()
+        val to = Location(origin.world, x.toDouble(), y.toDouble(), z.toDouble())
+        pasteSchematic(clipboard.unwrap(), to, false)
+        return Ok(Unit)
+    }
+
+    fun build() {
+        val structure = getStructure()
+        val (topLeft, _) = corners
+        val orientation = Orientation.fromLocation(origin)
+        for ((yOffset, layer) in structure.withIndex()) {
+            val blockY = topLeft.block.getRelative(BlockFace.UP, yOffset)
+            for ((zOffset, row) in layer.withIndex()) {
+                val blockYZ = blockY.getRelative(orientation.back.toBlockFace(), zOffset)
+                for ((xOffset, material) in row.withIndex()) {
+                    val blockXYZ = blockYZ.getRelative(orientation.right.toBlockFace(), xOffset)
+                    blockXYZ.type = material
+                }
+            }
+        }
     }
 }
