@@ -4,7 +4,7 @@ import com.github.james9909.warplus.util.CardinalDirection
 import org.bukkit.Location
 import kotlin.math.roundToInt
 
-val axis = arrayOf(CardinalDirection.NORTH, CardinalDirection.EAST, CardinalDirection.SOUTH, CardinalDirection.WEST)
+val axis = arrayOf(CardinalDirection.SOUTH, CardinalDirection.WEST, CardinalDirection.NORTH, CardinalDirection.EAST)
 
 fun Location.format(): String {
     // Format: world:x,y,z[,[yaw],[pitch]]
