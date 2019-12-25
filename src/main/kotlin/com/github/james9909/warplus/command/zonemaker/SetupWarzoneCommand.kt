@@ -191,7 +191,7 @@ class SetupWarzoneCommand(plugin: WarPlus, sender: CommandSender, args: List<Str
         fun handleSpawn(event: PlayerInteractEvent) {
             val block = event.clickedBlock ?: return
             val location = block.location
-            val spawn = warzone.teams.flatMap { it.spawns }.firstOrNull {
+            val spawn = warzone.teams.values.flatMap { it.spawns }.firstOrNull {
                 it.contains(location)
             }
             when (event.action) {
@@ -203,11 +203,11 @@ class SetupWarzoneCommand(plugin: WarPlus, sender: CommandSender, args: List<Str
                     }
                     prompt.text = "Input the team name:"
                     prompt.action = { s: String ->
-                        var team = warzone.teams.firstOrNull {
+                        var team = warzone.teams.values.firstOrNull {
                             it.name == s
                         }
                         if (team == null) {
-                            team = Team(s, mutableListOf(), warzone, mutableListOf())
+                            team = Team(s, mutableListOf(), warzone)
                             warzone.addTeam(team)
                         }
 
@@ -230,7 +230,7 @@ class SetupWarzoneCommand(plugin: WarPlus, sender: CommandSender, args: List<Str
                         return
                     }
                     // Remove spawn
-                    val team = warzone.teams.firstOrNull { team ->
+                    val team = warzone.teams.values.firstOrNull { team ->
                         team.spawns.firstOrNull { spawn ->
                             spawn.contains(location)
                         } != null

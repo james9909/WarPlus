@@ -12,6 +12,7 @@ import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
 import java.io.File
+import java.util.concurrent.ConcurrentHashMap
 
 enum class WarzoneState {
     IDLING,
@@ -28,23 +29,23 @@ class Warzone(
 ) {
     val enabled = warzoneSettings.getBoolean("enabled", true)
     var state = WarzoneState.IDLING
-    val teams = mutableListOf<Team>()
+    val teams = ConcurrentHashMap<TeamKind, Team>()
 
-    fun addTeam(team: Team) = teams.add(team)
+    fun addTeam(team: Team) = teams.put(team.kind, team)
 
     fun minPlayers(): Int =
-        teams.fold(0) { acc, team ->
+        teams.values.fold(0) { acc, team ->
             acc + team.settings.getInt("min-players", teamSettings.getInt("min-players"))
         }
 
     fun maxPlayers(): Int =
-        teams.fold(0) { acc, team ->
+        teams.values.fold(0) { acc, team ->
             acc + team.settings.getInt("max-players", teamSettings.getInt("max-players"))
         }
 
     fun contains(location: Location): Boolean = region.contains(location)
 
-    fun numPlayers(): Int = teams.fold(0) { acc, team ->
+    fun numPlayers(): Int = teams.values.fold(0) { acc, team ->
         acc + team.size()
     }
 
@@ -66,8 +67,8 @@ class Warzone(
         }
 
         // Find candidate team to join
-        teams.sortBy { it.size() }
-        for (team in teams) {
+        val candidates = teams.values.sortedBy { it.size() }
+        for (team in candidates) {
             if (!team.isFull()) {
                 return addPlayer(player, team)
             }
@@ -136,7 +137,7 @@ class Warzone(
         config.set("settings", warzoneSettings)
         config.set("team-settings", teamSettings)
         val teamsSection = config.createSection("teams")
-        for (team in teams) {
+        for ((_, team) in teams) {
             val teamSection = teamsSection.createSection(team.name.toLowerCase())
             team.save(teamSection)
         }
@@ -144,7 +145,7 @@ class Warzone(
     }
 
     fun unload() {
-        for (team in teams) {
+        for ((_, team) in teams) {
             team.reset()
         }
     }

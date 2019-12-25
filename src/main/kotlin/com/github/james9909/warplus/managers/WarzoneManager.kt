@@ -12,6 +12,7 @@ import com.github.james9909.warplus.extensions.getLocationList
 import com.github.james9909.warplus.extensions.getOrCreateSection
 import com.github.james9909.warplus.extensions.toLocation
 import com.github.james9909.warplus.region.Region
+import com.github.james9909.warplus.structure.FlagStructure
 import com.github.james9909.warplus.structure.SpawnStyle
 import com.github.james9909.warplus.structure.TeamSpawnStructure
 import com.github.michaelbull.result.Err
@@ -136,9 +137,11 @@ class WarzoneManager(val plugin: WarPlus) {
                 name = teamName,
                 spawns = spawns,
                 warzone = warzone,
-                flags = flags,
                 settings = teamSection.getConfigurationSection("settings") ?: teamSettings
             )
+            flags.forEach {
+                team.addFlag(FlagStructure(plugin, it, team.kind))
+            }
             teams.add(team)
             warzone.addTeam(team)
         }
