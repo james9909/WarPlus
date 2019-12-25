@@ -121,10 +121,10 @@ private fun getLargeSpawn(kind: TeamKind, origin: Location): Array<Array<Array<M
     val glowstone = Material.GLOWSTONE
     val air = Material.AIR
     return if (
-        (cardinal == CardinalDirection.NORTH && interCardinal == InterCardinalDirection.NORTH_EAST)
-        || (cardinal == CardinalDirection.EAST && interCardinal == InterCardinalDirection.SOUTH_EAST)
-        || (cardinal == CardinalDirection.SOUTH && interCardinal == InterCardinalDirection.SOUTH_WEST)
-        || (cardinal == CardinalDirection.WEST && interCardinal == InterCardinalDirection.NORTH_WEST)
+        (cardinal == CardinalDirection.NORTH && interCardinal == InterCardinalDirection.NORTH_EAST) ||
+        (cardinal == CardinalDirection.EAST && interCardinal == InterCardinalDirection.SOUTH_EAST) ||
+        (cardinal == CardinalDirection.SOUTH && interCardinal == InterCardinalDirection.SOUTH_WEST) ||
+        (cardinal == CardinalDirection.WEST && interCardinal == InterCardinalDirection.NORTH_WEST)
     ) {
         // Open to the right
         arrayOf(

@@ -1,6 +1,5 @@
 package com.github.james9909.warplus
 
-import com.github.james9909.warplus.extensions.blockLocation
 import com.github.james9909.warplus.extensions.format
 import com.github.james9909.warplus.structure.FlagStructure
 import com.github.james9909.warplus.structure.TeamSpawnStructure
