@@ -10,6 +10,17 @@ import org.bukkit.block.BlockFace
 class FlagStructure(plugin: WarPlus, origin: Location, private val kind: TeamKind) :
     AbstractStructure(plugin, origin) {
     override val prefix = "teams/flags"
+    override val corners: Pair<Location, Location> by lazy {
+        val orientation = Orientation.fromLocation(origin)
+        val topLeft = origin.block
+            .getRelative(orientation.front.toBlockFace())
+            .getRelative(orientation.left.toBlockFace())
+        val bottomRight = origin.block
+            .getRelative(orientation.back.toBlockFace())
+            .getRelative(orientation.right.toBlockFace())
+            .getRelative(BlockFace.UP, 3)
+        Pair(topLeft.location, bottomRight.location)
+    }
 
     override fun getStructure(): Array<Array<Array<Material>>> {
         val obsidian = Material.OBSIDIAN
@@ -38,17 +49,5 @@ class FlagStructure(plugin: WarPlus, origin: Location, private val kind: TeamKin
                 arrayOf(air, fence, air)
             )
         )
-    }
-
-    override fun getCorners(): Pair<Location, Location> {
-        val orientation = Orientation.fromLocation(origin)
-        val topLeft = origin.block
-            .getRelative(orientation.front.toBlockFace())
-            .getRelative(orientation.left.toBlockFace())
-        val bottomRight = origin.block
-            .getRelative(orientation.back.toBlockFace())
-            .getRelative(orientation.right.toBlockFace())
-            .getRelative(BlockFace.UP, 3)
-        return Pair(topLeft.location, bottomRight.location)
     }
 }

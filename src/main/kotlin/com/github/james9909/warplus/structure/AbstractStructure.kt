@@ -21,7 +21,7 @@ import org.bukkit.block.BlockFace
 
 abstract class AbstractStructure(val plugin: WarPlus, val origin: Location) {
     private val region by lazy {
-        val (p1, p2) = getCorners()
+        val (p1, p2) = corners
         Region(
             origin.world ?: plugin.server.worlds[0],
             p1,
@@ -30,8 +30,8 @@ abstract class AbstractStructure(val plugin: WarPlus, val origin: Location) {
     }
 
     abstract val prefix: String
+    abstract val corners: Pair<Location, Location>
     abstract fun getStructure(): Array<Array<Array<Material>>>
-    abstract fun getCorners(): Pair<Location, Location>
 
     fun getFolder(): String {
         return "${plugin.dataFolder.absolutePath}/volumes/$prefix"
@@ -46,7 +46,7 @@ abstract class AbstractStructure(val plugin: WarPlus, val origin: Location) {
     }
 
     fun save(): Result<Unit, WarError> {
-        val (pos1, pos2) = getCorners()
+        val (pos1, pos2) = corners
         val region = CuboidRegion(
             BukkitAdapter.adapt(pos1.world ?: plugin.server.worlds[0]),
             BlockVector3.at(pos1.blockX, pos1.blockY, pos1.blockZ),
@@ -73,7 +73,7 @@ abstract class AbstractStructure(val plugin: WarPlus, val origin: Location) {
 
     fun build() {
         val structure = getStructure()
-        val (topLeft, _) = getCorners()
+        val (topLeft, _) = corners
         val orientation = Orientation.fromLocation(origin)
         for ((yOffset, layer) in structure.withIndex()) {
             val blockY = topLeft.block.getRelative(BlockFace.UP, yOffset)
