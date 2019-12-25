@@ -20,7 +20,28 @@ enum class CardinalDirection {
     }
 }
 
-data class Orientation(val left: CardinalDirection, val right: CardinalDirection, val front: CardinalDirection, val back: CardinalDirection) {
+enum class InterCardinalDirection {
+    NORTH_EAST,
+    SOUTH_EAST,
+    SOUTH_WEST,
+    NORTH_WEST;
+
+    fun toBlockFace(): BlockFace {
+        return when (this) {
+            NORTH_EAST -> BlockFace.NORTH_EAST
+            SOUTH_EAST -> BlockFace.SOUTH_EAST
+            SOUTH_WEST -> BlockFace.SOUTH_WEST
+            NORTH_WEST -> BlockFace.NORTH_WEST
+        }
+    }
+}
+
+data class Orientation(
+    val left: CardinalDirection,
+    val right: CardinalDirection,
+    val front: CardinalDirection,
+    val back: CardinalDirection
+) {
 
     companion object {
         fun fromLocation(location: Location): Orientation {

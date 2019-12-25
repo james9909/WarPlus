@@ -5,9 +5,8 @@ import com.github.james9909.warplus.command.AbstractCommand
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
-class DeleteTeamFlagCommand(plugin: WarPlus, sender: CommandSender, args: List<String>) :
+class DeleteTeamSpawnCommand(plugin: WarPlus, sender: CommandSender, args: List<String>) :
     AbstractCommand(plugin, sender, args) {
-
     override fun handle(): Boolean {
         if (sender !is Player) {
             plugin.playerManager.sendMessage(sender, "Only in-game players may do that")
@@ -19,17 +18,17 @@ class DeleteTeamFlagCommand(plugin: WarPlus, sender: CommandSender, args: List<S
             return true
         }
         warzone.teams.forEach { (_, team) ->
-            team.flagStructures.forEach {
+            team.spawns.forEach {
                 if (it.contains(sender.location)) {
                     it.restore()
-                    team.flagStructures.remove(it)
+                    team.spawns.remove(it)
                     warzone.save()
-                    plugin.playerManager.sendMessage(sender, "Flag removed!")
+                    plugin.playerManager.sendMessage(sender, "Spawn removed!")
                     return true
                 }
             }
         }
-        plugin.playerManager.sendMessage(sender, "There is no flag at this location")
+        plugin.playerManager.sendMessage(sender, "There is no spawn at this location")
         return true
     }
 }
