@@ -138,7 +138,7 @@ class Warzone(
         config.set("team-settings", teamSettings)
         val teamsSection = config.createSection("teams")
         for ((_, team) in teams) {
-            val teamSection = teamsSection.createSection(team.name.toLowerCase())
+            val teamSection = teamsSection.createSection(team.kind.name.toLowerCase())
             team.save(teamSection)
         }
         config.save(file)

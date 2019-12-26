@@ -1,5 +1,6 @@
 package com.github.james9909.warplus.managers
 
+import com.github.james9909.warplus.IllegalTeamKindError
 import com.github.james9909.warplus.IllegalWarzoneError
 import com.github.james9909.warplus.Team
 import com.github.james9909.warplus.TeamKind
@@ -133,8 +134,18 @@ class WarzoneManager(val plugin: WarPlus) {
                 )
             }
 
+            val teamKind: TeamKind
+            try {
+                teamKind = TeamKind.valueOf(teamName.toUpperCase())
+            } catch (e: IllegalArgumentException) {
+                return Err(
+                    IllegalTeamKindError(
+                        "Bad team kind: $teamName"
+                    )
+                )
+            }
             val team = Team(
-                name = teamName,
+                kind = teamKind,
                 spawns = spawns,
                 warzone = warzone,
                 settings = teamSection.getConfigurationSection("settings") ?: teamSettings

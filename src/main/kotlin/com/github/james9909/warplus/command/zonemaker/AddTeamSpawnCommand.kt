@@ -34,7 +34,7 @@ class AddTeamSpawnCommand(plugin: WarPlus, sender: CommandSender, args: List<Str
         }
         var team = warzone.teams[kind]
         if (team == null) {
-            team = Team(kind.toString(), mutableListOf(), warzone)
+            team = Team(kind, mutableListOf(), warzone)
             warzone.addTeam(team)
         }
         val spawnStyle: SpawnStyle
