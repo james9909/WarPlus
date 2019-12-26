@@ -120,7 +120,7 @@ class SetupWarzonePrompt(val plugin: WarPlus, val player: Player, val warzone: W
 
         if (cornerOneSet && cornerTwoSet) {
             player.sendMessage("Saving warzone ${warzone.name}...")
-            warzone.save()
+            warzone.saveConfig()
             player.sendMessage("Setup complete!")
         } else {
             player.sendMessage("Setup incomplete. Missing points.")
@@ -193,7 +193,7 @@ class SetupWarzonePrompt(val plugin: WarPlus, val player: Player, val warzone: W
             }
         }
         if (cornerOneSet && cornerTwoSet) {
-            warzone.save()
+            warzone.saveConfig()
         }
     }
 
@@ -229,11 +229,11 @@ class SetupWarzonePrompt(val plugin: WarPlus, val player: Player, val warzone: W
                 }
                 val teamSpawn =
                     TeamSpawnStructure(plugin, location.subtract(0.0, 1.0, 0.0).blockLocation(), team.kind, spawnStyle).also {
-                        it.save()
+                        it.saveVolume()
                         it.build()
                     }
                 team.addTeamSpawn(teamSpawn)
-                warzone.save()
+                warzone.saveConfig()
                 text = "Spawn for team ${currTeamKind.name.toLowerCase()} created!"
             }
             Action.RIGHT_CLICK_AIR, Action.RIGHT_CLICK_BLOCK -> {
@@ -243,9 +243,9 @@ class SetupWarzonePrompt(val plugin: WarPlus, val player: Player, val warzone: W
                 }
                 // Remove spawn
                 val team = warzone.teams[spawn.kind] ?: return
-                spawn.restore()
+                spawn.restoreVolume()
                 team.removeTeamSpawn(spawn)
-                warzone.save()
+                warzone.saveConfig()
                 text = "Spawn removed!"
             }
             else -> {
@@ -269,19 +269,19 @@ class SetupWarzonePrompt(val plugin: WarPlus, val player: Player, val warzone: W
                     return
                 }
                 val flagStructure = FlagStructure(plugin, location.subtract(0.0, 1.0, 0.0).blockLocation(), team.kind)
-                flagStructure.save()
+                flagStructure.saveVolume()
                 flagStructure.build()
                 team.addFlag(flagStructure)
-                warzone.save()
+                warzone.saveConfig()
                 text = "Flag for team ${currTeamKind.name.toLowerCase()} created!"
             }
             Action.RIGHT_CLICK_AIR, Action.RIGHT_CLICK_BLOCK -> {
                 warzone.teams.forEach { (_, team) ->
                     team.flagStructures.forEach {
                         if (it.contains(location)) {
-                            it.restore()
+                            it.restoreVolume()
                             team.flagStructures.remove(it)
-                            warzone.save()
+                            warzone.saveConfig()
                             text = "Flag removed!"
                             return
                         }

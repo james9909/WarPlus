@@ -125,7 +125,7 @@ class Warzone(
         player.teleport(spawn.origin)
     }
 
-    fun save() {
+    fun saveConfig() {
         val file = File("${plugin.dataFolder}/warzone-$name.yml")
         val config = YamlConfiguration()
 
@@ -139,7 +139,7 @@ class Warzone(
         val teamsSection = config.createSection("teams")
         for ((_, team) in teams) {
             val teamSection = teamsSection.createSection(team.kind.name.toLowerCase())
-            team.save(teamSection)
+            team.saveConfig(teamSection)
         }
         config.save(file)
     }

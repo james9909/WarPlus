@@ -30,7 +30,7 @@ class CreateWarzoneCommand(plugin: WarPlus, sender: CommandSender, args: List<St
             Region(sender.world)
         )
         plugin.warzoneManager.addWarzone(warzone)
-        warzone.save()
+        warzone.saveConfig()
         return true
     }
 }

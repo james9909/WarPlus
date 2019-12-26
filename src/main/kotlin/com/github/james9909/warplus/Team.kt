@@ -68,7 +68,7 @@ class Team(
         spawns.remove(spawn)
     }
 
-    fun save(teamSection: ConfigurationSection) {
+    fun saveConfig(teamSection: ConfigurationSection) {
         teamSection.set("settings", settings)
         val spawnsStringList = mutableListOf<String>()
         for (spawn in spawns) {

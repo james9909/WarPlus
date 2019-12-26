@@ -21,9 +21,9 @@ class DeleteTeamFlagCommand(plugin: WarPlus, sender: CommandSender, args: List<S
         warzone.teams.forEach { (_, team) ->
             team.flagStructures.forEach {
                 if (it.contains(sender.location)) {
-                    it.restore()
+                    it.restoreVolume()
                     team.flagStructures.remove(it)
-                    warzone.save()
+                    warzone.saveConfig()
                     plugin.playerManager.sendMessage(sender, "Flag removed!")
                     return true
                 }
