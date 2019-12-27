@@ -6,6 +6,17 @@ import com.github.james9909.warplus.region.Region
 import com.github.james9909.warplus.util.DEFAULT_MAX_HEALTH
 import com.github.james9909.warplus.util.Message
 import com.github.james9909.warplus.util.PlayerState
+import com.github.james9909.warplus.util.copyRegion
+import com.github.james9909.warplus.util.loadSchematic
+import com.github.james9909.warplus.util.pasteSchematic
+import com.github.james9909.warplus.util.saveClipboard
+import com.github.michaelbull.result.Err
+import com.github.michaelbull.result.Ok
+import com.github.michaelbull.result.unwrap
+import com.github.michaelbull.result.Result
+import com.sk89q.worldedit.bukkit.BukkitAdapter
+import com.sk89q.worldedit.math.BlockVector3
+import com.sk89q.worldedit.regions.CuboidRegion
 import org.bukkit.Location
 import org.bukkit.attribute.Attribute
 import org.bukkit.configuration.ConfigurationSection
@@ -30,6 +41,8 @@ class Warzone(
     val enabled = warzoneSettings.getBoolean("enabled", true)
     var state = WarzoneState.IDLING
     val teams = ConcurrentHashMap<TeamKind, Team>()
+    val volumeFolder = "${plugin.dataFolder.absolutePath}/volumes/warzones"
+    val volumePath = "$volumeFolder/$name.schem"
 
     fun addTeam(team: Team) = teams.put(team.kind, team)
 
@@ -148,6 +161,33 @@ class Warzone(
         for ((_, team) in teams) {
             team.reset()
         }
+    }
+
+    fun saveVolume(): Result<Unit, WarError> {
+        val (minX, minY, minZ) = region.getMinimumPoint()
+        val (maxX, maxY, maxZ) = region.getMaximumPoint()
+        val region = CuboidRegion(
+            BukkitAdapter.adapt(region.world),
+            BlockVector3.at(minX, minY, minZ),
+            BlockVector3.at(maxX, maxY, maxZ)
+        )
+        val clipboard = copyRegion(region)
+        if (clipboard is Err) {
+            return clipboard
+        }
+        saveClipboard(clipboard.unwrap(), volumePath)
+        return Ok(Unit)
+    }
+
+    fun restoreVolume(): Result<Unit, WarError> {
+        val clipboard = loadSchematic(volumePath)
+        if (clipboard is Err) {
+            return clipboard
+        }
+        val (x, y, z) = region.getMinimumPoint()
+        val to = Location(region.world, x.toDouble(), y.toDouble(), z.toDouble())
+        pasteSchematic(clipboard.unwrap(), to, false)
+        return Ok(Unit)
     }
 
     companion object {
