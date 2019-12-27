@@ -32,7 +32,7 @@ import org.bukkit.inventory.ItemStack
 private enum class TOOL(val display: String) {
     CORNERS("Corners"),
     SPAWN("Spawns"),
-    FLAG("Flag")
+    FLAG("Flags")
 }
 
 class SetupWarzonePrompt(val plugin: WarPlus, val player: Player, val warzone: Warzone) : Prompt,
