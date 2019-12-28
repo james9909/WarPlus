@@ -45,7 +45,7 @@ abstract class AbstractStructure(val plugin: WarPlus, val origin: Location) {
         return region.contains(location)
     }
 
-    fun save(): Result<Unit, WarError> {
+    fun saveVolume(): Result<Unit, WarError> {
         val (pos1, pos2) = corners
         val region = CuboidRegion(
             BukkitAdapter.adapt(pos1.world ?: plugin.server.worlds[0]),
@@ -60,7 +60,7 @@ abstract class AbstractStructure(val plugin: WarPlus, val origin: Location) {
         return Ok(Unit)
     }
 
-    fun restore(): Result<Unit, WarError> {
+    fun restoreVolume(): Result<Unit, WarError> {
         val clipboard = loadSchematic(getVolumePath())
         if (clipboard is Err) {
             return clipboard

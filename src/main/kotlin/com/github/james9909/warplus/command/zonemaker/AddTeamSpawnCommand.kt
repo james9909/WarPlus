@@ -34,7 +34,7 @@ class AddTeamSpawnCommand(plugin: WarPlus, sender: CommandSender, args: List<Str
         }
         var team = warzone.teams[kind]
         if (team == null) {
-            team = Team(kind.toString(), mutableListOf(), warzone)
+            team = Team(kind, mutableListOf(), warzone)
             warzone.addTeam(team)
         }
         val spawnStyle: SpawnStyle
@@ -46,11 +46,11 @@ class AddTeamSpawnCommand(plugin: WarPlus, sender: CommandSender, args: List<Str
         }
         val teamSpawn =
             TeamSpawnStructure(plugin, sender.location.subtract(0.0, 1.0, 0.0).blockLocation(), team.kind, spawnStyle).also {
-                it.save()
+                it.saveVolume()
                 it.build()
             }
         team.addTeamSpawn(teamSpawn)
-        warzone.save()
+        warzone.saveConfig()
         plugin.playerManager.sendMessage(sender, "Spawn for team ${args[0]} created!")
         return true
     }

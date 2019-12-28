@@ -206,7 +206,7 @@ private fun getLargeSpawn(kind: TeamKind, origin: Location): Array<Array<Array<M
     }
 }
 
-class TeamSpawnStructure(plugin: WarPlus, origin: Location, private val kind: TeamKind, private val style: SpawnStyle) :
+class TeamSpawnStructure(plugin: WarPlus, origin: Location, val kind: TeamKind, private val style: SpawnStyle) :
     AbstractStructure(plugin, origin) {
     override val prefix: String = "teams/spawns"
     override val corners by lazy {

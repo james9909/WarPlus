@@ -29,3 +29,7 @@ fun Location.getInterCardinalDirection(): InterCardinalDirection {
 fun Location.blockLocation(): Location {
     return Location(world, blockX.toDouble(), blockY.toDouble(), blockZ.toDouble(), yaw, pitch)
 }
+
+fun Location.isFinite(): Boolean {
+    return x.isFinite() && y.isFinite() && z.isFinite() && yaw.isFinite() && pitch.isFinite()
+}

@@ -30,12 +30,11 @@ enum class TeamKind(val material: Material, val chatColor: ChatColor) {
 }
 
 class Team(
-    val name: String,
+    val kind: TeamKind,
     val spawns: MutableList<TeamSpawnStructure>,
     val warzone: Warzone,
     val settings: ConfigurationSection = defaultTeamConfiguration()
 ) {
-    val kind = TeamKind.valueOf(name.toUpperCase())
     val players = mutableSetOf<Player>()
     val flagStructures = mutableListOf<FlagStructure>()
 
@@ -63,14 +62,13 @@ class Team(
 
     fun addTeamSpawn(spawn: TeamSpawnStructure) {
         spawns.add(spawn)
-        // spawn.reset()
     }
 
     fun removeTeamSpawn(spawn: TeamSpawnStructure) {
         spawns.remove(spawn)
     }
 
-    fun save(teamSection: ConfigurationSection) {
+    fun saveConfig(teamSection: ConfigurationSection) {
         teamSection.set("settings", settings)
         val spawnsStringList = mutableListOf<String>()
         for (spawn in spawns) {

@@ -35,10 +35,10 @@ class AddTeamFlagCommand(plugin: WarPlus, sender: CommandSender, args: List<Stri
             return true
         }
         val flagStructure = FlagStructure(plugin, sender.location.subtract(0.0, 1.0, 0.0).blockLocation(), team.kind)
-        flagStructure.save()
+        flagStructure.saveVolume()
         flagStructure.build()
         team.addFlag(flagStructure)
-        warzone.save()
+        warzone.saveConfig()
         plugin.playerManager.sendMessage(sender, "Flag for team ${args[0]} created!")
         return true
     }

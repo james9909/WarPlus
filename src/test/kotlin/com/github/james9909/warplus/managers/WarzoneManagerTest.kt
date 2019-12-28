@@ -41,7 +41,7 @@ class WarzoneManagerTest {
         assert(warzone.enabled)
         assert(warzone.teams.size == 2)
         warzone.teams[TeamKind.NAVY]?.apply {
-            assert(name == "navy")
+            assert(kind == TeamKind.NAVY)
             assert(spawns.size == 1)
             spawns[0].apply {
                 assert(origin.x == 50.0)
@@ -52,7 +52,7 @@ class WarzoneManagerTest {
         } ?: fail("Navy team is null")
 
         warzone.teams[TeamKind.RED]?.apply {
-            assert(name == "red")
+            assert(kind == TeamKind.RED)
             assert(spawns.size == 1)
             spawns[0].apply {
                 assert(origin.x == 25.0)
