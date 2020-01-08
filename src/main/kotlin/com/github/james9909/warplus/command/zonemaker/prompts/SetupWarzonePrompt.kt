@@ -4,6 +4,7 @@ import com.github.james9909.warplus.Team
 import com.github.james9909.warplus.TeamKind
 import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.Warzone
+import com.github.james9909.warplus.WarzoneState
 import com.github.james9909.warplus.extensions.blockLocation
 import com.github.james9909.warplus.extensions.color
 import com.github.james9909.warplus.extensions.isFinite
@@ -122,6 +123,7 @@ class SetupWarzonePrompt(val plugin: WarPlus, val player: Player, val warzone: W
             player.sendMessage("Saving warzone ${warzone.name}...")
             warzone.saveConfig()
             player.sendMessage("Setup complete!")
+            warzone.state = WarzoneState.IDLING
         } else {
             player.sendMessage("Setup incomplete. Missing points.")
         }

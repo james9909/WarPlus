@@ -1,10 +1,10 @@
 package com.github.james9909.warplus.listeners
 
 import com.github.james9909.warplus.WarPlus
-import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.entity.Projectile
+import org.bukkit.entity.TNTPrimed
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
@@ -23,55 +23,71 @@ class EntityListener(val plugin: WarPlus) : Listener {
     fun onEntityDamageByEntity(event: EntityDamageByEntityEvent) {
         val defender = event.entity as? Player ?: return
         val damager = event.damager
+        plugin.playerManager.getPlayerInfo(defender) ?: return
 
-        val attacker: Entity
-        if (damager is Projectile && damager.shooter is Player) {
-            attacker = damager.shooter as Player
+        val attacker = if (damager is Projectile && damager.shooter is Player) {
+            // Attacked by another player's projectile
+            damager.shooter as Player
+        } else if (damager is TNTPrimed && damager.source is Player) {
+            // Attacked by another player's TNT
+            damager.source
         } else {
-            attacker = event.damager
+            event.damager
         }
 
-        val warDefender = plugin.playerManager.getPlayerInfo(defender) ?: return
         if (attacker is Player) {
-            // PVP
-            val warAttacker = plugin.playerManager.getPlayerInfo(attacker)
-            if (warAttacker?.team == null) {
-                return
-            }
+            handlePvP(event, attacker, defender)
+        } else if (attacker is LivingEntity) {
+            handlePvE(event, attacker, defender)
+        }
+    }
 
-            val aTeam = warAttacker.team
-            val dTeam = warDefender.team
-            if (aTeam.warzone != dTeam.warzone) {
-                // Same warzone, different teams
-                event.isCancelled = true
-                return
-            }
-            if (aTeam == dTeam) {
-                // No friendly fire
-                event.isCancelled = true
-                return
-            }
-            if (event.finalDamage < defender.health) {
-                return
-            }
+    private fun handlePvE(event: EntityDamageByEntityEvent, attacker: LivingEntity, defender: Player) {
+        val defenderInfo = plugin.playerManager.getPlayerInfo(defender) ?: return
+        if (event.finalDamage < defender.health) {
+            return
+        }
+        defenderInfo.team.warzone.handleMobDeath(defender, attacker)
+    }
 
-            // Death
+    private fun handlePvP(event: EntityDamageByEntityEvent, attacker: Player, defender: Player) {
+        val attackerInfo = plugin.playerManager.getPlayerInfo(attacker)
+        val defenderInfo = plugin.playerManager.getPlayerInfo(defender)
+
+        if ((attackerInfo == null) xor (defenderInfo == null)) {
+            // One is in a warzone while the other is not
             event.isCancelled = true
-            if (attacker == defender) {
-                // suicide
-            } else {
-                // kill
-            }
+            return
+        }
+        if (attackerInfo == null || defenderInfo == null) {
+            // Both are not in a warzone
+            // NOTE: We use OR for smart-casting, which is fine because
+            // the previous conditional takes care of the rest of the cases
             return
         }
 
-        if (attacker is LivingEntity) {
-            // PVE
-            val isDeath = event.finalDamage >= defender.health
-            if (!isDeath) {
-                return
-            }
-            // Kill
+        // At this point, both players are in a warzone
+
+        if (attackerInfo.team.warzone != defenderInfo.team.warzone) {
+            // Players in different warzones cannot damage each other
+            event.isCancelled = true
+            return
+        }
+
+        if (attackerInfo.team.kind == defenderInfo.team.kind) {
+            // Cancel friendly fire
+            event.isCancelled = true
+            return
+        }
+
+        if (event.finalDamage < defender.health) {
+            return
+        }
+
+        if (attacker == defender) {
+            defenderInfo.team.warzone.handleSuicide(defender)
+        } else {
+            defenderInfo.team.warzone.handleKill(attacker, defender, attacker, true)
         }
     }
 
@@ -88,14 +104,14 @@ class EntityListener(val plugin: WarPlus) : Listener {
         }
 
         val player = event.entity as? Player ?: return
-        plugin.playerManager.getPlayerInfo(player) ?: return
+        val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
 
         if (event.finalDamage < player.health) {
             return
         }
 
         event.isCancelled = true
-        // Handle natural kill
+        playerInfo.team.warzone.handleNaturalDeath(player, event.cause)
     }
 
     @EventHandler
@@ -135,10 +151,11 @@ class EntityListener(val plugin: WarPlus) : Listener {
         val warShooter = plugin.playerManager.getPlayerInfo(shooter) ?: return
         var beneficial = true
         val effects = potion.effects
-        for (effect in effects) {
+        loop@ for (effect in effects) {
             when (effect.type) {
                 PotionEffectType.HARM, PotionEffectType.POISON, PotionEffectType.WEAKNESS, PotionEffectType.SLOW -> {
                     beneficial = false
+                    break@loop
                 }
             }
         }

@@ -31,6 +31,7 @@ class CreateWarzoneCommand(plugin: WarPlus, sender: CommandSender, args: List<St
         )
         plugin.warzoneManager.addWarzone(warzone)
         warzone.saveConfig()
+        plugin.playerManager.sendMessage(sender, "Warzone ${args[0]} has been created!")
         return true
     }
 }

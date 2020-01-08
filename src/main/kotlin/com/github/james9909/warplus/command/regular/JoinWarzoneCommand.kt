@@ -1,6 +1,7 @@
 package com.github.james9909.warplus.command.regular
 
 import com.github.james9909.warplus.WarPlus
+import com.github.james9909.warplus.WarzoneState
 import com.github.james9909.warplus.command.AbstractCommand
 import com.github.james9909.warplus.util.Message
 import org.bukkit.command.CommandSender
@@ -25,6 +26,10 @@ class JoinWarzoneCommand(plugin: WarPlus, sender: CommandSender, args: List<Stri
         }
         if (!warzone.enabled) {
             plugin.playerManager.sendMessage(sender, Message.WARZONE_DISABLED)
+            return true
+        }
+        if (warzone.state == WarzoneState.EDITING) {
+            plugin.playerManager.sendMessage(sender, Message.WARZONE_EDITING)
             return true
         }
 

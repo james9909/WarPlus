@@ -46,6 +46,8 @@ class Team(
 
     fun size(): Int = players.size
 
+    fun hasEnoughPlayers(): Boolean = size() >= settings.getInt("min-players", 1)
+
     fun isFull(): Boolean = size() == settings.getInt("max-players", 5)
 
     fun reset() {
@@ -81,6 +83,16 @@ class Team(
             flagsStringList.add(flag.origin.format())
         }
         teamSection.set("flags", flagsStringList)
+    }
+
+    fun broadcast(message: String) {
+        players.forEach {
+            warzone.plugin.playerManager.sendMessage(it, message)
+        }
+    }
+
+    override fun toString(): String {
+        return "${kind.chatColor}${kind.name.toLowerCase()}${ChatColor.RESET}"
     }
 
     companion object {
