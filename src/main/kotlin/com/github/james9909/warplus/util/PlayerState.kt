@@ -11,7 +11,7 @@ import org.bukkit.potion.PotionEffect
 const val DEFAULT_MAX_HEALTH = 20.0
 const val DEFAULT_EXHAUSTION = 0F
 const val DEFAULT_SATURATION = 10F
-const val DEFAULT_REMAINING_AIR = 20
+const val DEFAULT_REMAINING_AIR = 20 * 15
 const val DEFAULT_FOOD_LEVEL = 20
 const val DEFAULT_EXP = 0F
 const val DEFAULT_LEVEL = 0
@@ -120,7 +120,7 @@ data class PlayerState(
                 maxHealth,
                 player.remainingAir,
                 player.foodLevel,
-                player.location,
+                player.location.clone(),
                 player.gameMode,
                 player.exp,
                 player.level,
