@@ -17,6 +17,7 @@ import com.github.michaelbull.result.unwrap
 import com.sk89q.worldedit.bukkit.BukkitAdapter
 import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.regions.CuboidRegion
+import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Location
 import org.bukkit.Material
@@ -27,6 +28,7 @@ import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause
+import org.bukkit.util.Vector
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 
@@ -147,6 +149,7 @@ class Warzone(
     private fun respawnPlayer(player: Player) {
         val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
         resetPlayer(player)
+        Bukkit.getScheduler().runTaskLater(plugin, { -> player.velocity = Vector() }, 1)
 
         // Pick a random spawn
         val spawn = playerInfo.team.spawns.random()
