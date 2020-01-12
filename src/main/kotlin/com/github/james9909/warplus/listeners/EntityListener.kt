@@ -25,9 +25,12 @@ class EntityListener(val plugin: WarPlus) : Listener {
         val damager = event.damager
         plugin.playerManager.getPlayerInfo(defender) ?: return
 
-        val attacker = if (damager is Projectile && damager.shooter is Player) {
-            // Attacked by another player's projectile
-            damager.shooter as Player
+        val attacker = if (damager is Projectile) {
+            when (damager.shooter) {
+                is Player -> damager.shooter
+                is LivingEntity -> damager.shooter
+                else -> null
+            }
         } else if (damager is TNTPrimed && damager.source is Player) {
             // Attacked by another player's TNT
             damager.source
@@ -35,10 +38,18 @@ class EntityListener(val plugin: WarPlus) : Listener {
             event.damager
         }
 
-        if (attacker is Player) {
-            handlePvP(event, attacker, defender)
-        } else if (attacker is LivingEntity) {
-            handlePvE(event, attacker, defender)
+        when (attacker) {
+            is Player -> handlePvP(event, attacker, defender)
+            is LivingEntity -> handlePvE(event, attacker, defender)
+            null -> handleNaturalDamage(event, defender)
+        }
+    }
+
+    private fun handleNaturalDamage(event: EntityDamageByEntityEvent, defender: Player) {
+        val defenderInfo = plugin.playerManager.getPlayerInfo(defender) ?: return
+        if (event.finalDamage >= defender.health) {
+            event.isCancelled = true
+            defenderInfo.team.warzone.handleNaturalDeath(defender, event.cause)
         }
     }
 
