@@ -37,6 +37,8 @@ class Team(
 ) {
     val players = mutableSetOf<Player>()
     val flagStructures = mutableListOf<FlagStructure>()
+    var lives = settings.getInt("lives", 20)
+    var score = 0
 
     fun addFlag(flagStructure: FlagStructure) = flagStructures.add(flagStructure)
 
@@ -50,10 +52,19 @@ class Team(
 
     fun isFull(): Boolean = size() == settings.getInt("max-players", 5)
 
+    fun resetAttributes() {
+        lives = settings.getInt("lives", 20)
+        score = 0
+    }
+
     fun reset() {
         for (player in ImmutableList.copyOf(players)) {
             removePlayer(player)
         }
+        resetStructures()
+    }
+
+    fun resetStructures() {
         for (flagStructure in flagStructures) {
             flagStructure.build()
         }
@@ -102,6 +113,7 @@ class Team(
                 set("lives", 20)
                 set("min-players", 1)
                 set("max-players", 20)
+                set("max-score", 3)
             }
             return config
         }

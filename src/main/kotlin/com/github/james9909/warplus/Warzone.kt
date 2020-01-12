@@ -81,11 +81,36 @@ class Warzone(
     private fun start() {
         plugin.logger.info("Starting warzone $name")
         state = WarzoneState.RUNNING
+
+        initialize()
+    }
+
+    private fun initialize() {
+        for ((_, team) in teams) {
+            team.resetAttributes()
+            team.resetStructures()
+            for (player in team.players) {
+                respawnPlayer(player)
+            }
+        }
+    }
+
+    private fun reinitialize() {
+        for ((_, team) in teams) {
+            team.resetStructures()
+            for (player in team.players) {
+                respawnPlayer(player)
+            }
+        }
     }
 
     @Synchronized
     fun removePlayer(player: Player, team: Team) {
         team.removePlayer(player)
+        removePlayer(player)
+    }
+
+    fun removePlayer(player: Player) {
         plugin.playerManager.restorePlayerState(player)
     }
 
@@ -215,14 +240,56 @@ class Warzone(
         return Ok(Unit)
     }
 
+    @Synchronized
     private fun handleDeath(player: Player) {
-        respawnPlayer(player)
+        val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
+        val lives = playerInfo.team.lives
+        if (lives == 0) {
+            handleTeamLoss(playerInfo.team, player)
+        } else {
+            if (lives == 1) {
+                broadcast("Team ${playerInfo.team}'s life pool is empty. One more death and they lose the battle!")
+            }
+            playerInfo.team.lives -= 1
+            respawnPlayer(player)
+        }
     }
 
     fun broadcast(message: String) {
         teams.values.forEach {
             it.broadcast(message)
         }
+    }
+
+    fun handleTeamLoss(team: Team, player: Player) {
+        val winningTeams = mutableListOf<Team>()
+        teams.values.filter {
+            it != team
+        }.forEach {
+            it.score += 1
+            if (it.score >= it.settings.getInt("max-score", 2)) {
+                winningTeams.add(it)
+            }
+        }
+        broadcast("The battle is over. Team $team lost: ${player.name} died and there were no lives left in their life pool.")
+        if (winningTeams.isEmpty()) {
+            restoreVolume()
+            reinitialize()
+        } else {
+            handleWin(winningTeams)
+        }
+    }
+
+    fun handleWin(winningTeams: List<Team>) {
+        broadcast("Score cap reached. Game is over! Winning teams: ${winningTeams.joinToString()}")
+        for ((_, team) in teams) {
+            val won = team in winningTeams
+            for (player in team.players.toList()) {
+                removePlayer(player, team)
+            }
+        }
+        restoreVolume()
+        initialize()
     }
 
     fun handleSuicide(player: Player) {
@@ -248,7 +315,8 @@ class Warzone(
             }
             val attackerColor = attackerInfo.team.kind.chatColor
             val defenderColor = defenderInfo.team.kind.chatColor
-            val message = "${attackerColor}${attacker.name}${ChatColor.RESET}'s $weaponName killed ${defenderColor}${defender.name}${ChatColor.RESET}"
+            val message =
+                "${attackerColor}${attacker.name}${ChatColor.RESET}'s $weaponName killed ${defenderColor}${defender.name}${ChatColor.RESET}"
             broadcast(message)
         }
 
