@@ -178,7 +178,7 @@ class Warzone(
 
         // Pick a random spawn
         val spawn = playerInfo.team.spawns.random()
-        val spawnLocation = spawn.origin
+        val spawnLocation = spawn.origin.clone()
 
         // Offset because the origin is in the ground
         spawnLocation.add(0.0, 1.0, 0.0)
