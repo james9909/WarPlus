@@ -12,16 +12,23 @@ import com.github.james9909.warplus.util.pasteSchematic
 import com.github.james9909.warplus.util.saveClipboard
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
-import com.github.michaelbull.result.unwrap
 import com.github.michaelbull.result.Result
+import com.github.michaelbull.result.unwrap
 import com.sk89q.worldedit.bukkit.BukkitAdapter
 import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.regions.CuboidRegion
+import org.bukkit.Bukkit
+import org.bukkit.ChatColor
 import org.bukkit.Location
+import org.bukkit.Material
 import org.bukkit.attribute.Attribute
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.YamlConfiguration
+import org.bukkit.entity.Entity
+import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause
+import org.bukkit.util.Vector
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 
@@ -41,8 +48,8 @@ class Warzone(
     val enabled = warzoneSettings.getBoolean("enabled", true)
     var state = WarzoneState.IDLING
     val teams = ConcurrentHashMap<TeamKind, Team>()
-    val volumeFolder = "${plugin.dataFolder.absolutePath}/volumes/warzones"
-    val volumePath = "$volumeFolder/$name.schem"
+    private val volumeFolder = "${plugin.dataFolder.absolutePath}/volumes/warzones"
+    private val volumePath = "$volumeFolder/$name.schem"
 
     fun addTeam(team: Team) = teams.put(team.kind, team)
 
@@ -62,19 +69,54 @@ class Warzone(
         acc + team.size()
     }
 
-    fun start() {
+    private fun canStart(): Boolean {
+        val sufficientTeams = teams.values.map { team ->
+            team.hasEnoughPlayers()
+        }.filter { v ->
+            v
+        }.size
+        return sufficientTeams >= warzoneSettings.getInt("min-teams", 2)
+    }
+
+    private fun start() {
+        plugin.logger.info("Starting warzone $name")
         state = WarzoneState.RUNNING
+
+        initialize()
+    }
+
+    private fun initialize() {
+        for ((_, team) in teams) {
+            team.resetAttributes()
+            team.resetStructures()
+            for (player in team.players) {
+                respawnPlayer(player)
+            }
+        }
+    }
+
+    private fun reinitialize() {
+        for ((_, team) in teams) {
+            team.resetStructures()
+            for (player in team.players) {
+                respawnPlayer(player)
+            }
+        }
     }
 
     @Synchronized
     fun removePlayer(player: Player, team: Team) {
         team.removePlayer(player)
+        removePlayer(player)
+    }
+
+    fun removePlayer(player: Player) {
         plugin.playerManager.restorePlayerState(player)
     }
 
     @Synchronized
     fun addPlayer(player: Player): Boolean {
-        if (numPlayers() == maxPlayers()) {
+        if (numPlayers() >= maxPlayers()) {
             plugin.playerManager.sendMessage(player, Message.TOO_MANY_PLAYERS)
             return false
         }
@@ -91,7 +133,7 @@ class Warzone(
     }
 
     @Synchronized
-    fun addPlayer(player: Player, team: Team): Boolean {
+    private fun addPlayer(player: Player, team: Team): Boolean {
         assert(!team.isFull())
         team.addPlayer(player)
         plugin.playerManager.savePlayerState(player, team)
@@ -99,15 +141,15 @@ class Warzone(
             player.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.baseValue = warzoneSettings.getDouble("max-health")
         }
         respawnPlayer(player)
+        broadcast("${player.name} joined team $team")
 
-        if (state != WarzoneState.RUNNING && numPlayers() >= minPlayers()) {
+        if (state != WarzoneState.RUNNING && canStart()) {
             start()
         }
-
         return true
     }
 
-    fun resetPlayer(player: Player) {
+    private fun resetPlayer(player: Player) {
         player.clearPotionEffects()
         val healthAttr = player.getAttribute(Attribute.GENERIC_MAX_HEALTH)
         val maxHealth = if (healthAttr == null) {
@@ -129,13 +171,21 @@ class Warzone(
         ).restore(player)
     }
 
-    fun respawnPlayer(player: Player) {
+    private fun respawnPlayer(player: Player) {
         val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
         resetPlayer(player)
+        Bukkit.getScheduler().runTaskLater(plugin, { -> player.velocity = Vector() }, 1)
 
         // Pick a random spawn
         val spawn = playerInfo.team.spawns.random()
-        player.teleport(spawn.origin)
+        val spawnLocation = spawn.origin.clone()
+
+        // Offset because the origin is in the ground
+        spawnLocation.add(0.0, 1.0, 0.0)
+        // We want players to be looking straight ahead
+        spawnLocation.pitch = 0F
+
+        player.teleport(spawnLocation)
     }
 
     fun saveConfig() {
@@ -190,8 +240,116 @@ class Warzone(
         return Ok(Unit)
     }
 
+    @Synchronized
+    private fun handleDeath(player: Player) {
+        val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
+        val lives = playerInfo.team.lives
+        if (lives == 0) {
+            handleTeamLoss(playerInfo.team, player)
+        } else {
+            if (lives == 1) {
+                broadcast("Team ${playerInfo.team}'s life pool is empty. One more death and they lose the battle!")
+            }
+            playerInfo.team.lives -= 1
+            respawnPlayer(player)
+        }
+    }
+
+    fun broadcast(message: String) {
+        teams.values.forEach {
+            it.broadcast(message)
+        }
+    }
+
+    fun handleTeamLoss(team: Team, player: Player) {
+        val winningTeams = mutableListOf<Team>()
+        teams.values.filter {
+            it != team
+        }.forEach {
+            it.score += 1
+            if (it.score >= it.settings.getInt("max-score", 2)) {
+                winningTeams.add(it)
+            }
+        }
+        broadcast("The battle is over. Team $team lost: ${player.name} died and there were no lives left in their life pool.")
+        if (winningTeams.isEmpty()) {
+            restoreVolume()
+            reinitialize()
+        } else {
+            handleWin(winningTeams)
+        }
+    }
+
+    fun handleWin(winningTeams: List<Team>) {
+        broadcast("Score cap reached. Game is over! Winning teams: ${winningTeams.joinToString()}")
+        for ((_, team) in teams) {
+            val won = team in winningTeams
+            for (player in team.players.toList()) {
+                removePlayer(player, team)
+            }
+        }
+        restoreVolume()
+        initialize()
+    }
+
+    fun handleSuicide(player: Player) {
+        val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
+        if (warzoneSettings.getBoolean("death-messages")) {
+            broadcast("${playerInfo.team.kind.chatColor}${player.name}${ChatColor.RESET} committed suicide")
+        }
+        handleDeath(player)
+    }
+
+    fun handleKill(attacker: Player, defender: Player, damager: Entity, direct: Boolean) {
+        val attackerInfo = plugin.playerManager.getPlayerInfo(attacker) ?: return
+        val defenderInfo = plugin.playerManager.getPlayerInfo(defender) ?: return
+
+        if (warzoneSettings.getBoolean("death-messages")) {
+            val weapon = attacker.inventory.itemInMainHand
+            val weaponName = if (weapon.hasItemMeta() && weapon.itemMeta!!.hasDisplayName()) {
+                weapon.itemMeta!!.displayName
+            } else if (weapon.type == Material.AIR) {
+                "air"
+            } else {
+                weapon.type.toString()
+            }
+            val attackerColor = attackerInfo.team.kind.chatColor
+            val defenderColor = defenderInfo.team.kind.chatColor
+            val message =
+                "${attackerColor}${attacker.name}${ChatColor.RESET}'s $weaponName killed ${defenderColor}${defender.name}${ChatColor.RESET}"
+            broadcast(message)
+        }
+
+        handleDeath(defender)
+    }
+
+    fun handleNaturalDeath(player: Player, cause: DamageCause) {
+        val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
+        val playerString = "${playerInfo.team.kind.chatColor}${player.name}${ChatColor.RESET}"
+        val message = when (cause) {
+            DamageCause.BLOCK_EXPLOSION -> "$playerString exploded"
+            DamageCause.FIRE, DamageCause.FIRE_TICK, DamageCause.LAVA, DamageCause.LIGHTNING -> "$playerString burned to a crisp"
+            DamageCause.DROWNING -> "$playerString drowned"
+            DamageCause.FALL -> "$playerString fell to an untimely death"
+            DamageCause.SUFFOCATION -> "$playerString suffocated"
+            else -> {
+                plugin.logger.info("Unhandled cause of death: $cause")
+                "$playerString died"
+            }
+        }
+        broadcast(message)
+        handleDeath(player)
+    }
+
+    fun handleMobDeath(player: Player, entity: LivingEntity) {
+        val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
+        val playerString = "${playerInfo.team.kind.chatColor}${player.name}${ChatColor.RESET}"
+        broadcast("$playerString was slain by ${entity.name}")
+        handleDeath(player)
+    }
+
     companion object {
-        fun defaultWarzoneConfiguration(): YamlConfiguration {
+        private fun defaultWarzoneConfiguration(): YamlConfiguration {
             val config = YamlConfiguration()
             config.apply {
                 set("enabled", false)
