@@ -47,10 +47,11 @@ class EntityListener(val plugin: WarPlus) : Listener {
 
     private fun handleNaturalDamage(event: EntityDamageByEntityEvent, defender: Player) {
         val defenderInfo = plugin.playerManager.getPlayerInfo(defender) ?: return
-        if (event.finalDamage >= defender.health) {
-            event.isCancelled = true
-            defenderInfo.team.warzone.handleNaturalDeath(defender, event.cause)
+        if (event.finalDamage < defender.health) {
+            return
         }
+        event.isCancelled = true
+        defenderInfo.team.warzone.handleNaturalDeath(defender, event.cause)
     }
 
     private fun handlePvE(event: EntityDamageByEntityEvent, attacker: LivingEntity, defender: Player) {
@@ -58,6 +59,7 @@ class EntityListener(val plugin: WarPlus) : Listener {
         if (event.finalDamage < defender.health) {
             return
         }
+        event.isCancelled = true
         defenderInfo.team.warzone.handleMobDeath(defender, attacker)
     }
 
