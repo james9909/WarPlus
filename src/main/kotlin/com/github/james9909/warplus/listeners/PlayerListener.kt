@@ -5,6 +5,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerItemDamageEvent
+import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.player.PlayerTeleportEvent
 
@@ -48,5 +49,29 @@ class PlayerListener(val plugin: WarPlus) : Listener {
         plugin.playerManager.getPlayerInfo(player) ?: return
 
         event.isCancelled = true
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    fun onPlayerMove(event: PlayerMoveEvent) {
+        val player = event.player
+        val to = event.to ?: return
+        val from = event.from
+        if (to.blockX == from.blockX && to.blockY == from.blockY && to.blockZ == from.blockZ) {
+            // Player hasn't moved to a different block
+            return
+        }
+
+        val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
+        if (!playerInfo.inSpawn) {
+            return
+        }
+
+        val stillInSpawn = playerInfo.team.spawns.any {
+            it.contains(to)
+        }
+        if (!stillInSpawn) {
+            // Player has exited the spawn
+            playerInfo.inSpawn = false
+        }
     }
 }

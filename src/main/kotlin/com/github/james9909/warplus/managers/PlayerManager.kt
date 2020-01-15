@@ -11,7 +11,8 @@ import java.util.concurrent.ConcurrentHashMap
 
 data class PlayerInfo(
     val team: Team,
-    val state: PlayerState
+    val state: PlayerState,
+    var inSpawn: Boolean
 )
 
 class PlayerManager(plugin: WarPlus) {
@@ -43,7 +44,7 @@ class PlayerManager(plugin: WarPlus) {
     }
 
     fun savePlayerState(player: Player, team: Team) {
-        players[player] = PlayerInfo(team, PlayerState.fromPlayer(player))
+        players[player] = PlayerInfo(team, PlayerState.fromPlayer(player), true)
     }
 
     fun restorePlayerState(player: Player) {
