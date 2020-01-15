@@ -175,6 +175,9 @@ class Warzone(
         val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
         resetPlayer(player)
         Bukkit.getScheduler().runTaskLater(plugin, { -> player.velocity = Vector() }, 1)
+        Bukkit.getScheduler().runTaskLater(plugin, { -> player.fireTicks = 0 }, 1)
+        Bukkit.getScheduler().runTaskLater(plugin, { -> player.fireTicks = 0 }, 2)
+        Bukkit.getScheduler().runTaskLater(plugin, { -> player.fireTicks = 0 }, 3)
 
         // Pick a random spawn
         val spawn = playerInfo.team.spawns.random()
@@ -186,6 +189,7 @@ class Warzone(
         spawnLocation.pitch = 0F
 
         player.teleport(spawnLocation)
+        playerInfo.inSpawn = true
     }
 
     fun saveConfig() {

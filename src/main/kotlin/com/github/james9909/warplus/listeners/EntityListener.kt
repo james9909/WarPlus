@@ -23,7 +23,11 @@ class EntityListener(val plugin: WarPlus) : Listener {
     fun onEntityDamageByEntity(event: EntityDamageByEntityEvent) {
         val defender = event.entity as? Player ?: return
         val damager = event.damager
-        plugin.playerManager.getPlayerInfo(defender) ?: return
+        val defenderInfo = plugin.playerManager.getPlayerInfo(defender) ?: return
+        if (defenderInfo.inSpawn) {
+            event.isCancelled = true
+            return
+        }
 
         val attacker = if (damager is Projectile) {
             when (damager.shooter) {
@@ -118,6 +122,10 @@ class EntityListener(val plugin: WarPlus) : Listener {
 
         val player = event.entity as? Player ?: return
         val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
+        if (playerInfo.inSpawn) {
+            event.isCancelled = true
+            return
+        }
 
         if (event.finalDamage < player.health) {
             return
