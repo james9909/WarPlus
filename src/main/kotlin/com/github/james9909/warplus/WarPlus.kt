@@ -1,6 +1,7 @@
 package com.github.james9909.warplus
 
 import com.github.james9909.warplus.command.CommandHandler
+import com.github.james9909.warplus.listeners.BlockListener
 import com.github.james9909.warplus.listeners.EntityListener
 import com.github.james9909.warplus.listeners.PlayerListener
 import com.github.james9909.warplus.managers.DatabaseManager
@@ -71,6 +72,7 @@ class WarPlus : JavaPlugin {
 
     private fun setupListeners() {
         val pluginManager = server.pluginManager
+        pluginManager.registerEvents(BlockListener(this), this)
         pluginManager.registerEvents(EntityListener(this), this)
         pluginManager.registerEvents(PlayerListener(this), this)
     }

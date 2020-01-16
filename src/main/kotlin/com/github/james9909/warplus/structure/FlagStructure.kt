@@ -5,6 +5,7 @@ import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.util.Orientation
 import org.bukkit.Location
 import org.bukkit.Material
+import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 
 class FlagStructure(plugin: WarPlus, origin: Location, private val kind: TeamKind) :
@@ -20,6 +21,9 @@ class FlagStructure(plugin: WarPlus, origin: Location, private val kind: TeamKin
             .getRelative(orientation.right.toBlockFace())
             .getRelative(BlockFace.UP, 3)
         Pair(topLeft.location, bottomRight.location)
+    }
+    val flagBlock: Block by lazy {
+        origin.block.getRelative(BlockFace.UP, 2)
     }
 
     override fun getStructure(): Array<Array<Array<Material>>> {
