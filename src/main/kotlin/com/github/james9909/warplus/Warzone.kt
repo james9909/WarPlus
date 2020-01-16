@@ -22,6 +22,7 @@ import org.bukkit.ChatColor
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.attribute.Attribute
+import org.bukkit.block.Block
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Entity
@@ -350,6 +351,22 @@ class Warzone(
         val playerString = "${playerInfo.team.kind.chatColor}${player.name}${ChatColor.RESET}"
         broadcast("$playerString was slain by ${entity.name}")
         handleDeath(player)
+    }
+
+    fun isStructureBlock(block: Block): Boolean {
+        for ((_, team) in teams) {
+            for (spawn in team.spawns) {
+                if (spawn.contains(block.location)) {
+                    return true
+                }
+            }
+            for (flag in team.flagStructures) {
+                if (flag.contains(block.location)) {
+                    return true
+                }
+            }
+        }
+        return false
     }
 
     companion object {
