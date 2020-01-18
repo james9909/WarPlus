@@ -4,6 +4,7 @@ import com.github.james9909.warplus.command.CommandHandler
 import com.github.james9909.warplus.listeners.BlockListener
 import com.github.james9909.warplus.listeners.EntityListener
 import com.github.james9909.warplus.listeners.PlayerListener
+import com.github.james9909.warplus.managers.ClassManager
 import com.github.james9909.warplus.managers.DatabaseManager
 import com.github.james9909.warplus.managers.PlayerManager
 import com.github.james9909.warplus.managers.WarzoneManager
@@ -17,6 +18,7 @@ import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
 
 class WarPlus : JavaPlugin {
+    val classManager = ClassManager(this)
     val warzoneManager = WarzoneManager(this)
     val playerManager = PlayerManager(this)
     val databaseManager = DatabaseManager(this, "jdbc:sqlite:$dataFolder/war.db")
@@ -55,6 +57,7 @@ class WarPlus : JavaPlugin {
             dataFolder.mkdir()
         }
         reloadConfig()
+        classManager.loadClasses()
         warzoneManager.loadWarzones()
         databaseManager.createTables()
         loaded.set(true)

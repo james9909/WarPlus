@@ -1,0 +1,9 @@
+ranger:
+  items:
+    0:
+      type: bow
+    1:
+      type: arrow
+      amount: 64
+  chestplate:
+    type: chainmail_chestplate

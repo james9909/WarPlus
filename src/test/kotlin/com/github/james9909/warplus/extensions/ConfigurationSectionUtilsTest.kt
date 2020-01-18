@@ -4,7 +4,6 @@ import be.seeseemelk.mockbukkit.MockBukkit
 import com.github.james9909.warplus.WarPlus
 import org.bukkit.Material
 import org.bukkit.configuration.file.YamlConfiguration
-import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.LeatherArmorMeta
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Disabled
