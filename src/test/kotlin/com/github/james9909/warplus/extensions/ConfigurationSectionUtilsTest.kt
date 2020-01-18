@@ -4,6 +4,7 @@ import be.seeseemelk.mockbukkit.MockBukkit
 import com.github.james9909.warplus.WarPlus
 import org.bukkit.Material
 import org.bukkit.configuration.file.YamlConfiguration
+import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.LeatherArmorMeta
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Disabled
@@ -34,12 +35,13 @@ class ConfigurationSectionUtilsTest {
     }
 
     @Test
-    fun `handles names and lore correctly`() {
+    fun `handles names, lore, and amount correctly`() {
         val configFile = File("src/test/resources/fixtures/config/predefined_items/sorLily.yml")
         val config = YamlConfiguration.loadConfiguration(configFile)
         val item = config.getConfigurationSection("sorLily")?.toItemStack()
         require(item != null)
         assert(item.type == Material.LILY_PAD)
+        assert(item.amount == 64)
 
         val meta = item.itemMeta
         require(meta != null)
@@ -48,6 +50,18 @@ class ConfigurationSectionUtilsTest {
         val lore = meta.lore
         require(lore != null)
         require(lore.size == 3)
+    }
+
+    @Test
+    @Disabled("not ready yet")
+    fun `handles enchants correctly`() {
+        val configFile = File("src/test/resources/fixtures/config/predefined_items/enchant-test.yml")
+        val config = YamlConfiguration.loadConfiguration(configFile)
+        val item = config.getConfigurationSection("enchant_test")?.toItemStack()
+        require(item != null)
+        assert(item.type == Material.WOODEN_SWORD)
+        val enchants = item.enchantments
+        assert(enchants.size == 1)
     }
 
     @Test

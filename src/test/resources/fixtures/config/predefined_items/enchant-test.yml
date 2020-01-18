@@ -1,0 +1,4 @@
+enchant_test:
+  type: wooden_sword
+  enchants:
+    - unbreaking:3
