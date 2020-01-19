@@ -49,10 +49,5 @@ class PlayerManager(plugin: WarPlus) {
         players[player] = PlayerInfo(team, PlayerState.fromPlayer(player), true, null)
     }
 
-    fun restorePlayerState(player: Player) {
-        players[player]?.state?.restore(player)
-        players.remove(player)
-    }
-
     fun removePlayer(player: Player) = players.remove(player)
 }

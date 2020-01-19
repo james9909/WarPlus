@@ -3,7 +3,6 @@ package com.github.james9909.warplus
 import com.github.james9909.warplus.extensions.format
 import com.github.james9909.warplus.structure.FlagStructure
 import com.github.james9909.warplus.structure.TeamSpawnStructure
-import com.google.common.collect.ImmutableList
 import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
@@ -58,9 +57,7 @@ class Team(
     }
 
     fun reset() {
-        for (player in ImmutableList.copyOf(players)) {
-            removePlayer(player)
-        }
+        players.clear()
         resetStructures()
     }
 

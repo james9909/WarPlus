@@ -111,8 +111,11 @@ class Warzone(
         removePlayer(player)
     }
 
-    fun removePlayer(player: Player) {
-        plugin.playerManager.restorePlayerState(player)
+    private fun removePlayer(player: Player) {
+        // Remove player before restoring their state so the teleport doesn't get canceled
+        val state = plugin.playerManager.getPlayerInfo(player)
+        plugin.playerManager.removePlayer(player)
+        state?.state?.restore(player)
     }
 
     @Synchronized
