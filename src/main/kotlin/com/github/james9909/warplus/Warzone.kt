@@ -14,6 +14,7 @@ import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.unwrap
+import com.google.common.collect.ImmutableList
 import com.sk89q.worldedit.bukkit.BukkitAdapter
 import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.regions.CuboidRegion
@@ -111,8 +112,11 @@ class Warzone(
         removePlayer(player)
     }
 
-    fun removePlayer(player: Player) {
-        plugin.playerManager.restorePlayerState(player)
+    private fun removePlayer(player: Player) {
+        // Remove player before restoring their state so the teleport doesn't get canceled
+        val state = plugin.playerManager.getPlayerInfo(player)
+        plugin.playerManager.removePlayer(player)
+        state?.state?.restore(player)
     }
 
     @Synchronized
@@ -217,6 +221,9 @@ class Warzone(
 
     fun unload() {
         for ((_, team) in teams) {
+            for (player in ImmutableList.copyOf(team.players)) {
+                removePlayer(player, team)
+            }
             team.reset()
         }
     }

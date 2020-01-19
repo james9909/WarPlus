@@ -18,8 +18,6 @@ class PlayerListener(val plugin: WarPlus) : Listener {
 
         val warzone = playerInfo.team.warzone
         warzone.removePlayer(player, playerInfo.team)
-        plugin.playerManager.removePlayer(player)
-        playerInfo.state.restore(player)
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
