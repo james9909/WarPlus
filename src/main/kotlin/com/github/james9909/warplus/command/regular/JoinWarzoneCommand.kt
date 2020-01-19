@@ -15,7 +15,13 @@ class JoinWarzoneCommand(plugin: WarPlus, sender: CommandSender, args: List<Stri
             return false
         }
         if (sender !is Player) {
-            // Only players can join warzones
+            plugin.playerManager.sendMessage(sender, "Only in-game players may do that")
+            return true
+        }
+
+        val playerInfo = plugin.playerManager.getPlayerInfo(sender)
+        if (playerInfo != null) {
+            plugin.playerManager.sendMessage(sender, "You are already in a warzone")
             return true
         }
 
