@@ -1,6 +1,7 @@
 package com.github.james9909.warplus.managers
 
 import com.github.james9909.warplus.Team
+import com.github.james9909.warplus.WarClass
 import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.util.Message
 import com.github.james9909.warplus.util.PlayerState
@@ -12,7 +13,8 @@ import java.util.concurrent.ConcurrentHashMap
 data class PlayerInfo(
     val team: Team,
     val state: PlayerState,
-    var inSpawn: Boolean
+    var inSpawn: Boolean,
+    var warClass: WarClass?
 )
 
 class PlayerManager(plugin: WarPlus) {
@@ -44,7 +46,7 @@ class PlayerManager(plugin: WarPlus) {
     }
 
     fun savePlayerState(player: Player, team: Team) {
-        players[player] = PlayerInfo(team, PlayerState.fromPlayer(player), true)
+        players[player] = PlayerInfo(team, PlayerState.fromPlayer(player), true, null)
     }
 
     fun restorePlayerState(player: Player) {
