@@ -61,22 +61,22 @@ fun handleEnchants(itemMeta: ItemMeta, path: ConfigurationSection) {
 
     val enchants = path.getStringList("enchants")
     enchants.forEach {
-        val split = it.split(" ")
+        val split = it.split(":")
         if (split.size != 2) {
-            print("Invalid enchant: $it")
+            println("Invalid enchant: $it")
             return@forEach
         }
 
-        val key = NamespacedKey.minecraft(split[0])
+        val key = NamespacedKey.minecraft(split[0].toLowerCase())
         val level = split[1].toIntOrNull()
         if (level == null) {
-            print("Invalid level: ${split[1]}")
+            println("Invalid level: ${split[1]}")
             return@forEach
         }
 
         val enchant = Enchantment.getByKey(key)
         if (enchant == null) {
-            print("Invalid enchant: ${it[0]}")
+            println("Invalid enchant: $key")
             return@forEach
         }
         if (itemMeta is EnchantmentStorageMeta) {
@@ -94,7 +94,7 @@ fun handleColor(itemMeta: ItemMeta, path: ConfigurationSection) {
     val color = path.getString("color") ?: return
     val hex = color.removePrefix("#").toIntOrNull(16)
     if (hex == null) {
-        print("Invalid color: $color")
+        println("Invalid color: $color")
         return
     }
     itemMeta.setColor(Color.fromRGB(hex))
@@ -107,16 +107,16 @@ fun ConfigurationSection.toItemStack(): ItemStack? {
         return getItemStack("data")
     }
     if (!contains("type")) {
-        print("No type specified for $name")
+        println("No type specified for $name")
         return null
     }
     val type = materialMap[getString("type")]
     if (type == null) {
-        print("Invalid type '${getString("type")}")
+        println("Invalid type '${getString("type")}")
         return null
     }
 
-    val item = ItemStack(type)
+    val item = ItemStack(type, getInt("amount", 1))
     val meta = item.itemMeta ?: return null
     val name = getString("name")
     if (name != null) {

@@ -3,9 +3,11 @@ package com.github.james9909.warplus.command
 import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.command.admin.LoadCommand
 import com.github.james9909.warplus.command.admin.UnloadCommand
+import com.github.james9909.warplus.command.regular.ClassCommand
 import com.github.james9909.warplus.command.regular.JoinWarzoneCommand
 import com.github.james9909.warplus.command.zonemaker.AddTeamFlagCommand
 import com.github.james9909.warplus.command.zonemaker.AddTeamSpawnCommand
+import com.github.james9909.warplus.command.zonemaker.ClassChestCommand
 import com.github.james9909.warplus.command.zonemaker.CreateWarzoneCommand
 import com.github.james9909.warplus.command.zonemaker.DeleteTeamFlagCommand
 import com.github.james9909.warplus.command.zonemaker.DeleteTeamSpawnCommand
@@ -32,6 +34,8 @@ class CommandHandler {
             "deleteteamflag" -> DeleteTeamFlagCommand(plugin, sender, rest)
             "addteamspawn" -> AddTeamSpawnCommand(plugin, sender, rest)
             "deleteteamspawn" -> DeleteTeamSpawnCommand(plugin, sender, rest)
+            "classchest" -> ClassChestCommand(plugin, sender, rest)
+            "class" -> ClassCommand(plugin, sender, rest)
             else -> null
         }
         return command

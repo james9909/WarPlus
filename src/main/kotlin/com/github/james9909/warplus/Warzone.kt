@@ -180,6 +180,9 @@ class Warzone(
         Bukkit.getScheduler().runTaskLater(plugin, { -> player.fireTicks = 0 }, 2)
         Bukkit.getScheduler().runTaskLater(plugin, { -> player.fireTicks = 0 }, 3)
 
+        // Equip class
+        playerInfo.warClass?.giveToPlayer(player)
+
         // Pick a random spawn
         val spawn = playerInfo.team.spawns.random()
         val spawnLocation = spawn.origin.clone()

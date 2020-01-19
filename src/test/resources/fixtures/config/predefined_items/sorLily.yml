@@ -5,3 +5,4 @@ sorLily:
     - "&eIce Beam &f- Shoot a beam of ice that slows foes."
     - "&eWater Mine &f- Drop a lingering mine that geysers foes."
     - "&eFlood (sneak) &f- Shoot a jet of water that pushes foes away."
+  amount: 64
