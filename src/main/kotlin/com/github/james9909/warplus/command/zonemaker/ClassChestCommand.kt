@@ -1,5 +1,6 @@
 package com.github.james9909.warplus.command.zonemaker
 
+import com.github.james9909.warplus.ArmorSet
 import com.github.james9909.warplus.WarClass
 import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.command.AbstractCommand
@@ -21,21 +22,23 @@ class ClassChestCommand(plugin: WarPlus, sender: CommandSender, args: List<Strin
         val className = args[1]
         when (action) {
             "set" -> {
-                val state = sender.getTargetBlock(null, 10).state
+                val targetBlock = sender.getTargetBlock(null, 10)
+                val state = targetBlock.state
                 if (state !is Chest) {
                     plugin.playerManager.sendMessage(sender, "You are not looking at a chest")
                     return true
                 }
-                val inventory = state.blockInventory
-                val warClass = WarClass.fromInventory(className, inventory)
+                val warClass = WarClass(className, null, mutableMapOf(), ArmorSet.default(), targetBlock.location)
                 plugin.classManager.addClass(className, warClass)
                 plugin.classManager.saveConfig()
                 plugin.playerManager.sendMessage(sender, "Class $className set!")
             }
             "remove" -> {
-                val message = if (plugin.classManager.removeClass(className)) {
+                val warClass = plugin.classManager.getClass(className)
+                val message = if (warClass != null) {
+                    warClass.classchest = null
                     plugin.classManager.saveConfig()
-                    "Class $className removed!"
+                    "Classchest for $className has been updated"
                 } else {
                     "Class $className does not exist"
                 }
