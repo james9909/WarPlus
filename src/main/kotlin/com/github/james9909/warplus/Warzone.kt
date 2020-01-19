@@ -14,6 +14,7 @@ import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.unwrap
+import com.google.common.collect.ImmutableList
 import com.sk89q.worldedit.bukkit.BukkitAdapter
 import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.regions.CuboidRegion
@@ -220,6 +221,9 @@ class Warzone(
 
     fun unload() {
         for ((_, team) in teams) {
+            for (player in ImmutableList.copyOf(team.players)) {
+                removePlayer(player, team)
+            }
             team.reset()
         }
     }
