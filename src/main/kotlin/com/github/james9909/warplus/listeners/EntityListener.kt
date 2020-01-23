@@ -167,9 +167,8 @@ class EntityListener(val plugin: WarPlus) : Listener {
     @EventHandler
     fun onPotionSplash(event: PotionSplashEvent) {
         val potion = event.potion
-        val shooter = potion.shooter as? Player ?: return
+        val shooter = potion.shooter
 
-        val warShooter = plugin.playerManager.getPlayerInfo(shooter) ?: return
         var beneficial = true
         val effects = potion.effects
         loop@ for (effect in effects) {
@@ -181,16 +180,42 @@ class EntityListener(val plugin: WarPlus) : Listener {
             }
         }
 
-        for (entity in event.affectedEntities) {
-            if (entity !is Player) {
-                continue
+        if (shooter !is Player) {
+            for (entity in event.affectedEntities) {
+                if (entity !is Player) {
+                    continue
+                }
+                val warPlayer = plugin.playerManager.getPlayerInfo(entity) ?: continue
+                if (warPlayer.inSpawn) {
+                    event.setIntensity(entity, 0.0)
+                }
             }
+        } else {
+            val warShooter = plugin.playerManager.getPlayerInfo(shooter)
+            if (warShooter != null && warShooter.inSpawn) {
+                // Players in spawn can't do anything
+                event.isCancelled = true
+                return
+            }
+            for (entity in event.affectedEntities) {
+                if (entity !is Player) {
+                    continue
+                }
 
-            val warPlayer = plugin.playerManager.getPlayerInfo(entity)
-            if (warPlayer == null) {
-                // Don't affect outsiders
-                event.setIntensity(entity, 0.0)
-            } else {
+                val warPlayer = plugin.playerManager.getPlayerInfo(entity)
+                if (warPlayer == null && warShooter == null) {
+                    // Outside of scope
+                    continue
+                }
+                if (warPlayer == null || warShooter == null) {
+                    // One player is in a warzone, the other isn't
+                    event.setIntensity(entity, 0.0)
+                    continue
+                }
+                if (warPlayer.inSpawn) {
+                    event.setIntensity(entity, 0.0)
+                    continue
+                }
                 val sameTeam = warPlayer.team == warShooter.team
                 if (sameTeam && !beneficial) {
                     // Don't affect teammates with hurtful potions
