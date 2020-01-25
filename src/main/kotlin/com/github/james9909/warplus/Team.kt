@@ -26,6 +26,10 @@ enum class TeamKind(val material: Material, val chatColor: ChatColor) {
     DARKGREEN(Material.GREEN_WOOL, ChatColor.DARK_GREEN),
     RED(Material.RED_WOOL, ChatColor.RED),
     BLACK(Material.BLACK_WOOL, ChatColor.BLACK);
+
+    fun format(): String {
+        return "${chatColor}${name.toLowerCase()}${ChatColor.RESET}"
+    }
 }
 
 class Team(
@@ -38,6 +42,7 @@ class Team(
     val flagStructures = mutableListOf<FlagStructure>()
     var lives = settings.getInt("lives", 20)
     var score = 0
+        private set
 
     fun addFlag(flagStructure: FlagStructure) = flagStructures.add(flagStructure)
 
@@ -99,8 +104,13 @@ class Team(
         }
     }
 
+    @Synchronized
+    fun addPoint() {
+        score += 1
+    }
+
     override fun toString(): String {
-        return "${kind.chatColor}${kind.name.toLowerCase()}${ChatColor.RESET}"
+        return kind.format()
     }
 
     companion object {

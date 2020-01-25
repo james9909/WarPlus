@@ -24,8 +24,13 @@ class BlockListener(val plugin: WarPlus) : Listener {
         for ((_, team) in playerInfo.team.warzone.teams) {
             for (flag in team.flagStructures) {
                 if (flag.contains(block.location)) {
-                    // Allow players to break only other team flags
-                    event.isCancelled = block != flag.flagBlock || team.kind != playerInfo.team.kind
+                    if (block == flag.flagBlock && team.kind != playerInfo.team.kind) {
+                        team.warzone.stealFlag(player, flag)
+                        event.isDropItems = false
+                    } else {
+                        // Not breaking another team's flag block
+                        event.isCancelled = true
+                    }
                     return
                 }
             }
@@ -42,7 +47,16 @@ class BlockListener(val plugin: WarPlus) : Listener {
     fun onBlockPlace(event: BlockPlaceEvent) {
         val block = event.block
         val warzone = plugin.warzoneManager.getWarzoneByLocation(block.location) ?: return
-        event.isCancelled = warzone.isStructureBlock(block)
+        if (warzone.isStructureBlock(block)) {
+            event.isCancelled = true
+            return
+        }
+        val player = event.player
+        val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
+        if (playerInfo.team.warzone.flagThieves.containsKey(player)) {
+            event.isCancelled = true
+            return
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

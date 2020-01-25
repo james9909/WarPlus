@@ -1,9 +1,12 @@
 package com.github.james9909.warplus.listeners
 
 import com.github.james9909.warplus.WarPlus
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
+import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerItemDamageEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerQuitEvent
@@ -60,16 +63,48 @@ class PlayerListener(val plugin: WarPlus) : Listener {
         }
 
         val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
-        if (!playerInfo.inSpawn) {
-            return
-        }
-
-        val stillInSpawn = playerInfo.team.spawns.any {
+        val team = playerInfo.team
+        val inSpawn = playerInfo.team.spawns.any {
             it.contains(to)
         }
-        if (!stillInSpawn) {
-            // Player has exited the spawn
-            playerInfo.inSpawn = false
+        if (playerInfo.inSpawn) {
+            if (!inSpawn) {
+                // Player has exited the spawn
+                playerInfo.inSpawn = false
+            }
+            return
+        }
+        if (team.warzone.flagThieves.containsKey(player)) {
+            if (inSpawn) {
+                val flag = team.warzone.flagThieves[player] ?: return // Null case should never happen
+                flag.build()
+                team.warzone.broadcast("${player.name} captured ${flag.kind.format()}'s flag. Team $team scores one point.")
+                team.addPoint()
+
+                // Detect win condition
+                if (team.score >= team.settings.getInt("max-score", 2)) {
+                    team.warzone.handleWin(listOf(team))
+                    return
+                }
+                team.warzone.removeFlagThief(player)
+                team.warzone.respawnPlayer(player)
+            }
+        }
+    }
+
+    @EventHandler
+    fun onPlayerDropItem(event: PlayerDropItemEvent) {
+        val player = event.player
+        val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
+        event.isCancelled = true
+    }
+
+    @EventHandler
+    fun onInventoryClickEvent(event: InventoryClickEvent) {
+        val player = event.whoClicked as? Player ?: return
+        val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
+        if (playerInfo.team.warzone.flagThieves.containsKey(player)) {
+            event.isCancelled = true
         }
     }
 }

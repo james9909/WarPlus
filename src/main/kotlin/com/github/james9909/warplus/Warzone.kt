@@ -3,6 +3,7 @@ package com.github.james9909.warplus
 import com.github.james9909.warplus.extensions.clearPotionEffects
 import com.github.james9909.warplus.extensions.format
 import com.github.james9909.warplus.region.Region
+import com.github.james9909.warplus.structure.FlagStructure
 import com.github.james9909.warplus.util.DEFAULT_MAX_HEALTH
 import com.github.james9909.warplus.util.Message
 import com.github.james9909.warplus.util.PlayerState
@@ -30,6 +31,7 @@ import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause
+import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
@@ -50,6 +52,7 @@ class Warzone(
     val enabled = warzoneSettings.getBoolean("enabled", true)
     var state = WarzoneState.IDLING
     val teams = ConcurrentHashMap<TeamKind, Team>()
+    val flagThieves = HashMap<Player, FlagStructure>()
     private val volumeFolder = "${plugin.dataFolder.absolutePath}/volumes/warzones"
     private val volumePath = "$volumeFolder/$name.schem"
 
@@ -113,6 +116,8 @@ class Warzone(
     }
 
     private fun removePlayer(player: Player) {
+        restoreStolenObjectives(player)
+
         // Remove player before restoring their state so the teleport doesn't get canceled
         val state = plugin.playerManager.getPlayerInfo(player)
         plugin.playerManager.removePlayer(player)
@@ -176,7 +181,7 @@ class Warzone(
         ).restore(player)
     }
 
-    private fun respawnPlayer(player: Player) {
+    fun respawnPlayer(player: Player) {
         val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
         resetPlayer(player)
         Bukkit.getScheduler().runTaskLater(plugin, { -> player.velocity = Vector() }, 1)
@@ -255,6 +260,15 @@ class Warzone(
         return Ok(Unit)
     }
 
+    fun restoreStolenObjectives(player: Player) {
+        if (flagThieves.containsKey(player)) {
+            val flag = flagThieves[player] ?: return
+            flag.build()
+            flagThieves.remove(player)
+            broadcast("${player.name} has dropped ${flag.kind.format()}'s flag!")
+        }
+    }
+
     @Synchronized
     private fun handleDeath(player: Player) {
         val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
@@ -266,6 +280,7 @@ class Warzone(
                 broadcast("Team ${playerInfo.team}'s life pool is empty. One more death and they lose the battle!")
             }
             playerInfo.team.lives -= 1
+            restoreStolenObjectives(player)
             respawnPlayer(player)
         }
     }
@@ -281,7 +296,7 @@ class Warzone(
         teams.values.filter {
             it != team
         }.forEach {
-            it.score += 1
+            it.addPoint()
             if (it.score >= it.settings.getInt("max-score", 2)) {
                 winningTeams.add(it)
             }
@@ -377,6 +392,26 @@ class Warzone(
             }
         }
         return false
+    }
+
+    fun stealFlag(player: Player, flag: FlagStructure) {
+        val team = teams[flag.kind] ?: return
+        flagThieves[player] = flag
+
+        // Fill the player's inventory with wool
+        val contents = player.inventory.storageContents
+        contents.forEachIndexed { i, _ ->
+            contents[i] = ItemStack(flag.kind.material, 64)
+        }
+        player.inventory.storageContents = contents
+        player.inventory.setItemInOffHand(null)
+
+        player.clearPotionEffects()
+        broadcast("${player.name} stole team $team's flag")
+    }
+
+    fun removeFlagThief(player: Player) {
+        flagThieves.remove(player)
     }
 
     companion object {
