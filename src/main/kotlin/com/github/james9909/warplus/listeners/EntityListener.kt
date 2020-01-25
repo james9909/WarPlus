@@ -11,6 +11,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityExplodeEvent
+import org.bukkit.event.entity.EntityPickupItemEvent
 import org.bukkit.event.entity.EntityRegainHealthEvent
 import org.bukkit.event.entity.FoodLevelChangeEvent
 import org.bukkit.event.entity.PlayerDeathEvent
@@ -222,6 +223,16 @@ class EntityListener(val plugin: WarPlus) : Listener {
                     event.setIntensity(entity, 0.0)
                 }
             }
+        }
+    }
+
+    @EventHandler
+    fun onEntityPickupItem(event: EntityPickupItemEvent) {
+        val player = event.entity as? Player ?: return
+        val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
+        val warzone = playerInfo.team.warzone
+        if (warzone.flagThieves.containsKey(player)) {
+            event.isCancelled = true
         }
     }
 }

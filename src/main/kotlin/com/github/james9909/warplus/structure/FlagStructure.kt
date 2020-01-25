@@ -8,7 +8,7 @@ import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 
-class FlagStructure(plugin: WarPlus, origin: Location, private val kind: TeamKind) :
+class FlagStructure(plugin: WarPlus, origin: Location, val kind: TeamKind) :
     AbstractStructure(plugin, origin) {
     override val prefix = "teams/flags"
     override val corners: Pair<Location, Location> by lazy {
