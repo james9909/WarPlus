@@ -231,8 +231,6 @@ class EntityListener(val plugin: WarPlus) : Listener {
         val player = event.entity as? Player ?: return
         val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
         val warzone = playerInfo.team.warzone
-        if (warzone.flagThieves.containsKey(player)) {
-            event.isCancelled = true
-        }
+        event.isCancelled = warzone.onPlayerPickupItem(player, event.item)
     }
 }

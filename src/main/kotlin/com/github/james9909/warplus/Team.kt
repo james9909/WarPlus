@@ -1,7 +1,6 @@
 package com.github.james9909.warplus
 
 import com.github.james9909.warplus.extensions.format
-import com.github.james9909.warplus.structure.FlagStructure
 import com.github.james9909.warplus.structure.TeamSpawnStructure
 import org.bukkit.ChatColor
 import org.bukkit.Material
@@ -39,12 +38,12 @@ class Team(
     val settings: ConfigurationSection = defaultTeamConfiguration()
 ) {
     val players = mutableSetOf<Player>()
-    val flagStructures = mutableListOf<FlagStructure>()
+    // val flagStructures = mutableListOf<FlagStructure>()
     var lives = settings.getInt("lives", 20)
     var score = 0
         private set
 
-    fun addFlag(flagStructure: FlagStructure) = flagStructures.add(flagStructure)
+    // fun addFlag(flagStructure: FlagStructure) = flagStructures.add(flagStructure)
 
     fun addPlayer(player: Player) = players.add(player)
 
@@ -63,15 +62,12 @@ class Team(
 
     fun reset() {
         players.clear()
-        resetStructures()
+        resetSpawns()
     }
 
-    fun resetStructures() {
-        for (flagStructure in flagStructures) {
-            flagStructure.build()
-        }
-        for (spawn in spawns) {
-            spawn.build()
+    fun resetSpawns() {
+        spawns.forEach {
+            it.build()
         }
     }
 
@@ -90,12 +86,6 @@ class Team(
             spawnsStringList.add(spawn.origin.format())
         }
         teamSection.set("spawns", spawnsStringList)
-
-        val flagsStringList = mutableListOf<String>()
-        for (flag in flagStructures) {
-            flagsStringList.add(flag.origin.format())
-        }
-        teamSection.set("flags", flagsStringList)
     }
 
     fun broadcast(message: String) {

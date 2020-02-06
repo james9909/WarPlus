@@ -2,6 +2,8 @@ package com.github.james9909.warplus
 
 import com.github.james9909.warplus.extensions.clearPotionEffects
 import com.github.james9909.warplus.extensions.format
+import com.github.james9909.warplus.objectives.AbstractObjective
+import com.github.james9909.warplus.objectives.FlagObjective
 import com.github.james9909.warplus.region.Region
 import com.github.james9909.warplus.structure.FlagStructure
 import com.github.james9909.warplus.util.DEFAULT_MAX_HEALTH
@@ -28,10 +30,11 @@ import org.bukkit.block.Block
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Entity
+import org.bukkit.entity.Item
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause
-import org.bukkit.inventory.ItemStack
+import org.bukkit.event.inventory.InventoryAction
 import org.bukkit.util.Vector
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
@@ -47,12 +50,12 @@ class Warzone(
     val name: String,
     val region: Region,
     val teamSettings: ConfigurationSection = Team.defaultTeamConfiguration(),
-    val warzoneSettings: ConfigurationSection = defaultWarzoneConfiguration()
+    val warzoneSettings: ConfigurationSection = defaultWarzoneConfiguration(),
+    val objectives: HashMap<String, AbstractObjective> = hashMapOf()
 ) {
     val enabled = warzoneSettings.getBoolean("enabled", true)
     var state = WarzoneState.IDLING
     val teams = ConcurrentHashMap<TeamKind, Team>()
-    val flagThieves = HashMap<Player, FlagStructure>()
     private val volumeFolder = "${plugin.dataFolder.absolutePath}/volumes/warzones"
     private val volumePath = "$volumeFolder/$name.schem"
 
@@ -93,7 +96,7 @@ class Warzone(
     private fun initialize() {
         for ((_, team) in teams) {
             team.resetAttributes()
-            team.resetStructures()
+            team.resetSpawns()
             for (player in team.players) {
                 respawnPlayer(player)
             }
@@ -102,7 +105,7 @@ class Warzone(
 
     private fun reinitialize() {
         for ((_, team) in teams) {
-            team.resetStructures()
+            team.resetSpawns()
             for (player in team.players) {
                 respawnPlayer(player)
             }
@@ -116,8 +119,6 @@ class Warzone(
     }
 
     private fun removePlayer(player: Player) {
-        restoreStolenObjectives(player)
-
         // Remove player before restoring their state so the teleport doesn't get canceled
         val state = plugin.playerManager.getPlayerInfo(player)
         plugin.playerManager.removePlayer(player)
@@ -217,9 +218,15 @@ class Warzone(
         config.set("settings", warzoneSettings)
         config.set("team-settings", teamSettings)
         val teamsSection = config.createSection("teams")
-        for ((_, team) in teams) {
-            val teamSection = teamsSection.createSection(team.kind.name.toLowerCase())
-            team.saveConfig(teamSection)
+        teams.values.forEach {
+            val teamSection = teamsSection.createSection(it.kind.name.toLowerCase())
+            it.saveConfig(teamSection)
+        }
+
+        val objectivesSection = config.createSection("objectives")
+        objectives.values.forEach {
+            val objectiveSection = objectivesSection.createSection(it.name)
+            it.saveConfig(objectiveSection)
         }
         config.save(file)
     }
@@ -260,15 +267,6 @@ class Warzone(
         return Ok(Unit)
     }
 
-    fun restoreStolenObjectives(player: Player) {
-        if (flagThieves.containsKey(player)) {
-            val flag = flagThieves[player] ?: return
-            flag.build()
-            flagThieves.remove(player)
-            broadcast("${player.name} has dropped ${flag.kind.format()}'s flag!")
-        }
-    }
-
     @Synchronized
     private fun handleDeath(player: Player) {
         val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
@@ -280,7 +278,6 @@ class Warzone(
                 broadcast("Team ${playerInfo.team}'s life pool is empty. One more death and they lose the battle!")
             }
             playerInfo.team.lives -= 1
-            restoreStolenObjectives(player)
             respawnPlayer(player)
         }
     }
@@ -378,15 +375,52 @@ class Warzone(
         handleDeath(player)
     }
 
-    fun isStructureBlock(block: Block): Boolean {
+    fun onBlockBreak(player: Player?, block: Block): Boolean {
+        objectives.values.forEach {
+            if (it.handleBlockBreak(player, block)) {
+                return true
+            }
+        }
+        return false
+    }
+
+    fun onPlayerPickupItem(player: Player, item: Item): Boolean {
+        objectives.values.forEach {
+            if (it.handleItemPickup(player, item)) {
+                return true
+            }
+        }
+        return false
+    }
+
+    fun onPlayerMove(player: Player, from: Location, to: Location) {
+        objectives.values.forEach {
+            it.handlePlayerMove(player, from, to)
+        }
+    }
+
+    fun onInventoryClick(player: Player, action: InventoryAction): Boolean {
+        objectives.values.forEach {
+            if (it.handleInventoryClick(player, action)) {
+                return true
+            }
+        }
+        return false
+    }
+
+    fun onPlayerDropItem(player: Player, item: Item): Boolean {
+        objectives.values.forEach {
+            if (it.handlePlayerDropItem(player, item)) {
+                return true
+            }
+        }
+        return false
+    }
+
+    fun isSpawnBlock(block: Block): Boolean {
         for ((_, team) in teams) {
             for (spawn in team.spawns) {
                 if (spawn.contains(block.location)) {
-                    return true
-                }
-            }
-            for (flag in team.flagStructures) {
-                if (flag.contains(block.location)) {
                     return true
                 }
             }
@@ -394,31 +428,35 @@ class Warzone(
         return false
     }
 
-    fun stealFlag(player: Player, flag: FlagStructure) {
-        val team = teams[flag.kind] ?: return
-        flagThieves[player] = flag
-
-        // Fill the player's inventory with wool
-        val contents = player.inventory.storageContents
-        contents.forEachIndexed { i, _ ->
-            contents[i] = ItemStack(flag.kind.material, 64)
-        }
-        player.inventory.storageContents = contents
-        player.inventory.setItemInOffHand(null)
-
-        player.clearPotionEffects()
-        broadcast("${player.name} stole team $team's flag")
+    fun getFlagAtLocation(location: Location): FlagStructure? {
+        val objective = objectives["flag"] as? FlagObjective ?: return null
+        return objective.getFlagAtLocation(location)
     }
 
-    fun removeFlagThief(player: Player) {
-        flagThieves.remove(player)
+    fun addFlag(flag: FlagStructure) {
+        val objective = objectives["flag"] as? FlagObjective ?: run {
+            val temp = FlagObjective(plugin, this, mutableListOf())
+            objectives[temp.name] = temp
+            temp
+        }
+        objective.addFlag(flag)
+    }
+
+    fun removeFlag(flag: FlagStructure): Boolean {
+        val objective = objectives["flag"] as? FlagObjective ?: return false
+        return objective.removeFlag(flag)
+    }
+
+    fun removeFlagAtLocation(location: Location): Boolean {
+        val objective = objectives["flag"] as? FlagObjective ?: return false
+        return objective.removeFlag(objective.getFlagAtLocation(location) ?: return false)
     }
 
     companion object {
         private fun defaultWarzoneConfiguration(): YamlConfiguration {
             val config = YamlConfiguration()
             config.apply {
-                set("enabled", false)
+                set("enabled", true)
             }
             return config
         }

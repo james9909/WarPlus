@@ -64,7 +64,7 @@ class PlayerListener(val plugin: WarPlus) : Listener {
 
         val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
         val team = playerInfo.team
-        val inSpawn = playerInfo.team.spawns.any {
+        val inSpawn = team.spawns.any {
             it.contains(to)
         }
         if (playerInfo.inSpawn) {
@@ -74,37 +74,20 @@ class PlayerListener(val plugin: WarPlus) : Listener {
             }
             return
         }
-        if (team.warzone.flagThieves.containsKey(player)) {
-            if (inSpawn) {
-                val flag = team.warzone.flagThieves[player] ?: return // Null case should never happen
-                flag.build()
-                team.warzone.broadcast("${player.name} captured ${flag.kind.format()}'s flag. Team $team scores one point.")
-                team.addPoint()
-
-                // Detect win condition
-                if (team.score >= team.settings.getInt("max-score", 2)) {
-                    team.warzone.handleWin(listOf(team))
-                    return
-                }
-                team.warzone.removeFlagThief(player)
-                team.warzone.respawnPlayer(player)
-            }
-        }
+        team.warzone.onPlayerMove(player, from, to)
     }
 
     @EventHandler
     fun onPlayerDropItem(event: PlayerDropItemEvent) {
         val player = event.player
         val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
-        event.isCancelled = true
+        event.isCancelled = playerInfo.team.warzone.onPlayerDropItem(player, event.itemDrop)
     }
 
     @EventHandler
     fun onInventoryClickEvent(event: InventoryClickEvent) {
         val player = event.whoClicked as? Player ?: return
         val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
-        if (playerInfo.team.warzone.flagThieves.containsKey(player)) {
-            event.isCancelled = true
-        }
+        event.isCancelled = playerInfo.team.warzone.onInventoryClick(player, event.action)
     }
 }
