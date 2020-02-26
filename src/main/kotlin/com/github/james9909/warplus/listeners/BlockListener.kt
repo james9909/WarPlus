@@ -38,7 +38,8 @@ class BlockListener(val plugin: WarPlus) : Listener {
             return
         }
         val player = event.player
-        val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
+        plugin.playerManager.getPlayerInfo(player) ?: return
+        event.isCancelled = warzone.onBlockPlace(player, block)
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

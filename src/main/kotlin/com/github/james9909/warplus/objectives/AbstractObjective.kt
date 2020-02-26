@@ -16,7 +16,7 @@ abstract class AbstractObjective(plugin: WarPlus, warzone: Warzone) {
         return false
     }
 
-    open fun handleBlockBuild(player: Player, block: Block): Boolean {
+    open fun handleBlockPlace(player: Player, block: Block): Boolean {
         return false
     }
 

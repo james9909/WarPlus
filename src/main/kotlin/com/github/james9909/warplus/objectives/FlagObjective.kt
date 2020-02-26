@@ -77,7 +77,7 @@ class FlagObjective(
         return false
     }
 
-    override fun handleBlockBuild(player: Player, block: Block): Boolean = flagThieves.containsKey(player)
+    override fun handleBlockPlace(player: Player, block: Block): Boolean = flagThieves.containsKey(player)
 
     override fun handleItemPickup(player: Player, item: Item): Boolean = flagThieves.containsKey(player)
 

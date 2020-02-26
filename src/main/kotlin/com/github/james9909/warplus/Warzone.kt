@@ -270,6 +270,9 @@ class Warzone(
     @Synchronized
     private fun handleDeath(player: Player) {
         val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
+        objectives.values.forEach {
+            it.handleDeath(player)
+        }
         val lives = playerInfo.team.lives
         if (lives == 0) {
             handleTeamLoss(playerInfo.team, player)
@@ -417,6 +420,15 @@ class Warzone(
         return false
     }
 
+    fun onBlockPlace(player: Player, block: Block): Boolean {
+        objectives.values.forEach {
+            if (it.handleBlockPlace(player, block)) {
+                return true
+            }
+        }
+        return false
+    }
+
     fun isSpawnBlock(block: Block): Boolean {
         for ((_, team) in teams) {
             for (spawn in team.spawns) {
@@ -445,11 +457,6 @@ class Warzone(
     fun removeFlag(flag: FlagStructure): Boolean {
         val objective = objectives["flag"] as? FlagObjective ?: return false
         return objective.removeFlag(flag)
-    }
-
-    fun removeFlagAtLocation(location: Location): Boolean {
-        val objective = objectives["flag"] as? FlagObjective ?: return false
-        return objective.removeFlag(objective.getFlagAtLocation(location) ?: return false)
     }
 
     companion object {
