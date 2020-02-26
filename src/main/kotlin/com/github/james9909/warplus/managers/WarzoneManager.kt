@@ -9,11 +9,10 @@ import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.Warzone
 import com.github.james9909.warplus.extensions.LocationFormatException
 import com.github.james9909.warplus.extensions.getLocation
-import com.github.james9909.warplus.extensions.getLocationList
 import com.github.james9909.warplus.extensions.getOrCreateSection
 import com.github.james9909.warplus.extensions.toLocation
+import com.github.james9909.warplus.objectives.createFlagObjective
 import com.github.james9909.warplus.region.Region
-import com.github.james9909.warplus.structure.FlagStructure
 import com.github.james9909.warplus.structure.SpawnStyle
 import com.github.james9909.warplus.structure.TeamSpawnStructure
 import com.github.michaelbull.result.Err
@@ -52,6 +51,7 @@ class WarzoneManager(val plugin: WarPlus) {
         val zoneSettings = config.getOrCreateSection("settings")
         val teamSettings = config.getOrCreateSection("team-settings")
         val teamsSection = config.getOrCreateSection("teams")
+        val objectivesSection = config.getOrCreateSection("objectives")
 
         // Get region information
         val worldName = infoSection.getString("world") ?: plugin.server.worlds[0].name
@@ -92,9 +92,7 @@ class WarzoneManager(val plugin: WarPlus) {
         val teams = mutableListOf<Team>()
         for (teamName in teamNames) {
             val spawns: MutableList<TeamSpawnStructure> = mutableListOf()
-            val flags: MutableList<Location>
 
-            // Should never happen, but just in case...
             val teamSection = teamsSection.getConfigurationSection(teamName) ?: continue
             try {
                 for (spawnLocation in teamSection.getStringList("spawns")) {
@@ -124,15 +122,6 @@ class WarzoneManager(val plugin: WarPlus) {
                 }
                 contains
             }
-            try {
-                flags = teamSection.getLocationList("flags") as MutableList<Location>
-            } catch (e: LocationFormatException) {
-                return Err(
-                    IllegalWarzoneError(
-                        "Error when parsing flags:\n$e"
-                    )
-                )
-            }
 
             val teamKind: TeamKind
             try {
@@ -150,11 +139,24 @@ class WarzoneManager(val plugin: WarPlus) {
                 warzone = warzone,
                 settings = teamSection.getConfigurationSection("settings") ?: teamSettings
             )
-            flags.forEach {
-                team.addFlag(FlagStructure(plugin, it, team.kind))
-            }
             teams.add(team)
             warzone.addTeam(team)
+        }
+
+        // Load objectives
+        for (objectiveName in objectivesSection.getKeys(false)) {
+            val objectiveSection = objectivesSection.getConfigurationSection(objectiveName) ?: continue
+            val objective = when (objectiveName) {
+                "flags" -> {
+                    createFlagObjective(plugin, warzone, objectiveSection)
+                }
+                else -> null
+            }
+            if (objective != null) {
+                warzone.objectives[objective.name] = objective
+            } else {
+                plugin.logger.warning("Could not parse objective: $objectiveName")
+            }
         }
 
         return Ok(warzone)

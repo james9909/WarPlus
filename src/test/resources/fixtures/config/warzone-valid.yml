@@ -21,9 +21,6 @@ teams:
       - class1
     spawns:
       - flat:50,50,50
-    flags:
-      - flat:60,50,50
-      - flat:50,50,60
   red:
     settings:
       lives: 5
@@ -32,3 +29,10 @@ teams:
       - class2
     spawns:
       - flat:25,25,25
+objectives:
+  flags:
+    locations:
+      - origin: flat:60,50,40
+        team: navy
+      - origin: flat:40,50,60
+        team: navy

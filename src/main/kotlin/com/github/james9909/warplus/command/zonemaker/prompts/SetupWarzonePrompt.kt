@@ -272,26 +272,22 @@ class SetupWarzonePrompt(val plugin: WarPlus, val player: Player, val warzone: W
                     text = "This team doesn't exist. Please create a spawn first"
                     return
                 }
+
                 val flagStructure = FlagStructure(plugin, location.subtract(0.0, 1.0, 0.0).blockLocation(), team.kind)
                 flagStructure.saveVolume()
                 flagStructure.build()
-                team.addFlag(flagStructure)
                 warzone.saveConfig()
                 text = "Flag for team ${currTeamKind.name.toLowerCase()} created!"
             }
             Action.RIGHT_CLICK_AIR, Action.RIGHT_CLICK_BLOCK -> {
-                warzone.teams.forEach { (_, team) ->
-                    team.flagStructures.forEach {
-                        if (it.contains(location)) {
-                            it.restoreVolume()
-                            team.flagStructures.remove(it)
-                            warzone.saveConfig()
-                            text = "Flag removed!"
-                            return
-                        }
-                    }
+                val flag = warzone.getFlagAtLocation(location)
+                if (flag == null) {
+                    text = "There is no flag here"
+                    return
                 }
-                text = "There is no flag here"
+                flag.restoreVolume()
+                warzone.removeFlag(flag)
+                text = "Flag removed!"
             }
             else -> {
                 // Do nothing

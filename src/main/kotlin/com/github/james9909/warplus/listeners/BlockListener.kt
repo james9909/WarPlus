@@ -21,55 +21,38 @@ class BlockListener(val plugin: WarPlus) : Listener {
             return
         }
 
-        for ((_, team) in playerInfo.team.warzone.teams) {
-            for (flag in team.flagStructures) {
-                if (flag.contains(block.location)) {
-                    if (block == flag.flagBlock && team.kind != playerInfo.team.kind) {
-                        team.warzone.stealFlag(player, flag)
-                        event.isDropItems = false
-                    } else {
-                        // Not breaking another team's flag block
-                        event.isCancelled = true
-                    }
-                    return
-                }
-            }
-            for (spawn in team.spawns) {
-                if (spawn.contains(block.location)) {
-                    event.isCancelled = true
-                    return
-                }
-            }
+        val warzone = playerInfo.team.warzone
+        if (warzone.isSpawnBlock(block)) {
+            event.isCancelled = true
+            return
         }
+        event.isCancelled = warzone.onBlockBreak(player, block)
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onBlockPlace(event: BlockPlaceEvent) {
         val block = event.block
         val warzone = plugin.warzoneManager.getWarzoneByLocation(block.location) ?: return
-        if (warzone.isStructureBlock(block)) {
+        if (warzone.isSpawnBlock(block)) {
             event.isCancelled = true
             return
         }
         val player = event.player
-        val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
-        if (playerInfo.team.warzone.flagThieves.containsKey(player)) {
-            event.isCancelled = true
-            return
-        }
+        plugin.playerManager.getPlayerInfo(player) ?: return
+        event.isCancelled = warzone.onBlockPlace(player, block)
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onBlockBurn(event: BlockBurnEvent) {
         val block = event.block
         val warzone = plugin.warzoneManager.getWarzoneByLocation(block.location) ?: return
-        event.isCancelled = warzone.isStructureBlock(block)
+        event.isCancelled = warzone.onBlockBreak(null, block)
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onBlockIgnite(event: BlockIgniteEvent) {
         val block = event.block
         val warzone = plugin.warzoneManager.getWarzoneByLocation(block.location) ?: return
-        event.isCancelled = warzone.isStructureBlock(block)
+        event.isCancelled = warzone.onBlockBreak(null, block)
     }
 }
