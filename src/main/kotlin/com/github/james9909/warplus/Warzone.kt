@@ -101,6 +101,7 @@ class Warzone(
                 respawnPlayer(player)
             }
         }
+        resetObjectives()
     }
 
     private fun reinitialize() {
@@ -110,6 +111,7 @@ class Warzone(
                 respawnPlayer(player)
             }
         }
+        resetObjectives()
     }
 
     @Synchronized
@@ -238,6 +240,7 @@ class Warzone(
             }
             team.reset()
         }
+        resetObjectives()
     }
 
     fun saveVolume(): Result<Unit, WarError> {
@@ -457,6 +460,12 @@ class Warzone(
     fun removeFlag(flag: FlagStructure): Boolean {
         val objective = objectives["flag"] as? FlagObjective ?: return false
         return objective.removeFlag(flag)
+    }
+
+    private fun resetObjectives() {
+        objectives.values.forEach {
+            it.reset()
+        }
     }
 
     companion object {

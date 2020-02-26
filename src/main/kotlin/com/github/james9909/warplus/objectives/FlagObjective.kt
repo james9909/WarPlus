@@ -157,5 +157,6 @@ class FlagObjective(
         flagStructures.forEach {
             it.build()
         }
+        flagThieves.clear()
     }
 }
