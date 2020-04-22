@@ -1,7 +1,10 @@
 package com.github.james9909.warplus
 
+import com.github.james9909.warplus.config.TeamConfigType
+import com.github.james9909.warplus.config.WarzoneConfigType
 import com.github.james9909.warplus.extensions.clearPotionEffects
 import com.github.james9909.warplus.extensions.format
+import com.github.james9909.warplus.extensions.get
 import com.github.james9909.warplus.objectives.AbstractObjective
 import com.github.james9909.warplus.objectives.FlagObjective
 import com.github.james9909.warplus.region.Region
@@ -49,26 +52,27 @@ class Warzone(
     val plugin: WarPlus,
     val name: String,
     val region: Region,
-    val teamSettings: ConfigurationSection = Team.defaultTeamConfiguration(),
-    val warzoneSettings: ConfigurationSection = defaultWarzoneConfiguration(),
+    val teamSettings: ConfigurationSection = YamlConfiguration(),
+    val warzoneSettings: ConfigurationSection = YamlConfiguration(),
     val objectives: HashMap<String, AbstractObjective> = hashMapOf()
 ) {
-    val enabled = warzoneSettings.getBoolean("enabled", true)
     var state = WarzoneState.IDLING
     val teams = ConcurrentHashMap<TeamKind, Team>()
     private val volumeFolder = "${plugin.dataFolder.absolutePath}/volumes/warzones"
     private val volumePath = "$volumeFolder/$name.schem"
 
+    fun isEnabled(): Boolean = warzoneSettings.get(WarzoneConfigType.ENABLED)
+
     fun addTeam(team: Team) = teams.put(team.kind, team)
 
     fun minPlayers(): Int =
         teams.values.fold(0) { acc, team ->
-            acc + team.settings.getInt("min-players", teamSettings.getInt("min-players"))
+            acc + team.settings.get(TeamConfigType.MIN_PLAYERS, teamSettings.get(TeamConfigType.MIN_PLAYERS))
         }
 
     fun maxPlayers(): Int =
         teams.values.fold(0) { acc, team ->
-            acc + team.settings.getInt("max-players", teamSettings.getInt("max-players"))
+            acc + team.settings.get(TeamConfigType.MAX_PLAYERS, teamSettings.get(TeamConfigType.MAX_PLAYERS))
         }
 
     fun contains(location: Location): Boolean = region.contains(location)
@@ -83,7 +87,7 @@ class Warzone(
         }.filter { v ->
             v
         }.size
-        return sufficientTeams >= warzoneSettings.getInt("min-teams", 2)
+        return sufficientTeams >= warzoneSettings.get(WarzoneConfigType.MIN_TEAMS)
     }
 
     private fun start() {
@@ -171,7 +175,7 @@ class Warzone(
         val healthAttr = player.getAttribute(Attribute.GENERIC_MAX_HEALTH)
         val maxHealth = if (healthAttr == null) {
             if ("max-health" in warzoneSettings) {
-                warzoneSettings.getDouble("max-health")
+                warzoneSettings.get(WarzoneConfigType.MAX_HEALTH)
             } else {
                 DEFAULT_MAX_HEALTH
             }
@@ -304,7 +308,7 @@ class Warzone(
             it != team
         }.forEach {
             it.addPoint()
-            if (it.score >= it.settings.getInt("max-score", 2)) {
+            if (it.score >= it.settings.get(TeamConfigType.MAX_SCORE)) {
                 winningTeams.add(it)
             }
         }
@@ -331,7 +335,7 @@ class Warzone(
 
     fun handleSuicide(player: Player) {
         val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
-        if (warzoneSettings.getBoolean("death-messages")) {
+        if (warzoneSettings.get(WarzoneConfigType.DEATH_MESSAGES)) {
             broadcast("${playerInfo.team.kind.chatColor}${player.name}${ChatColor.RESET} committed suicide")
         }
         handleDeath(player)
@@ -341,7 +345,7 @@ class Warzone(
         val attackerInfo = plugin.playerManager.getPlayerInfo(attacker) ?: return
         val defenderInfo = plugin.playerManager.getPlayerInfo(defender) ?: return
 
-        if (warzoneSettings.getBoolean("death-messages")) {
+        if (warzoneSettings.get(WarzoneConfigType.DEATH_MESSAGES)) {
             val weapon = attacker.inventory.itemInMainHand
             val weaponName = if (weapon.hasItemMeta() && weapon.itemMeta!!.hasDisplayName()) {
                 weapon.itemMeta!!.displayName
@@ -469,16 +473,6 @@ class Warzone(
     private fun resetObjectives() {
         objectives.values.forEach {
             it.reset()
-        }
-    }
-
-    companion object {
-        private fun defaultWarzoneConfiguration(): YamlConfiguration {
-            val config = YamlConfiguration()
-            config.apply {
-                set("enabled", true)
-            }
-            return config
         }
     }
 }

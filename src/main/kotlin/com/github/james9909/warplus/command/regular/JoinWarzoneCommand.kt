@@ -30,7 +30,7 @@ class JoinWarzoneCommand(plugin: WarPlus, sender: CommandSender, args: List<Stri
             plugin.playerManager.sendMessage(sender, Message.NO_SUCH_WARZONE)
             return true
         }
-        if (!warzone.enabled) {
+        if (!warzone.isEnabled()) {
             plugin.playerManager.sendMessage(sender, Message.WARZONE_DISABLED)
             return true
         }

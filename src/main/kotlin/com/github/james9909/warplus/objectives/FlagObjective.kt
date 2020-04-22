@@ -3,7 +3,9 @@ package com.github.james9909.warplus.objectives
 import com.github.james9909.warplus.TeamKind
 import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.Warzone
+import com.github.james9909.warplus.config.TeamConfigType
 import com.github.james9909.warplus.extensions.clearPotionEffects
+import com.github.james9909.warplus.extensions.get
 import com.github.james9909.warplus.extensions.toLocation
 import com.github.james9909.warplus.structure.FlagStructure
 import org.bukkit.Location
@@ -97,7 +99,7 @@ class FlagObjective(
             team.addPoint()
 
             // Detect win condition
-            if (team.score >= team.settings.getInt("max-score", 2)) {
+            if (team.score >= team.settings.get(TeamConfigType.MAX_SCORE)) {
                 team.warzone.handleWin(listOf(team))
                 return
             }

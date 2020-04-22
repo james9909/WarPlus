@@ -2,6 +2,9 @@ package com.github.james9909.warplus.extensions
 
 import be.seeseemelk.mockbukkit.MockBukkit
 import com.github.james9909.warplus.WarPlus
+import com.github.james9909.warplus.config.TeamConfigType
+import com.github.james9909.warplus.config.WarzoneConfigType
+import com.github.james9909.warplus.structure.SpawnStyle
 import org.bukkit.Material
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.inventory.meta.LeatherArmorMeta
@@ -23,6 +26,37 @@ class ConfigurationSectionUtilsTest {
     @AfterAll
     internal fun afterAll() {
         MockBukkit.unload()
+    }
+
+    @Test
+    fun `can use get() with ConfigKey`() {
+        val configFile = File("src/test/resources/fixtures/config/warzone-valid.yml")
+        val config = YamlConfiguration.loadConfiguration(configFile)
+        val warzoneConfig = config.getConfigurationSection("settings")
+        require(warzoneConfig != null)
+        assert(warzoneConfig.get(WarzoneConfigType.ENABLED))
+        assert(warzoneConfig.get(WarzoneConfigType.MIN_TEAMS) == 1)
+    }
+
+    @Test
+    fun `get() correctly retrieves default ConfigKey values`() {
+        val config = YamlConfiguration()
+        assert(config.get(WarzoneConfigType.ENABLED))
+        assert(config.get(WarzoneConfigType.MIN_TEAMS) == 2)
+        assert(config.get(WarzoneConfigType.CLASS_CMD) == "")
+    }
+
+    @Test
+    fun `get() correctly retrieves default ConfigKey values for enums`() {
+        val configFile = File("src/test/resources/fixtures/config/warzone-valid.yml")
+        val config = YamlConfiguration.loadConfiguration(configFile)
+        val navyConfig = config.getConfigurationSection("teams.navy.settings")
+        require(navyConfig != null)
+        assert(navyConfig.get(TeamConfigType.SPAWN_STYLE) == SpawnStyle.SMALL)
+
+        val redConfig = config.getConfigurationSection("teams.red.settings")
+        require(redConfig != null)
+        assert(redConfig.get(TeamConfigType.SPAWN_STYLE) == SpawnStyle.LARGE)
     }
 
     @Test
