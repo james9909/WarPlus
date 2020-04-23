@@ -39,7 +39,7 @@ class WarzoneManagerTest {
 
         val warzone = result.unwrap()
         assert(warzone.name == "valid")
-        assert(warzone.enabled)
+        assert(warzone.isEnabled())
         assert(warzone.teams.size == 2)
         warzone.teams[TeamKind.NAVY]?.apply {
             assert(kind == TeamKind.NAVY)

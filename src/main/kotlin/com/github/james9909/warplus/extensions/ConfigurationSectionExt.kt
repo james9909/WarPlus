@@ -2,6 +2,7 @@
 
 package com.github.james9909.warplus.extensions
 
+import com.github.james9909.warplus.config.ConfigKey
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Material
@@ -40,6 +41,10 @@ fun ConfigurationSection.getLocationList(path: String): List<Location> {
     }
     return locations
 }
+
+fun <T> ConfigurationSection.get(key: ConfigKey<T>): T = key.get(this)
+
+fun <T> ConfigurationSection.get(key: ConfigKey<T>, default: T): T = key.get(this, default)
 
 fun handleLore(itemMeta: ItemMeta, path: ConfigurationSection) {
     if (path.isList("lore")) {

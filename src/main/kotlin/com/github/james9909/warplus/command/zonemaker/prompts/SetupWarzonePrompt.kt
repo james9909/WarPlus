@@ -5,8 +5,10 @@ import com.github.james9909.warplus.TeamKind
 import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.Warzone
 import com.github.james9909.warplus.WarzoneState
+import com.github.james9909.warplus.config.TeamConfigType
 import com.github.james9909.warplus.extensions.blockLocation
 import com.github.james9909.warplus.extensions.color
+import com.github.james9909.warplus.extensions.get
 import com.github.james9909.warplus.extensions.isFinite
 import com.github.james9909.warplus.structure.FlagStructure
 import com.github.james9909.warplus.structure.SpawnStyle
@@ -226,9 +228,9 @@ class SetupWarzonePrompt(val plugin: WarPlus, val player: Player, val warzone: W
 
                 val spawnStyle: SpawnStyle
                 try {
-                    spawnStyle = SpawnStyle.valueOf(team.settings.getString("spawnstyle")?.toUpperCase() ?: "SMALL")
+                    spawnStyle = team.settings.get(TeamConfigType.SPAWN_STYLE)
                 } catch (e: IllegalArgumentException) {
-                    text = "Invalid spawn style ${team.settings.getString("spawnstyle")}"
+                    text = "Invalid spawn style ${team.settings.getString("spawn-style")}"
                     return
                 }
                 val teamSpawn =

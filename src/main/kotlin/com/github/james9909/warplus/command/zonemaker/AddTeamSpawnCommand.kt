@@ -4,7 +4,9 @@ import com.github.james9909.warplus.Team
 import com.github.james9909.warplus.TeamKind
 import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.command.AbstractCommand
+import com.github.james9909.warplus.config.TeamConfigType
 import com.github.james9909.warplus.extensions.blockLocation
+import com.github.james9909.warplus.extensions.get
 import com.github.james9909.warplus.structure.SpawnStyle
 import com.github.james9909.warplus.structure.TeamSpawnStructure
 import org.bukkit.command.CommandSender
@@ -39,9 +41,9 @@ class AddTeamSpawnCommand(plugin: WarPlus, sender: CommandSender, args: List<Str
         }
         val spawnStyle: SpawnStyle
         try {
-            spawnStyle = SpawnStyle.valueOf(team.settings.getString("spawnstyle")?.toUpperCase() ?: "SMALL")
+            spawnStyle = team.settings.get(TeamConfigType.SPAWN_STYLE)
         } catch (e: java.lang.IllegalArgumentException) {
-            plugin.playerManager.sendMessage(sender, "Invalid spawn style ${team.settings.getString("spawnstyle")}")
+            plugin.playerManager.sendMessage(sender, "Invalid spawn style ${team.settings.getString("spawn-style")}")
             return true
         }
         val teamSpawn =

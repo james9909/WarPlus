@@ -4,6 +4,7 @@ info:
   p2: flat:100,100,100
 settings:
   enabled: true
+  min-teams: 1
 team-settings:
   lives: 20
   min-players: 1
@@ -16,7 +17,7 @@ teams:
   navy:
     settings:
       lives: 30
-      spawnstyle: small
+      spawn-style: small
     classes:
       - class1
     spawns:
@@ -24,7 +25,7 @@ teams:
   red:
     settings:
       lives: 5
-      spawnstyle: large
+      spawn-style: large
     classes:
       - class2
     spawns:

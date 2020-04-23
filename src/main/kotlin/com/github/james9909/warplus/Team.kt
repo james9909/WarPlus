@@ -1,6 +1,8 @@
 package com.github.james9909.warplus
 
+import com.github.james9909.warplus.config.TeamConfigType
 import com.github.james9909.warplus.extensions.format
+import com.github.james9909.warplus.extensions.get
 import com.github.james9909.warplus.structure.TeamSpawnStructure
 import org.bukkit.ChatColor
 import org.bukkit.Material
@@ -35,11 +37,11 @@ class Team(
     val kind: TeamKind,
     val spawns: MutableList<TeamSpawnStructure>,
     val warzone: Warzone,
-    val settings: ConfigurationSection = defaultTeamConfiguration()
+    val settings: ConfigurationSection = YamlConfiguration()
 ) {
     val players = mutableSetOf<Player>()
     // val flagStructures = mutableListOf<FlagStructure>()
-    var lives = settings.getInt("lives", 20)
+    var lives = settings.get(TeamConfigType.LIVES)
     var score = 0
         private set
 
@@ -51,12 +53,12 @@ class Team(
 
     fun size(): Int = players.size
 
-    fun hasEnoughPlayers(): Boolean = size() >= settings.getInt("min-players", 1)
+    fun hasEnoughPlayers(): Boolean = size() >= settings.get(TeamConfigType.MIN_PLAYERS)
 
-    fun isFull(): Boolean = size() == settings.getInt("max-players", 5)
+    fun isFull(): Boolean = size() == settings.get(TeamConfigType.MAX_PLAYERS)
 
     fun resetAttributes() {
-        lives = settings.getInt("lives", 20)
+        lives = settings.get(TeamConfigType.LIVES)
         score = 0
     }
 
@@ -101,18 +103,5 @@ class Team(
 
     override fun toString(): String {
         return kind.format()
-    }
-
-    companion object {
-        fun defaultTeamConfiguration(): YamlConfiguration {
-            val config = YamlConfiguration()
-            config.apply {
-                set("lives", 20)
-                set("min-players", 1)
-                set("max-players", 20)
-                set("max-score", 3)
-            }
-            return config
-        }
     }
 }
