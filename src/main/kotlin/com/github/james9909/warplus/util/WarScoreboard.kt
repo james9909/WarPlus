@@ -10,8 +10,8 @@ import org.bukkit.scoreboard.DisplaySlot
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
-val PLAYER_SCOREBOARDS: MutableMap<UUID, WarScoreboard> = ConcurrentHashMap();
-private val updating: MutableMap<UUID, Boolean> = ConcurrentHashMap();
+val PLAYER_SCOREBOARDS: MutableMap<UUID, WarScoreboard> = ConcurrentHashMap()
+private val updating: MutableMap<UUID, Boolean> = ConcurrentHashMap()
 
 class WarScoreboard(val player: Player, val zone: Warzone) {
     val scoreboard = Bukkit.getScoreboardManager()!!.getNewScoreboard()
@@ -48,7 +48,7 @@ class WarScoreboard(val player: Player, val zone: Warzone) {
     }
 
     fun addTeamText(team: WarTeam, flash: Boolean) {
-        val teamName = "&6Team&7: &f${team}"
+        val teamName = "&6Team&7: &f$team"
         addText(teamName)
 
         // Team points
@@ -62,7 +62,7 @@ class WarScoreboard(val player: Player, val zone: Warzone) {
 
     fun update() {
         if (updating.getOrDefault(player.uniqueId, false)) {
-            return;
+            return
         }
         updating[player.uniqueId] = true
         this.lines = 20
@@ -107,7 +107,7 @@ class WarScoreboard(val player: Player, val zone: Warzone) {
         var prefix = iterator.next()
 
         // Color behavior adapted from SimpleScoreboard
-        var suffix = "";
+        var suffix = ""
         if (iterator.hasNext()) {
             var prefixColor = ChatColor.getLastColors(prefix)
             suffix = iterator.next()
@@ -132,8 +132,8 @@ class WarScoreboard(val player: Player, val zone: Warzone) {
     }
 
     private fun setTitle(text: String) {
-        val coloredText = ChatColor.translateAlternateColorCodes('&', text);
-        objective.displayName = coloredText;
+        val coloredText = ChatColor.translateAlternateColorCodes('&', text)
+        objective.displayName = coloredText
     }
 
     companion object {

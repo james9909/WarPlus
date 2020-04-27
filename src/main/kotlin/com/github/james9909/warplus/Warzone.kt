@@ -475,5 +475,4 @@ class Warzone(
             it.reset()
         }
     }
-
 }
