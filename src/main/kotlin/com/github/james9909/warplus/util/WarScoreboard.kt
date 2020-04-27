@@ -117,10 +117,6 @@ class WarScoreboard(val player: Player, val zone: Warzone) {
                 suffix = suffix.substring(1)
             }
 
-            if (prefixColor == null) {
-                prefixColor = ChatColor.RESET.toString()
-            }
-
             if (suffix.length > 16) {
                 suffix = suffix.substring(0, (13 - prefixColor.length))
             }
