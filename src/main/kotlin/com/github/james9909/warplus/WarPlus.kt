@@ -22,9 +22,9 @@ class WarPlus : JavaPlugin {
     val classManager = ClassManager(this)
     val warzoneManager = WarzoneManager(this)
     val playerManager = PlayerManager(this)
-    val databaseManager = DatabaseManager(this, "jdbc:sqlite:$dataFolder/war.db")
-    val commandHandler = CommandHandler()
-    val usr = UpdateScoreboardRunnable(this)
+    private val databaseManager = DatabaseManager(this, "jdbc:sqlite:$dataFolder/war.db")
+    private val commandHandler = CommandHandler()
+    private val usr = UpdateScoreboardRunnable(this)
     var loaded = AtomicBoolean()
 
     constructor() : super()

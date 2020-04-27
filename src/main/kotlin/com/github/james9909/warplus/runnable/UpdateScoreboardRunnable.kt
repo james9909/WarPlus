@@ -9,7 +9,7 @@ class UpdateScoreboardRunnable(val plugin: WarPlus) : BukkitRunnable() {
         if (!plugin.isEnabled) {
             return
         }
-        PLAYER_SCOREBOARDS.forEach { _, scoreboard ->
+        PLAYER_SCOREBOARDS.forEach { (_, scoreboard) ->
             scoreboard.update()
         }
     }

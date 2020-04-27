@@ -13,11 +13,11 @@ import java.util.concurrent.ConcurrentHashMap
 val PLAYER_SCOREBOARDS: MutableMap<UUID, WarScoreboard> = ConcurrentHashMap()
 private val updating: MutableMap<UUID, Boolean> = ConcurrentHashMap()
 
-class WarScoreboard(val player: Player, val zone: Warzone) {
+class WarScoreboard(val player: Player, private val zone: Warzone) {
     val scoreboard = Bukkit.getScoreboardManager()!!.getNewScoreboard()
-    val objective = scoreboard.registerNewObjective(zone.name, "dummy", "dummy")
-    var lines = 20
-    var lastFlash = 0L
+    private val objective = scoreboard.registerNewObjective(zone.name, "dummy", "dummy")
+    private var lines = 20
+    private var lastFlash = 0L
 
     init {
         scoreboard.clearSlot(DisplaySlot.SIDEBAR)
@@ -26,7 +26,7 @@ class WarScoreboard(val player: Player, val zone: Warzone) {
         setTitle("&8>> &6&l${zone.name} &8<<")
 
         // Add all players to this scoreboard
-        zone.teams.forEach { _, team ->
+        zone.teams.forEach { (_, team) ->
             val scoreboardTeam = scoreboard.registerNewTeam(team.getScoreboardName())
             scoreboardTeam.color = team.kind.chatColor
             scoreboardTeam.setCanSeeFriendlyInvisibles(true)
@@ -47,7 +47,7 @@ class WarScoreboard(val player: Player, val zone: Warzone) {
         scoreboardTeam.addEntry(player.name)
     }
 
-    fun addTeamText(team: WarTeam, flash: Boolean) {
+    private fun addTeamText(team: WarTeam, flash: Boolean) {
         val teamName = "&6Team&7: &f$team"
         addText(teamName)
 

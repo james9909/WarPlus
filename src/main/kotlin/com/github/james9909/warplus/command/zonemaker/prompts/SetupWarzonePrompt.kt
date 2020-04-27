@@ -40,8 +40,8 @@ private enum class TOOL(val display: String) {
 
 class SetupWarzonePrompt(val plugin: WarPlus, val player: Player, val warzone: Warzone) : Prompt,
     ConversationAbandonedListener, Listener {
-    var text = "Enter \"done\" to finish editing."
-    var teamKind: TeamKind? = null
+    private var text = "Enter \"done\" to finish editing."
+    private var teamKind: TeamKind? = null
     lateinit var conversation: Conversation
 
     private var cornerOneSet = warzone.region.p1.isFinite()

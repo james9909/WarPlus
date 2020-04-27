@@ -32,8 +32,7 @@ class WarzoneManager(val plugin: WarPlus) {
             }
             val name = it.nameWithoutExtension.substring(8)
             plugin.logger.info("Loading zone $name")
-            val result = loadWarzone(name, YamlConfiguration.loadConfiguration(it))
-            when (result) {
+            when (val result = loadWarzone(name, YamlConfiguration.loadConfiguration(it))) {
                 is Ok -> {
                     warzones[name.toLowerCase()] = result.value
                     plugin.logger.info("Loaded zone $name")

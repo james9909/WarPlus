@@ -20,9 +20,8 @@ class DatabaseManager(private val plugin: WarPlus, private val database: String)
         }
     }
 
-    fun runSql(func: (conn: Connection) -> Unit): Result<Boolean, WarSqlError> {
-        val connResult = getConnection()
-        return when (connResult) {
+    private fun runSql(func: (conn: Connection) -> Unit): Result<Boolean, WarSqlError> {
+        return when (val connResult = getConnection()) {
             is Err -> {
                 plugin.logger.info(connResult.error.toString())
                 connResult

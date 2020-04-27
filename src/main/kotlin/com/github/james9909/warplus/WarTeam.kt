@@ -48,7 +48,7 @@ class WarTeam(
     fun addPlayer(player: Player) {
         players.add(player)
         WarScoreboard.createScoreboard(player, warzone)
-        warzone.teams.forEach { _, team ->
+        warzone.teams.forEach { (_, team) ->
             team.players.forEach {
                 WarScoreboard.getScoreboard(it)?.addPlayer(this, player)
             }
@@ -58,7 +58,7 @@ class WarTeam(
     fun removePlayer(player: Player) {
         players.remove(player)
         WarScoreboard.removeScoreboard(player)
-        warzone.teams.forEach { _, team ->
+        warzone.teams.forEach { (_, team) ->
             team.players.forEach {
                 WarScoreboard.getScoreboard(it)?.removePlayer(this, player)
             }
