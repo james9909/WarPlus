@@ -1,15 +1,14 @@
 package com.github.james9909.warplus
 
+import com.github.james9909.warplus.config.CascadingConfig
 import com.github.james9909.warplus.config.TeamConfigType
 import com.github.james9909.warplus.config.WarzoneConfigType
 import com.github.james9909.warplus.extensions.clearPotionEffects
 import com.github.james9909.warplus.extensions.format
-import com.github.james9909.warplus.extensions.get
 import com.github.james9909.warplus.objectives.AbstractObjective
 import com.github.james9909.warplus.objectives.FlagObjective
 import com.github.james9909.warplus.region.Region
 import com.github.james9909.warplus.structure.FlagStructure
-import com.github.james9909.warplus.util.DEFAULT_MAX_HEALTH
 import com.github.james9909.warplus.util.Message
 import com.github.james9909.warplus.util.PlayerState
 import com.github.james9909.warplus.util.copyRegion
@@ -30,7 +29,6 @@ import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.attribute.Attribute
 import org.bukkit.block.Block
-import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Item
@@ -52,8 +50,8 @@ class Warzone(
     val plugin: WarPlus,
     val name: String,
     val region: Region,
-    val teamSettings: ConfigurationSection = YamlConfiguration(),
-    val warzoneSettings: ConfigurationSection = YamlConfiguration(),
+    val teamSettings: CascadingConfig = CascadingConfig(),
+    val warzoneSettings: CascadingConfig = CascadingConfig(),
     val objectives: HashMap<String, AbstractObjective> = hashMapOf()
 ) {
     var state = WarzoneState.IDLING
@@ -158,9 +156,7 @@ class Warzone(
         assert(!team.isFull())
         team.addPlayer(player)
         plugin.playerManager.savePlayerState(player, team)
-        if ("max-health" in warzoneSettings) {
-            player.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.baseValue = warzoneSettings.getDouble("max-health")
-        }
+        player.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.baseValue = warzoneSettings.get(WarzoneConfigType.MAX_HEALTH)
         respawnPlayer(player)
         broadcast("${player.name} joined team $team")
 
@@ -174,11 +170,7 @@ class Warzone(
         player.clearPotionEffects()
         val healthAttr = player.getAttribute(Attribute.GENERIC_MAX_HEALTH)
         val maxHealth = if (healthAttr == null) {
-            if ("max-health" in warzoneSettings) {
-                warzoneSettings.get(WarzoneConfigType.MAX_HEALTH)
-            } else {
-                DEFAULT_MAX_HEALTH
-            }
+            warzoneSettings.get(WarzoneConfigType.MAX_HEALTH)
         } else {
             for (modifier in healthAttr.modifiers) {
                 healthAttr.removeModifier(modifier)
@@ -225,8 +217,8 @@ class Warzone(
         config.set("info.p1", region.p1.format())
         config.set("info.p2", region.p2.format())
 
-        config.set("settings", warzoneSettings)
-        config.set("team-settings", teamSettings)
+        config.set("settings", warzoneSettings.config)
+        config.set("team-settings", teamSettings.config)
         val teamsSection = config.createSection("teams")
         teams.values.forEach {
             val teamSection = teamsSection.createSection(it.kind.name.toLowerCase())

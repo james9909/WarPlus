@@ -3,7 +3,10 @@ package com.github.james9909.warplus.managers
 import be.seeseemelk.mockbukkit.MockBukkit
 import com.github.james9909.warplus.TeamKind
 import com.github.james9909.warplus.WarPlus
+import com.github.james9909.warplus.config.TeamConfigType
+import com.github.james9909.warplus.config.WarzoneConfigType
 import com.github.james9909.warplus.objectives.FlagObjective
+import com.github.james9909.warplus.structure.SpawnStyle
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.unwrap
 import org.bukkit.configuration.file.YamlConfiguration
@@ -22,6 +25,7 @@ class WarzoneManagerTest {
 
     init {
         server.addSimpleWorld("flat")
+        plugin.config.load(File("src/test/resources/fixtures/config/config.yml"))
     }
 
     @AfterAll
@@ -81,5 +85,34 @@ class WarzoneManagerTest {
             assert(origin.y == 50.0)
             assert(origin.z == 60.0)
         }
+    }
+
+    @Test
+    fun `handles cascading settings properly`() {
+        val configFile = File("src/test/resources/fixtures/config/warzone-valid.yml")
+        val config = YamlConfiguration.loadConfiguration(configFile)
+
+        val result = warzoneManager.loadWarzone("valid", config)
+        assert(result is Ok)
+
+        val warzone = result.unwrap()
+        assert(warzone.warzoneSettings.get(WarzoneConfigType.ENABLED))
+        assert(warzone.warzoneSettings.get(WarzoneConfigType.MAX_HEALTH) == 40.0)
+
+        warzone.teams[TeamKind.RED]?.apply {
+            assert(settings.get(TeamConfigType.LIVES) == 5)
+            assert(settings.get(TeamConfigType.SPAWN_STYLE) == SpawnStyle.LARGE)
+            assert(settings.get(TeamConfigType.MIN_PLAYERS) == 1)
+            assert(settings.get(TeamConfigType.MAX_PLAYERS) == 20)
+            assert(settings.get(TeamConfigType.MAX_SCORE) == 5)
+        } ?: fail("Team red is null")
+
+        warzone.teams[TeamKind.NAVY]?.apply {
+            assert(settings.get(TeamConfigType.LIVES) == 30)
+            assert(settings.get(TeamConfigType.SPAWN_STYLE) == SpawnStyle.SMALL)
+            assert(settings.get(TeamConfigType.MIN_PLAYERS) == 1)
+            assert(settings.get(TeamConfigType.MAX_PLAYERS) == 20)
+            assert(settings.get(TeamConfigType.MAX_SCORE) == 5)
+        } ?: fail("Team navy is null")
     }
 }

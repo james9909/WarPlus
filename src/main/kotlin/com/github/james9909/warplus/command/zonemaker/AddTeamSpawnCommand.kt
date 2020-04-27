@@ -43,7 +43,7 @@ class AddTeamSpawnCommand(plugin: WarPlus, sender: CommandSender, args: List<Str
         try {
             spawnStyle = team.settings.get(TeamConfigType.SPAWN_STYLE)
         } catch (e: java.lang.IllegalArgumentException) {
-            plugin.playerManager.sendMessage(sender, "Invalid spawn style ${team.settings.getString("spawn-style")}")
+            plugin.playerManager.sendMessage(sender, "Invalid spawn style for $team")
             return true
         }
         val teamSpawn =

@@ -230,7 +230,7 @@ class SetupWarzonePrompt(val plugin: WarPlus, val player: Player, val warzone: W
                 try {
                     spawnStyle = team.settings.get(TeamConfigType.SPAWN_STYLE)
                 } catch (e: IllegalArgumentException) {
-                    text = "Invalid spawn style ${team.settings.getString("spawn-style")}"
+                    text = "Invalid spawn style for $team"
                     return
                 }
                 val teamSpawn =
