@@ -214,19 +214,19 @@ class Warzone(
 
         config.createSection("info")
         config.set("info.world", region.world.name)
-        config.set("info.p1", region.p1.format())
-        config.set("info.p2", region.p2.format())
+        config.set("info.p1", region.p1.format(false))
+        config.set("info.p2", region.p2.format(false))
 
         config.set("settings", warzoneSettings.config)
         config.set("team-settings", teamSettings.config)
         val teamsSection = config.createSection("teams")
-        teams.values.forEach {
+        teams.toSortedMap().values.forEach {
             val teamSection = teamsSection.createSection(it.kind.name.toLowerCase())
             it.saveConfig(teamSection)
         }
 
         val objectivesSection = config.createSection("objectives")
-        objectives.values.forEach {
+        objectives.toSortedMap().values.forEach {
             val objectiveSection = objectivesSection.createSection(it.name)
             it.saveConfig(objectiveSection)
         }

@@ -5,7 +5,7 @@ import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.Warzone
 import com.github.james9909.warplus.config.TeamConfigType
 import com.github.james9909.warplus.extensions.clearPotionEffects
-import com.github.james9909.warplus.extensions.get
+import com.github.james9909.warplus.extensions.format
 import com.github.james9909.warplus.extensions.toLocation
 import com.github.james9909.warplus.structure.FlagStructure
 import org.bukkit.Location
@@ -147,12 +147,12 @@ class FlagObjective(
         flagStructures.forEach {
             flags.add(
                 mapOf(
-                    "team" to it.kind.toString().toLowerCase(),
-                    "origin" to it.origin.toString()
+                    "origin" to it.origin.format(false),
+                    "team" to it.kind.toString().toLowerCase()
                 )
             )
         }
-        config.set("flags", flags)
+        config.set("locations", flags)
     }
 
     override fun reset() {
