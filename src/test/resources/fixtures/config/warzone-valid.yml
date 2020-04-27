@@ -1,7 +1,7 @@
 info:
   world: flat
-  p1: flat:0,0,0
-  p2: flat:100,100,100
+  p1: flat:0.0,0.0,0.0
+  p2: flat:100.0,100.0,100.0
 settings:
   enabled: true
   min-teams: 1
@@ -9,31 +9,23 @@ team-settings:
   lives: 20
   min-players: 1
   max-players: 20
-classes:
-  - class1
-  - class2
-  - class3
 teams:
   navy:
     settings:
       lives: 30
       spawn-style: small
-    classes:
-      - class1
     spawns:
-      - flat:50,50,50
+    - flat:50.0,50.0,50.0,0.0,0.0
   red:
     settings:
       lives: 5
       spawn-style: large
-    classes:
-      - class2
     spawns:
-      - flat:25,25,25
+    - flat:25.0,25.0,25.0,0.0,0.0
 objectives:
   flags:
     locations:
-      - origin: flat:60,50,40
-        team: navy
-      - origin: flat:40,50,60
-        team: navy
+    - origin: flat:60.0,50.0,40.0
+      team: navy
+    - origin: flat:40.0,50.0,60.0
+      team: navy

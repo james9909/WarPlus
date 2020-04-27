@@ -1,12 +1,15 @@
 package com.github.james9909.warplus.managers
 
+import com.github.james9909.warplus.DEFAULT_TEAM_CONFIG
+import com.github.james9909.warplus.DEFAULT_WARZONE_CONFIG
 import com.github.james9909.warplus.IllegalTeamKindError
 import com.github.james9909.warplus.IllegalWarzoneError
-import com.github.james9909.warplus.WarTeam
 import com.github.james9909.warplus.TeamKind
 import com.github.james9909.warplus.WarError
 import com.github.james9909.warplus.WarPlus
+import com.github.james9909.warplus.WarTeam
 import com.github.james9909.warplus.Warzone
+import com.github.james9909.warplus.config.CascadingConfig
 import com.github.james9909.warplus.extensions.LocationFormatException
 import com.github.james9909.warplus.extensions.getLocation
 import com.github.james9909.warplus.extensions.getOrCreateSection
@@ -78,12 +81,27 @@ class WarzoneManager(val plugin: WarPlus) {
         }
 
         val region = Region(world, p1, p2)
+        val teamDefaultConfig = plugin.config.getConfigurationSection("team.default.config") ?: YamlConfiguration()
+        val warzoneDefaultConfig =
+            plugin.config.getConfigurationSection("warzone.default.config") ?: YamlConfiguration()
         val warzone = Warzone(
             plugin = plugin,
             name = name,
             region = region,
-            teamSettings = teamSettings,
-            warzoneSettings = zoneSettings
+            teamSettings = CascadingConfig(
+                teamSettings, CascadingConfig(
+                    teamDefaultConfig, CascadingConfig(
+                        DEFAULT_TEAM_CONFIG
+                    )
+                )
+            ),
+            warzoneSettings = CascadingConfig(
+                zoneSettings, CascadingConfig(
+                    warzoneDefaultConfig, CascadingConfig(
+                        DEFAULT_WARZONE_CONFIG
+                    )
+                )
+            )
         )
 
         // Get teams
@@ -132,11 +150,13 @@ class WarzoneManager(val plugin: WarPlus) {
                     )
                 )
             }
+            // Settings for this specific team
+            val overloadedTeamSettings = teamSection.getConfigurationSection("settings") ?: YamlConfiguration()
             val team = WarTeam(
                 kind = teamKind,
                 spawns = spawns,
                 warzone = warzone,
-                settings = teamSection.getConfigurationSection("settings") ?: teamSettings
+                settings = CascadingConfig(overloadedTeamSettings, warzone.teamSettings)
             )
             teams.add(team)
             warzone.addTeam(team)

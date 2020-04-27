@@ -1,6 +1,8 @@
 package com.github.james9909.warplus
 
 import com.github.james9909.warplus.command.CommandHandler
+import com.github.james9909.warplus.config.TeamConfigType
+import com.github.james9909.warplus.config.WarzoneConfigType
 import com.github.james9909.warplus.listeners.BlockListener
 import com.github.james9909.warplus.listeners.EntityListener
 import com.github.james9909.warplus.listeners.PlayerListener
@@ -11,12 +13,34 @@ import com.github.james9909.warplus.managers.WarzoneManager
 import com.github.james9909.warplus.runnable.UpdateScoreboardRunnable
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
+import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.event.HandlerList
 import org.bukkit.plugin.PluginDescriptionFile
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.plugin.java.JavaPluginLoader
 import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
+
+val DEFAULT_TEAM_CONFIG by lazy {
+    val config = YamlConfiguration()
+    config[TeamConfigType.LIVES.path] = TeamConfigType.LIVES.default
+    config[TeamConfigType.MIN_PLAYERS.path] = TeamConfigType.MIN_PLAYERS.default
+    config[TeamConfigType.MAX_PLAYERS.path] = TeamConfigType.MAX_PLAYERS.default
+    config[TeamConfigType.MAX_SCORE.path] = TeamConfigType.MAX_SCORE.default
+    config[TeamConfigType.SPAWN_STYLE.path] = TeamConfigType.SPAWN_STYLE.default
+    config
+}
+
+val DEFAULT_WARZONE_CONFIG by lazy {
+    val config = YamlConfiguration()
+    config[WarzoneConfigType.CLASS_CMD.path] = WarzoneConfigType.CLASS_CMD.default
+    config[WarzoneConfigType.DEATH_MESSAGES.path] = WarzoneConfigType.DEATH_MESSAGES.default
+    config[WarzoneConfigType.DEFAULT_CLASS.path] = WarzoneConfigType.DEFAULT_CLASS.default
+    config[WarzoneConfigType.ENABLED.path] = WarzoneConfigType.ENABLED.default
+    config[WarzoneConfigType.MAX_HEALTH.path] = WarzoneConfigType.MAX_HEALTH.default
+    config[WarzoneConfigType.MIN_TEAMS.path] = WarzoneConfigType.MIN_TEAMS.default
+    config
+}
 
 class WarPlus : JavaPlugin {
     val classManager = ClassManager(this)

@@ -2,9 +2,12 @@ global: {}
 warzone:
   default:
     config:
+      enabled: false
+      max-health: 40
 team:
   default:
     config:
+      max-score: 5
 extensions:
   worldedit:
     enabled: true

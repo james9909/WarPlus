@@ -8,9 +8,13 @@ import kotlin.math.roundToInt
 val axis = arrayOf(CardinalDirection.SOUTH, CardinalDirection.WEST, CardinalDirection.NORTH, CardinalDirection.EAST)
 val radial = arrayOf(InterCardinalDirection.SOUTH_WEST, InterCardinalDirection.NORTH_WEST, InterCardinalDirection.NORTH_EAST, InterCardinalDirection.SOUTH_EAST)
 
-fun Location.format(): String {
+fun Location.format(direction: Boolean = true): String {
     // Format: world:x,y,z[,[yaw],[pitch]]
-    return "${this.world?.name}:${this.x},${this.y},${this.z},${this.yaw},${this.pitch}"
+    val buff = StringBuffer("${this.world?.name}:${this.x},${this.y},${this.z}")
+    if (direction) {
+        buff.append(",${this.yaw},${this.pitch}")
+    }
+    return buff.toString()
 }
 
 fun Location.getCardinalDirection(): CardinalDirection {

@@ -1,5 +1,6 @@
 package com.github.james9909.warplus
 
+import com.github.james9909.warplus.config.CascadingConfig
 import com.github.james9909.warplus.config.TeamConfigType
 import com.github.james9909.warplus.extensions.format
 import com.github.james9909.warplus.extensions.get
@@ -8,26 +9,25 @@ import com.github.james9909.warplus.util.WarScoreboard
 import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
-import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
 
 enum class TeamKind(val material: Material, val chatColor: ChatColor) {
-    WHITE(Material.WHITE_WOOL, ChatColor.WHITE),
-    ORANGE(Material.ORANGE_WOOL, ChatColor.GOLD),
-    MAGENTA(Material.MAGENTA_WOOL, ChatColor.LIGHT_PURPLE),
+    BLACK(Material.BLACK_WOOL, ChatColor.BLACK),
     BLUE(Material.LIGHT_BLUE_WOOL, ChatColor.BLUE),
-    GOLD(Material.YELLOW_WOOL, ChatColor.YELLOW),
-    GREEN(Material.GREEN_WOOL, ChatColor.GREEN),
-    PINK(Material.PINK_WOOL, ChatColor.LIGHT_PURPLE),
-    GRAY(Material.GRAY_WOOL, ChatColor.DARK_GRAY),
-    IRON(Material.LIGHT_GRAY_WOOL, ChatColor.GRAY),
-    DIAMOND(Material.CYAN_WOOL, ChatColor.DARK_AQUA),
-    PURPLE(Material.PURPLE_WOOL, ChatColor.DARK_PURPLE),
-    NAVY(Material.BLUE_WOOL, ChatColor.DARK_BLUE),
     BROWN(Material.BROWN_WOOL, ChatColor.DARK_RED),
     DARKGREEN(Material.GREEN_WOOL, ChatColor.DARK_GREEN),
+    DIAMOND(Material.CYAN_WOOL, ChatColor.DARK_AQUA),
+    GOLD(Material.YELLOW_WOOL, ChatColor.YELLOW),
+    GRAY(Material.GRAY_WOOL, ChatColor.DARK_GRAY),
+    GREEN(Material.GREEN_WOOL, ChatColor.GREEN),
+    IRON(Material.LIGHT_GRAY_WOOL, ChatColor.GRAY),
+    MAGENTA(Material.MAGENTA_WOOL, ChatColor.LIGHT_PURPLE),
+    NAVY(Material.BLUE_WOOL, ChatColor.DARK_BLUE),
+    ORANGE(Material.ORANGE_WOOL, ChatColor.GOLD),
+    PINK(Material.PINK_WOOL, ChatColor.LIGHT_PURPLE),
+    PURPLE(Material.PURPLE_WOOL, ChatColor.DARK_PURPLE),
     RED(Material.RED_WOOL, ChatColor.RED),
-    BLACK(Material.BLACK_WOOL, ChatColor.BLACK);
+    WHITE(Material.WHITE_WOOL, ChatColor.WHITE);
 
     fun format(): String {
         return "${chatColor}${name.toLowerCase()}${ChatColor.RESET}"
@@ -38,7 +38,7 @@ class WarTeam(
     val kind: TeamKind,
     val spawns: MutableList<TeamSpawnStructure>,
     val warzone: Warzone,
-    val settings: ConfigurationSection = YamlConfiguration()
+    val settings: CascadingConfig = CascadingConfig()
 ) {
     val players = mutableSetOf<Player>()
     var lives = maxLives()
@@ -100,7 +100,7 @@ class WarTeam(
     }
 
     fun saveConfig(teamSection: ConfigurationSection) {
-        teamSection.set("settings", settings)
+        teamSection.set("settings", settings.config)
         val spawnsStringList = mutableListOf<String>()
         for (spawn in spawns) {
             spawnsStringList.add(spawn.origin.format())

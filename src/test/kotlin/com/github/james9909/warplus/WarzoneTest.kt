@@ -15,12 +15,12 @@ import java.util.UUID
 class WarzoneTest {
     private val server = MockBukkit.mock()
     private val plugin = MockBukkit.load(WarPlus::class.java)
+    private val configFile = File("src/test/resources/fixtures/config/warzone-valid.yml")
     private val warzone: Warzone
 
     init {
         server.addSimpleWorld("flat")
 
-        val configFile = File("src/test/resources/fixtures/config/warzone-valid.yml")
         val config = YamlConfiguration.loadConfiguration(configFile)
         warzone = plugin.warzoneManager.loadWarzone("valid", config).unwrap()
     }
@@ -38,5 +38,13 @@ class WarzoneTest {
         val playerInfo = plugin.playerManager.getPlayerInfo(player)
         assert(playerInfo != null)
         assert(playerInfo!!.team.warzone == warzone)
+    }
+
+    @Test
+    fun `saving warzones works`() {
+        warzone.saveConfig()
+        val actualConfigFile = File("${plugin.dataFolder}/warzone-valid.yml")
+        assert(actualConfigFile.exists())
+        assert(actualConfigFile.readText().trim() == configFile.readText().trim())
     }
 }
