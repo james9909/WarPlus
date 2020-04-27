@@ -57,13 +57,13 @@ class Warzone(
     val objectives: HashMap<String, AbstractObjective> = hashMapOf()
 ) {
     var state = WarzoneState.IDLING
-    val teams = ConcurrentHashMap<TeamKind, Team>()
+    val teams = ConcurrentHashMap<TeamKind, WarTeam>()
     private val volumeFolder = "${plugin.dataFolder.absolutePath}/volumes/warzones"
     private val volumePath = "$volumeFolder/$name.schem"
 
     fun isEnabled(): Boolean = warzoneSettings.get(WarzoneConfigType.ENABLED)
 
-    fun addTeam(team: Team) = teams.put(team.kind, team)
+    fun addTeam(team: WarTeam) = teams.put(team.kind, team)
 
     fun minPlayers(): Int =
         teams.values.fold(0) { acc, team ->
@@ -119,7 +119,7 @@ class Warzone(
     }
 
     @Synchronized
-    fun removePlayer(player: Player, team: Team) {
+    fun removePlayer(player: Player, team: WarTeam) {
         team.removePlayer(player)
         removePlayer(player)
     }
@@ -154,7 +154,7 @@ class Warzone(
     }
 
     @Synchronized
-    private fun addPlayer(player: Player, team: Team): Boolean {
+    private fun addPlayer(player: Player, team: WarTeam): Boolean {
         assert(!team.isFull())
         team.addPlayer(player)
         plugin.playerManager.savePlayerState(player, team)
@@ -302,8 +302,8 @@ class Warzone(
         }
     }
 
-    fun handleTeamLoss(team: Team, player: Player) {
-        val winningTeams = mutableListOf<Team>()
+    fun handleTeamLoss(team: WarTeam, player: Player) {
+        val winningTeams = mutableListOf<WarTeam>()
         teams.values.filter {
             it != team
         }.forEach {
@@ -321,7 +321,7 @@ class Warzone(
         }
     }
 
-    fun handleWin(winningTeams: List<Team>) {
+    fun handleWin(winningTeams: List<WarTeam>) {
         broadcast("Score cap reached. Game is over! Winning teams: ${winningTeams.joinToString()}")
         for ((_, team) in teams) {
             val won = team in winningTeams

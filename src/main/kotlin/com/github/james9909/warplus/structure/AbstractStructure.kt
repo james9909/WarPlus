@@ -33,11 +33,11 @@ abstract class AbstractStructure(val plugin: WarPlus, val origin: Location) {
     abstract val corners: Pair<Location, Location>
     abstract fun getStructure(): Array<Array<Array<Material>>>
 
-    fun getFolder(): String {
+    private fun getFolder(): String {
         return "${plugin.dataFolder.absolutePath}/volumes/$prefix"
     }
 
-    fun getVolumePath(): String {
+    private fun getVolumePath(): String {
         return "${getFolder()}/${origin.blockX}-${origin.blockY}-${origin.blockZ}.schem"
     }
 

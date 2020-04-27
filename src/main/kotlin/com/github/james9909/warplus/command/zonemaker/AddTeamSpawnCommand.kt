@@ -1,6 +1,6 @@
 package com.github.james9909.warplus.command.zonemaker
 
-import com.github.james9909.warplus.Team
+import com.github.james9909.warplus.WarTeam
 import com.github.james9909.warplus.TeamKind
 import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.command.AbstractCommand
@@ -36,7 +36,7 @@ class AddTeamSpawnCommand(plugin: WarPlus, sender: CommandSender, args: List<Str
         }
         var team = warzone.teams[kind]
         if (team == null) {
-            team = Team(kind, mutableListOf(), warzone)
+            team = WarTeam(kind, mutableListOf(), warzone)
             warzone.addTeam(team)
         }
         val spawnStyle: SpawnStyle
