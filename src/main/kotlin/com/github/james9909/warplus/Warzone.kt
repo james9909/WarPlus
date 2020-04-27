@@ -350,10 +350,10 @@ class Warzone(
             val weaponName = if (weapon.hasItemMeta() && weapon.itemMeta!!.hasDisplayName()) {
                 weapon.itemMeta!!.displayName
             } else if (weapon.type == Material.AIR) {
-                "air"
+                "hand"
             } else {
                 weapon.type.toString()
-            }
+            }.toLowerCase().replace('_', ' ')
             val attackerColor = attackerInfo.team.kind.chatColor
             val defenderColor = defenderInfo.team.kind.chatColor
             val message =
