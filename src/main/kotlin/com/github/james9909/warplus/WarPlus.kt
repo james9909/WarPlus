@@ -8,6 +8,7 @@ import com.github.james9909.warplus.managers.ClassManager
 import com.github.james9909.warplus.managers.DatabaseManager
 import com.github.james9909.warplus.managers.PlayerManager
 import com.github.james9909.warplus.managers.WarzoneManager
+import com.github.james9909.warplus.runnable.UpdateScoreboardRunnable
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.event.HandlerList
@@ -23,6 +24,7 @@ class WarPlus : JavaPlugin {
     val playerManager = PlayerManager(this)
     val databaseManager = DatabaseManager(this, "jdbc:sqlite:$dataFolder/war.db")
     val commandHandler = CommandHandler()
+    val usr = UpdateScoreboardRunnable(this)
     var loaded = AtomicBoolean()
 
     constructor() : super()
@@ -60,6 +62,7 @@ class WarPlus : JavaPlugin {
         classManager.loadClasses()
         warzoneManager.loadWarzones()
         databaseManager.createTables()
+        setupRunnables()
         loaded.set(true)
     }
 
@@ -70,7 +73,16 @@ class WarPlus : JavaPlugin {
         HandlerList.unregisterAll(this)
         server.scheduler.cancelTasks(this)
         warzoneManager.unloadWarzones()
+        cancelRunnables()
         loaded.set(false)
+    }
+
+    private fun setupRunnables() {
+        usr.runTaskTimerAsynchronously(this, 0, 10)
+    }
+
+    private fun cancelRunnables() {
+        usr.cancel()
     }
 
     private fun setupListeners() {

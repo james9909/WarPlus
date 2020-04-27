@@ -4,6 +4,7 @@ import com.github.james9909.warplus.config.TeamConfigType
 import com.github.james9909.warplus.extensions.format
 import com.github.james9909.warplus.extensions.get
 import com.github.james9909.warplus.structure.TeamSpawnStructure
+import com.github.james9909.warplus.util.WarScoreboard
 import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
@@ -33,23 +34,36 @@ enum class TeamKind(val material: Material, val chatColor: ChatColor) {
     }
 }
 
-class Team(
+class WarTeam(
     val kind: TeamKind,
     val spawns: MutableList<TeamSpawnStructure>,
     val warzone: Warzone,
     val settings: ConfigurationSection = YamlConfiguration()
 ) {
     val players = mutableSetOf<Player>()
-    // val flagStructures = mutableListOf<FlagStructure>()
-    var lives = settings.get(TeamConfigType.LIVES)
+    var lives = maxLives()
     var score = 0
         private set
 
-    // fun addFlag(flagStructure: FlagStructure) = flagStructures.add(flagStructure)
+    fun addPlayer(player: Player) {
+        players.add(player)
+        WarScoreboard.createScoreboard(player, warzone)
+        warzone.teams.forEach { _, team ->
+            team.players.forEach {
+                WarScoreboard.getScoreboard(it)?.addPlayer(this, player)
+            }
+        }
+    }
 
-    fun addPlayer(player: Player) = players.add(player)
-
-    fun removePlayer(player: Player) = players.remove(player)
+    fun removePlayer(player: Player) {
+        players.remove(player)
+        WarScoreboard.removeScoreboard(player)
+        warzone.teams.forEach { _, team ->
+            team.players.forEach {
+                WarScoreboard.getScoreboard(it)?.removePlayer(this, player)
+            }
+        }
+    }
 
     fun size(): Int = players.size
 
@@ -57,8 +71,12 @@ class Team(
 
     fun isFull(): Boolean = size() == settings.get(TeamConfigType.MAX_PLAYERS)
 
+    fun maxScore(): Int = settings.get(TeamConfigType.MAX_SCORE)
+
+    fun maxLives(): Int = settings.get(TeamConfigType.LIVES)
+
     fun resetAttributes() {
-        lives = settings.get(TeamConfigType.LIVES)
+        lives = maxLives()
         score = 0
     }
 
@@ -100,6 +118,8 @@ class Team(
     fun addPoint() {
         score += 1
     }
+
+    fun getScoreboardName(): String = "${warzone.name}_${kind.name.toLowerCase()}"
 
     override fun toString(): String {
         return kind.format()

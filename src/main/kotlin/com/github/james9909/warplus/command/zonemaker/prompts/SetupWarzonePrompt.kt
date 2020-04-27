@@ -1,6 +1,6 @@
 package com.github.james9909.warplus.command.zonemaker.prompts
 
-import com.github.james9909.warplus.Team
+import com.github.james9909.warplus.WarTeam
 import com.github.james9909.warplus.TeamKind
 import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.Warzone
@@ -222,7 +222,7 @@ class SetupWarzonePrompt(val plugin: WarPlus, val player: Player, val warzone: W
                 }
                 var team = warzone.teams[currTeamKind]
                 if (team == null) {
-                    team = Team(currTeamKind, mutableListOf(), warzone)
+                    team = WarTeam(currTeamKind, mutableListOf(), warzone)
                     warzone.addTeam(team)
                 }
 

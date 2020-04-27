@@ -2,7 +2,7 @@ package com.github.james9909.warplus.managers
 
 import com.github.james9909.warplus.IllegalTeamKindError
 import com.github.james9909.warplus.IllegalWarzoneError
-import com.github.james9909.warplus.Team
+import com.github.james9909.warplus.WarTeam
 import com.github.james9909.warplus.TeamKind
 import com.github.james9909.warplus.WarError
 import com.github.james9909.warplus.WarPlus
@@ -89,7 +89,7 @@ class WarzoneManager(val plugin: WarPlus) {
 
         // Get teams
         val teamNames = teamsSection.getKeys(false)
-        val teams = mutableListOf<Team>()
+        val teams = mutableListOf<WarTeam>()
         for (teamName in teamNames) {
             val spawns: MutableList<TeamSpawnStructure> = mutableListOf()
 
@@ -133,7 +133,7 @@ class WarzoneManager(val plugin: WarPlus) {
                     )
                 )
             }
-            val team = Team(
+            val team = WarTeam(
                 kind = teamKind,
                 spawns = spawns,
                 warzone = warzone,

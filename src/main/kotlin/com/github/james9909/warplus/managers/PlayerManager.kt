@@ -1,6 +1,6 @@
 package com.github.james9909.warplus.managers
 
-import com.github.james9909.warplus.Team
+import com.github.james9909.warplus.WarTeam
 import com.github.james9909.warplus.WarClass
 import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.util.Message
@@ -11,7 +11,7 @@ import org.bukkit.entity.Player
 import java.util.concurrent.ConcurrentHashMap
 
 data class PlayerInfo(
-    val team: Team,
+    val team: WarTeam,
     val state: PlayerState,
     var inSpawn: Boolean,
     var warClass: WarClass?
@@ -45,7 +45,7 @@ class PlayerManager(plugin: WarPlus) {
         return players[player]
     }
 
-    fun savePlayerState(player: Player, team: Team) {
+    fun savePlayerState(player: Player, team: WarTeam) {
         players[player] = PlayerInfo(team, PlayerState.fromPlayer(player), true, null)
     }
 
