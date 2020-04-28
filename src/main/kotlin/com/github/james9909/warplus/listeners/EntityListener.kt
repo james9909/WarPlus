@@ -22,9 +22,6 @@ class EntityListener(val plugin: WarPlus) : Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onEntityDamageByEntity(event: EntityDamageByEntityEvent) {
-        println(event.damager)
-        println(event.cause)
-        println(event.entity)
         val defender = event.entity as? Player ?: return
         val damager = event.damager
         val defenderInfo = plugin.playerManager.getPlayerInfo(defender) ?: return
@@ -106,6 +103,8 @@ class EntityListener(val plugin: WarPlus) : Listener {
             return
         }
 
+        // Player is supposed to die, but cancel the event and respawn them
+        event.isCancelled = true
         if (attacker == defender) {
             defenderInfo.team.warzone.handleSuicide(defender)
         } else {
@@ -117,12 +116,18 @@ class EntityListener(val plugin: WarPlus) : Listener {
     fun onEntityExplode(event: EntityExplodeEvent) {
         val warzone = plugin.warzoneManager.getWarzoneByLocation(event.location) ?: return
 
+        val originalSize = event.blockList().size
         event.blockList().removeIf { block ->
             // Prevent blocks that are important to the warzone from being blown up
             warzone.isSpawnBlock(block) || warzone.objectives.values.any { objective ->
                 objective.handleBlockBreak(null, block)
             }
         }
+
+        // Change explosion yield after explosion protection
+        val newSize = event.blockList().size
+        val scale = (originalSize - newSize).toFloat() / originalSize
+        event.yield *= scale
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
