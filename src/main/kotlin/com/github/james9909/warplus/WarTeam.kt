@@ -69,7 +69,7 @@ class WarTeam(
 
     fun hasEnoughPlayers(): Boolean = size() >= settings.get(TeamConfigType.MIN_PLAYERS)
 
-    fun isFull(): Boolean = size() == settings.get(TeamConfigType.MAX_PLAYERS)
+    fun isFull(): Boolean = size() >= settings.get(TeamConfigType.MAX_PLAYERS)
 
     fun maxScore(): Int = settings.get(TeamConfigType.MAX_SCORE)
 
