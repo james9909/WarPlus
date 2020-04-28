@@ -11,6 +11,7 @@ import com.github.james9909.warplus.managers.DatabaseManager
 import com.github.james9909.warplus.managers.PlayerManager
 import com.github.james9909.warplus.managers.WarzoneManager
 import com.github.james9909.warplus.runnable.UpdateScoreboardRunnable
+import net.milkbowl.vault.economy.Economy
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.configuration.file.YamlConfiguration
@@ -50,6 +51,9 @@ class WarPlus : JavaPlugin {
     private val commandHandler = CommandHandler()
     private val usr = UpdateScoreboardRunnable(this)
     var loaded = AtomicBoolean()
+        private set
+    var economy: Economy? = null
+        private set
 
     constructor() : super()
 
@@ -87,6 +91,7 @@ class WarPlus : JavaPlugin {
         warzoneManager.loadWarzones()
         databaseManager.createTables()
         setupRunnables()
+        setupEconomy()
         loaded.set(true)
     }
 
@@ -119,5 +124,19 @@ class WarPlus : JavaPlugin {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<String>): Boolean {
         val warCommand = commandHandler.getCommand(this, sender, args) ?: return false
         return warCommand.handle()
+    }
+
+    private fun setupEconomy() {
+        if (server.pluginManager.getPlugin("Vault") == null) {
+            logger.info("Vault not found, economy rewards disabled")
+            return
+        }
+        val e = server.servicesManager.getRegistration(Economy::class.java)
+        if (e != null) {
+            economy = e.provider
+            logger.info("Vault found, economy rewards enabled")
+        } else {
+            logger.info("Vault found, but no economy plugin was detected. Economy rewards will be disabled")
+        }
     }
 }

@@ -39,6 +39,8 @@ import org.bukkit.event.inventory.InventoryAction
 import org.bukkit.util.Vector
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.math.max
+import kotlin.math.sqrt
 
 enum class WarzoneState {
     IDLING,
@@ -63,21 +65,13 @@ class Warzone(
 
     fun addTeam(team: WarTeam) = teams.put(team.kind, team)
 
-    fun minPlayers(): Int =
-        teams.values.fold(0) { acc, team ->
-            acc + team.settings.get(TeamConfigType.MIN_PLAYERS, teamSettings.get(TeamConfigType.MIN_PLAYERS))
-        }
+    fun minPlayers(): Int = teams.values.sumBy { it.settings.get(TeamConfigType.MIN_PLAYERS) }
 
-    fun maxPlayers(): Int =
-        teams.values.fold(0) { acc, team ->
-            acc + team.settings.get(TeamConfigType.MAX_PLAYERS, teamSettings.get(TeamConfigType.MAX_PLAYERS))
-        }
+    fun maxPlayers(): Int = teams.values.sumBy { it.settings.get(TeamConfigType.MAX_PLAYERS) }
 
     fun contains(location: Location): Boolean = region.contains(location)
 
-    fun numPlayers(): Int = teams.values.fold(0) { acc, team ->
-        acc + team.size()
-    }
+    fun numPlayers(): Int = teams.values.sumBy { it.size() }
 
     private fun canStart(): Boolean {
         val sufficientTeams = teams.values.map { team ->
@@ -317,8 +311,19 @@ class Warzone(
         broadcast("Score cap reached. Game is over! Winning teams: ${winningTeams.joinToString()}")
         for ((_, team) in teams) {
             val won = team in winningTeams
+            val econReward = getEconReward(team.settings.get(TeamConfigType.ECON_REWARD))
             for (player in team.players.toList()) {
                 removePlayer(player, team)
+            }
+            if (won) {
+                plugin.economy?.apply {
+                    team.players.toList().forEach {
+                        val response = depositPlayer(it, econReward)
+                        if (response.transactionSuccess()) {
+                            plugin.logger.warning("Failed to reward ${it.name}: ${response.errorMessage}")
+                        }
+                    }
+                }
             }
         }
         restoreVolume()
@@ -466,5 +471,14 @@ class Warzone(
         objectives.values.forEach {
             it.reset()
         }
+    }
+
+    private fun getEconReward(base: Double): Double {
+        val totalPlayers = numPlayers()
+        val maxCapacity = maxPlayers()
+        if (totalPlayers < 2) {
+            return 0.0
+        }
+        return max(0.0, base + (base * (totalPlayers - 2) / (sqrt(maxCapacity.toDouble()) * 2)))
     }
 }

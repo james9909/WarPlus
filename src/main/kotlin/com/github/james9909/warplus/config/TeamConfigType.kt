@@ -9,5 +9,6 @@ class TeamConfigType {
         val MAX_PLAYERS = integerKey("max-players", 20)
         val MAX_SCORE = integerKey("max-score", 2)
         val SPAWN_STYLE = enumKey("spawn-style", SpawnStyle.SMALL)
+        val ECON_REWARD = doubleKey("econ-reward", 5.0)
     }
 }

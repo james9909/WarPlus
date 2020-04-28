@@ -36,6 +36,7 @@ repositories {
     maven { url = "https://oss.sonatype.org/content/repositories/snapshots" }
     maven { url = "http://maven.sk89q.com/repo/" }
     maven { url = "https://dl.bintray.com/michaelbull/maven" }
+    maven { url = "https://jitpack.io" }
 }
 
 dependencies {
@@ -44,6 +45,7 @@ dependencies {
     compile "org.xerial:sqlite-jdbc:3.7.2"
     compileOnly "com.sk89q.worldedit:worldedit-bukkit:7.0.0-SNAPSHOT"
     compileOnly "org.spigotmc:spigot-api:1.13.2-R0.1-SNAPSHOT"
+    compileOnly "com.github.MilkBowl:VaultAPI:1.7"
     testCompile "org.junit.jupiter:junit-jupiter:5.4.2"
     testCompile "com.github.seeseemelk:MockBukkit-v1.13:0.2.0"
 }
