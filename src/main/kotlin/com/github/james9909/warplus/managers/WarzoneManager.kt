@@ -38,6 +38,7 @@ class WarzoneManager(val plugin: WarPlus) {
             when (val result = loadWarzone(name, YamlConfiguration.loadConfiguration(it))) {
                 is Ok -> {
                     warzones[name.toLowerCase()] = result.value
+                    result.value.restoreVolume()
                     plugin.logger.info("Loaded zone $name")
                 }
                 is Err -> plugin.logger.warning("Failed to load warzone $name: ${result.error}")
