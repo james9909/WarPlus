@@ -49,7 +49,7 @@ class WarPlus : JavaPlugin {
     val playerManager = PlayerManager(this)
     private val databaseManager = DatabaseManager(this, "jdbc:sqlite:$dataFolder/war.db")
     private val commandHandler = CommandHandler()
-    private val usr = UpdateScoreboardRunnable(this)
+    private var usr = UpdateScoreboardRunnable(this)
     var loaded = AtomicBoolean()
         private set
     var economy: Economy? = null
@@ -112,6 +112,7 @@ class WarPlus : JavaPlugin {
 
     private fun cancelRunnables() {
         usr.cancel()
+        usr = UpdateScoreboardRunnable(this)
     }
 
     private fun setupListeners() {

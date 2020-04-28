@@ -21,24 +21,31 @@ class BlockListener(val plugin: WarPlus) : Listener {
             return
         }
 
-        val warzone = playerInfo.team.warzone
-        if (warzone.isSpawnBlock(block)) {
+        val playerZone = playerInfo.team.warzone
+        val targetZone = plugin.warzoneManager.getWarzoneByLocation(block.location)
+        if (playerZone != targetZone || playerZone.isSpawnBlock(block)) {
+            // In-game players cannot break blocks outside of their warzone or spawn blocks
             event.isCancelled = true
             return
         }
-        event.isCancelled = warzone.onBlockBreak(player, block)
+        event.isCancelled = playerZone.onBlockBreak(player, block)
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onBlockPlace(event: BlockPlaceEvent) {
-        val block = event.block
-        val warzone = plugin.warzoneManager.getWarzoneByLocation(block.location) ?: return
-        if (warzone.isSpawnBlock(block)) {
+        val player = event.player
+        val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
+        if (playerInfo.inSpawn) {
             event.isCancelled = true
             return
         }
-        val player = event.player
-        plugin.playerManager.getPlayerInfo(player) ?: return
+
+        val block = event.block
+        val warzone = plugin.warzoneManager.getWarzoneByLocation(block.location)
+        if (warzone == null || warzone != playerInfo.team.warzone || warzone.isSpawnBlock(block)) {
+            event.isCancelled = true
+            return
+        }
         event.isCancelled = warzone.onBlockPlace(player, block)
     }
 

@@ -30,7 +30,7 @@ class WarScoreboard(val player: Player, private val zone: Warzone) {
             val scoreboardTeam = scoreboard.registerNewTeam(team.getScoreboardName())
             scoreboardTeam.color = team.kind.chatColor
             scoreboardTeam.setCanSeeFriendlyInvisibles(true)
-            scoreboardTeam.setAllowFriendlyFire(false)
+            scoreboardTeam.setAllowFriendlyFire(true) // Enable tnt friendly fire
             team.players.forEach {
                 scoreboardTeam.addEntry(it.name)
             }

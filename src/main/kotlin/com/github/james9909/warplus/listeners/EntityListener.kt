@@ -30,6 +30,7 @@ class EntityListener(val plugin: WarPlus) : Listener {
             return
         }
 
+        var canFriendlyFire = false // Enable certain damage sources to friendly fire
         val attacker = if (damager is Projectile) {
             when (damager.shooter) {
                 is Player -> damager.shooter
@@ -38,13 +39,14 @@ class EntityListener(val plugin: WarPlus) : Listener {
             }
         } else if (damager is TNTPrimed && damager.source is Player) {
             // Attacked by another player's TNT
+            canFriendlyFire = true
             damager.source
         } else {
             event.damager
         }
 
         when (attacker) {
-            is Player -> handlePvP(event, attacker, defender)
+            is Player -> handlePvP(event, attacker, defender, canFriendlyFire)
             is LivingEntity -> handlePvE(event, attacker, defender)
             null -> handleNaturalDamage(event, defender)
         }
@@ -68,7 +70,7 @@ class EntityListener(val plugin: WarPlus) : Listener {
         defenderInfo.team.warzone.handleMobDeath(defender, attacker)
     }
 
-    private fun handlePvP(event: EntityDamageByEntityEvent, attacker: Player, defender: Player) {
+    private fun handlePvP(event: EntityDamageByEntityEvent, attacker: Player, defender: Player, canFriendlyFire: Boolean) {
         val attackerInfo = plugin.playerManager.getPlayerInfo(attacker)
         val defenderInfo = plugin.playerManager.getPlayerInfo(defender)
 
@@ -85,14 +87,13 @@ class EntityListener(val plugin: WarPlus) : Listener {
         }
 
         // At this point, both players are in a warzone
-
         if (attackerInfo.team.warzone != defenderInfo.team.warzone) {
             // Players in different warzones cannot damage each other
             event.isCancelled = true
             return
         }
 
-        if (attackerInfo.team.kind == defenderInfo.team.kind) {
+        if (attackerInfo.team.kind == defenderInfo.team.kind && !canFriendlyFire) {
             // Cancel friendly fire
             event.isCancelled = true
             return
@@ -102,6 +103,8 @@ class EntityListener(val plugin: WarPlus) : Listener {
             return
         }
 
+        // Player is supposed to die, but cancel the event and respawn them
+        event.isCancelled = true
         if (attacker == defender) {
             defenderInfo.team.warzone.handleSuicide(defender)
         } else {
@@ -111,8 +114,20 @@ class EntityListener(val plugin: WarPlus) : Listener {
 
     @EventHandler
     fun onEntityExplode(event: EntityExplodeEvent) {
-        plugin.warzoneManager.getWarzoneByLocation(event.location) ?: return
-        event.isCancelled = true
+        val warzone = plugin.warzoneManager.getWarzoneByLocation(event.location) ?: return
+
+        val originalSize = event.blockList().size
+        event.blockList().removeIf { block ->
+            // Prevent blocks that are important to the warzone from being blown up
+            warzone.isSpawnBlock(block) || warzone.objectives.values.any { objective ->
+                objective.handleBlockBreak(null, block)
+            }
+        }
+
+        // Change explosion yield after explosion protection
+        val newSize = event.blockList().size
+        val scale = (originalSize - newSize).toFloat() / originalSize
+        event.yield *= scale
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
