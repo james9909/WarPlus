@@ -98,7 +98,9 @@ class Warzone(
                 respawnPlayer(player)
             }
         }
-        removeEntities()
+        if (warzoneSettings.get(WarzoneConfigType.REMOVE_ENTITIES_ON_RESET)) {
+            removeEntities()
+        }
         resetObjectives()
     }
 
@@ -109,7 +111,9 @@ class Warzone(
                 respawnPlayer(player)
             }
         }
-        removeEntities()
+        if (warzoneSettings.get(WarzoneConfigType.REMOVE_ENTITIES_ON_RESET)) {
+            removeEntities()
+        }
         resetObjectives()
     }
 
