@@ -39,6 +39,7 @@ import org.bukkit.event.inventory.InventoryAction
 import org.bukkit.util.Vector
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.sqrt
 
@@ -97,6 +98,7 @@ class Warzone(
                 respawnPlayer(player)
             }
         }
+        removeEntities()
         resetObjectives()
     }
 
@@ -107,6 +109,7 @@ class Warzone(
                 respawnPlayer(player)
             }
         }
+        removeEntities()
         resetObjectives()
     }
 
@@ -480,5 +483,28 @@ class Warzone(
             return 0.0
         }
         return max(0.0, base + (base * (totalPlayers - 2) / (sqrt(maxCapacity.toDouble()) * 2)))
+    }
+
+    private fun removeEntities() {
+        val minPoint = region.getMinimumPoint()
+        val maxPoint = region.getMaximumPoint()
+        val midPoint = Triple(
+            ceil((maxPoint.first + minPoint.first) / 2.0),
+            ceil((maxPoint.second + minPoint.second) / 2.0),
+            ceil((maxPoint.third + minPoint.third) / 2.0)
+        )
+        val minLoc = Location(region.world, midPoint.first, midPoint.second, midPoint.third)
+        minLoc.world?.getNearbyEntities(
+            minLoc,
+            maxPoint.first - midPoint.first,
+            maxPoint.second - midPoint.second,
+            maxPoint.third - midPoint.third
+        )?.apply {
+            forEach {
+                if (it !is Player && region.contains(it.location)) {
+                    it.remove()
+                }
+            }
+        }
     }
 }
