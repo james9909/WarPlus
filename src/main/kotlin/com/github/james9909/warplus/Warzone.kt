@@ -181,7 +181,6 @@ class Warzone(
     fun respawnPlayer(player: Player) {
         val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
         resetPlayer(player)
-        Bukkit.getScheduler().runTaskLater(plugin, { -> player.velocity = Vector() }, 1)
         Bukkit.getScheduler().runTaskLater(plugin, { -> player.fireTicks = 0 }, 1)
         Bukkit.getScheduler().runTaskLater(plugin, { -> player.fireTicks = 0 }, 2)
         Bukkit.getScheduler().runTaskLater(plugin, { -> player.fireTicks = 0 }, 3)
@@ -198,6 +197,7 @@ class Warzone(
         // We want players to be looking straight ahead
         spawnLocation.pitch = 0F
 
+        player.velocity = Vector()
         player.teleport(spawnLocation)
         playerInfo.inSpawn = true
     }

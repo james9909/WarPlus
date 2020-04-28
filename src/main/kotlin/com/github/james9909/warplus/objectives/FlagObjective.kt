@@ -79,7 +79,15 @@ class FlagObjective(
         return false
     }
 
-    override fun handleBlockPlace(player: Player, block: Block): Boolean = flagThieves.containsKey(player)
+    override fun handleBlockPlace(player: Player, block: Block): Boolean {
+        if (flagThieves.containsKey(player)) {
+            return true
+        }
+        if (flagStructures.any { it.contains(block.location) }) {
+            return true
+        }
+        return false
+    }
 
     override fun handleItemPickup(player: Player, item: Item): Boolean = flagThieves.containsKey(player)
 
