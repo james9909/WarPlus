@@ -8,5 +8,6 @@ class WarzoneConfigType {
         val MIN_TEAMS = integerKey("min-teams", 2)
         val DEATH_MESSAGES = booleanKey("death-messages", true)
         val MAX_HEALTH = doubleKey("max-health", 20.0)
+        val REMOVE_ENTITIES_ON_RESET = booleanKey("remove-entities-on-reset", true)
     }
 }
