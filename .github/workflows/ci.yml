@@ -20,5 +20,5 @@ jobs:
       run: chmod +x ktlint
     - name: Build and test with Gradle
       run: ./gradlew test build
-    - name: Lint kotlin files
+    - name: Lint Kotlin files
       run: ./ktlint "src/**/*.kt"
