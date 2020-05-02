@@ -1,4 +1,4 @@
-package com.github.james9909.warplus.structure
+package com.github.james9909.warplus.structures
 
 import com.github.james9909.warplus.TeamKind
 import com.github.james9909.warplus.WarPlus

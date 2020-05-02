@@ -3,8 +3,7 @@ package com.github.james9909.warplus
 import com.github.james9909.warplus.config.CascadingConfig
 import com.github.james9909.warplus.config.TeamConfigType
 import com.github.james9909.warplus.extensions.format
-import com.github.james9909.warplus.extensions.get
-import com.github.james9909.warplus.structure.TeamSpawnStructure
+import com.github.james9909.warplus.structures.TeamSpawnStructure
 import com.github.james9909.warplus.util.WarScoreboard
 import org.bukkit.ChatColor
 import org.bukkit.Material

@@ -4,7 +4,7 @@ import com.github.james9909.warplus.TeamKind
 import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.command.AbstractCommand
 import com.github.james9909.warplus.extensions.blockLocation
-import com.github.james9909.warplus.structure.FlagStructure
+import com.github.james9909.warplus.structures.FlagStructure
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 

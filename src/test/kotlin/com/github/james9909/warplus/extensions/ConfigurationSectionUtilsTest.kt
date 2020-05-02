@@ -4,7 +4,7 @@ import be.seeseemelk.mockbukkit.MockBukkit
 import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.config.TeamConfigType
 import com.github.james9909.warplus.config.WarzoneConfigType
-import com.github.james9909.warplus.structure.SpawnStyle
+import com.github.james9909.warplus.structures.SpawnStyle
 import org.bukkit.Material
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.inventory.meta.LeatherArmorMeta

@@ -7,7 +7,7 @@ import com.github.james9909.warplus.config.TeamConfigType
 import com.github.james9909.warplus.extensions.clearPotionEffects
 import com.github.james9909.warplus.extensions.format
 import com.github.james9909.warplus.extensions.toLocation
-import com.github.james9909.warplus.structure.FlagStructure
+import com.github.james9909.warplus.structures.FlagStructure
 import org.bukkit.Location
 import org.bukkit.block.Block
 import org.bukkit.configuration.ConfigurationSection
@@ -45,24 +45,20 @@ fun createFlagObjective(plugin: WarPlus, warzone: Warzone, config: Configuration
 class FlagObjective(
     private val plugin: WarPlus,
     private val warzone: Warzone,
-    val flagStructures: MutableList<FlagStructure>
+    val flags: MutableList<FlagStructure>
 ) : AbstractObjective(plugin, warzone) {
     override val name: String = "flags"
 
     private val flagThieves = HashMap<Player, FlagStructure>()
 
-    fun addFlag(flag: FlagStructure) {
-        flagStructures.add(flag)
-    }
+    fun addFlag(flag: FlagStructure) = flags.add(flag)
 
-    fun removeFlag(flag: FlagStructure) = flagStructures.remove(flag)
+    fun removeFlag(flag: FlagStructure) = flags.remove(flag)
 
-    fun getFlagAtLocation(location: Location): FlagStructure? {
-        return flagStructures.firstOrNull { it.contains(location) }
-    }
+    fun getFlagAtLocation(location: Location): FlagStructure? = flags.firstOrNull { it.contains(location) }
 
     override fun handleBlockBreak(player: Player?, block: Block): Boolean {
-        val flagStructure = flagStructures.find {
+        val flagStructure = flags.find {
             it.contains(block.location)
         } ?: return false
         if (player == null) {
@@ -83,7 +79,7 @@ class FlagObjective(
         if (flagThieves.containsKey(player)) {
             return true
         }
-        if (flagStructures.any { it.contains(block.location) }) {
+        if (flags.any { it.contains(block.location) }) {
             return true
         }
         return false
@@ -151,20 +147,16 @@ class FlagObjective(
     }
 
     override fun saveConfig(config: ConfigurationSection) {
-        val flags: MutableList<Map<String, String>> = mutableListOf()
-        flagStructures.forEach {
-            flags.add(
-                mapOf(
-                    "origin" to it.origin.format(false),
-                    "team" to it.kind.toString().toLowerCase()
-                )
+        config.set("locations", flags.map {
+            mapOf(
+                "origin" to it.origin.format(),
+                "team" to it.kind.toString().toLowerCase()
             )
-        }
-        config.set("locations", flags)
+        })
     }
 
     override fun reset() {
-        flagStructures.forEach {
+        flags.forEach {
             it.build()
         }
         flagThieves.clear()

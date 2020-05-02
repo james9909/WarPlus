@@ -15,9 +15,10 @@ import com.github.james9909.warplus.extensions.getLocation
 import com.github.james9909.warplus.extensions.getOrCreateSection
 import com.github.james9909.warplus.extensions.toLocation
 import com.github.james9909.warplus.objectives.createFlagObjective
+import com.github.james9909.warplus.objectives.createMonumentObjective
 import com.github.james9909.warplus.region.Region
-import com.github.james9909.warplus.structure.SpawnStyle
-import com.github.james9909.warplus.structure.TeamSpawnStructure
+import com.github.james9909.warplus.structures.SpawnStyle
+import com.github.james9909.warplus.structures.TeamSpawnStructure
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
@@ -169,6 +170,9 @@ class WarzoneManager(val plugin: WarPlus) {
             val objective = when (objectiveName) {
                 "flags" -> {
                     createFlagObjective(plugin, warzone, objectiveSection)
+                }
+                "monuments" -> {
+                    createMonumentObjective(plugin, warzone, objectiveSection)
                 }
                 else -> null
             }

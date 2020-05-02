@@ -25,7 +25,11 @@ teams:
 objectives:
   flags:
     locations:
-    - origin: flat:60.0,50.0,40.0
+    - origin: flat:60.0,50.0,40.0,0.0,0.0
       team: navy
-    - origin: flat:40.0,50.0,60.0
+    - origin: flat:40.0,50.0,60.0,0.0,0.0
       team: navy
+  monuments:
+    locations:
+    - name: Monument1
+      origin: flat:10.0,11.0,12.0,0.0,0.0

@@ -6,9 +6,8 @@ import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.command.AbstractCommand
 import com.github.james9909.warplus.config.TeamConfigType
 import com.github.james9909.warplus.extensions.blockLocation
-import com.github.james9909.warplus.extensions.get
-import com.github.james9909.warplus.structure.SpawnStyle
-import com.github.james9909.warplus.structure.TeamSpawnStructure
+import com.github.james9909.warplus.structures.SpawnStyle
+import com.github.james9909.warplus.structures.TeamSpawnStructure
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 

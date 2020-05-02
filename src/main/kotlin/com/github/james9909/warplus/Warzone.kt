@@ -7,8 +7,10 @@ import com.github.james9909.warplus.extensions.clearPotionEffects
 import com.github.james9909.warplus.extensions.format
 import com.github.james9909.warplus.objectives.AbstractObjective
 import com.github.james9909.warplus.objectives.FlagObjective
+import com.github.james9909.warplus.objectives.MonumentObjective
 import com.github.james9909.warplus.region.Region
-import com.github.james9909.warplus.structure.FlagStructure
+import com.github.james9909.warplus.structures.FlagStructure
+import com.github.james9909.warplus.structures.MonumentStructure
 import com.github.james9909.warplus.util.Message
 import com.github.james9909.warplus.util.PlayerState
 import com.github.james9909.warplus.util.copyRegion
@@ -456,12 +458,12 @@ class Warzone(
     }
 
     fun getFlagAtLocation(location: Location): FlagStructure? {
-        val objective = objectives["flag"] as? FlagObjective ?: return null
+        val objective = objectives["flags"] as? FlagObjective ?: return null
         return objective.getFlagAtLocation(location)
     }
 
     fun addFlag(flag: FlagStructure) {
-        val objective = objectives["flag"] as? FlagObjective ?: run {
+        val objective = objectives["flags"] as? FlagObjective ?: run {
             val temp = FlagObjective(plugin, this, mutableListOf())
             objectives[temp.name] = temp
             temp
@@ -470,8 +472,27 @@ class Warzone(
     }
 
     fun removeFlag(flag: FlagStructure): Boolean {
-        val objective = objectives["flag"] as? FlagObjective ?: return false
+        val objective = objectives["flags"] as? FlagObjective ?: return false
         return objective.removeFlag(flag)
+    }
+
+    fun getMonumentAtLocation(location: Location): MonumentStructure? {
+        val objective = objectives["monuments"] as? MonumentObjective ?: return null
+        return objective.getMonumentAtLocation(location)
+    }
+
+    fun addMonument(monument: MonumentStructure) {
+        val objective = objectives["monuments"] as? MonumentObjective ?: run {
+            val temp = MonumentObjective(plugin, this, mutableListOf())
+            objectives[temp.name] = temp
+            temp
+        }
+        objective.addMonument(monument)
+    }
+
+    fun removeMonument(monument: MonumentStructure): Boolean {
+        val objective = objectives["monuments"] as? MonumentObjective ?: return false
+        return objective.removeMonument(monument)
     }
 
     private fun resetObjectives() {

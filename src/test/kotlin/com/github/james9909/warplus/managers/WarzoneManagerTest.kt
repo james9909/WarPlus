@@ -6,7 +6,8 @@ import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.config.TeamConfigType
 import com.github.james9909.warplus.config.WarzoneConfigType
 import com.github.james9909.warplus.objectives.FlagObjective
-import com.github.james9909.warplus.structure.SpawnStyle
+import com.github.james9909.warplus.objectives.MonumentObjective
+import com.github.james9909.warplus.structures.SpawnStyle
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.unwrap
 import org.bukkit.configuration.file.YamlConfiguration
@@ -69,21 +70,31 @@ class WarzoneManagerTest {
         assert(warzone.minPlayers() == 2)
         assert(warzone.maxPlayers() == 40)
 
-        assert(warzone.objectives.size == 1)
+        assert(warzone.objectives.size == 2)
         val flagObjective = warzone.objectives["flags"] as? FlagObjective
         require(flagObjective != null)
-        assert(flagObjective.flagStructures.size == 2)
-        flagObjective.flagStructures[0].apply {
+        assert(flagObjective.flags.size == 2)
+        flagObjective.flags[0].apply {
             assert(kind == TeamKind.NAVY)
             assert(origin.x == 60.0)
             assert(origin.y == 50.0)
             assert(origin.z == 40.0)
         }
-        flagObjective.flagStructures[1].apply {
+        flagObjective.flags[1].apply {
             assert(kind == TeamKind.NAVY)
             assert(origin.x == 40.0)
             assert(origin.y == 50.0)
             assert(origin.z == 60.0)
+        }
+
+        val monumentObjective = warzone.objectives["monuments"] as? MonumentObjective
+        require(monumentObjective != null)
+        assert(monumentObjective.monuments.size == 1)
+        monumentObjective.monuments[0].apply {
+            assert(name == "Monument1")
+            assert(origin.x == 10.0)
+            assert(origin.y == 11.0)
+            assert(origin.z == 12.0)
         }
     }
 
