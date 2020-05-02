@@ -1,5 +1,6 @@
 package com.github.james9909.warplus.structures
 
+import com.github.james9909.warplus.TeamKind
 import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.util.Orientation
 import org.bukkit.Location
@@ -19,9 +20,10 @@ class MonumentStructure(plugin: WarPlus, origin: Location, val name: String) : A
             .getRelative(BlockFace.UP, 3)
         Pair(topLeft.location, bottomRight.location)
     }
-    val monumentBlock by lazy {
-        origin.block.getRelative(BlockFace.UP, 2)
+    val blockLocation by lazy {
+        origin.block.getRelative(BlockFace.UP, 2).location
     }
+    var owner: TeamKind? = null
 
     override fun getStructure(): Array<Array<Array<Material>>> {
         val obsidian = Material.OBSIDIAN

@@ -65,6 +65,9 @@ class FlagObjective(
             return true
         }
         val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return true
+        if (playerInfo.team.warzone != warzone) {
+            return true
+        }
         if (playerInfo.team.kind == flagStructure.kind ||
             block != flagStructure.flagBlock ||
             flagThieves.containsKey(player)

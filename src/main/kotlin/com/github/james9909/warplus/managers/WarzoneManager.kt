@@ -182,7 +182,6 @@ class WarzoneManager(val plugin: WarPlus) {
                 plugin.logger.warning("Could not parse objective: $objectiveName")
             }
         }
-
         return Ok(warzone)
     }
 
