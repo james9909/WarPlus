@@ -477,6 +477,11 @@ class Warzone(
         return objective.removeFlag(flag)
     }
 
+    fun getMonumentByName(name: String): MonumentStructure? {
+        val objective = objectives["monuments"] as? MonumentObjective ?: return null
+        return objective.monuments.firstOrNull { it.name.equals(name, true) }
+    }
+
     fun getMonumentAtLocation(location: Location): MonumentStructure? {
         val objective = objectives["monuments"] as? MonumentObjective ?: return null
         return objective.getMonumentAtLocation(location)
