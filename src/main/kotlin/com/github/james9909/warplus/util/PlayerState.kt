@@ -48,7 +48,7 @@ data class PlayerState(
         player.level = level
         player.isFlying = flying
 
-        player.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.baseValue = maxHealth
+        player.setMaxHealth(maxHealth)
 
         if (inventoryContents != null) {
             player.inventory.contents = inventoryContents

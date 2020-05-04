@@ -2,13 +2,17 @@ package com.github.james9909.warplus.objectives
 
 import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.Warzone
+import com.github.james9909.warplus.config.WarzoneConfigType
 import com.github.james9909.warplus.extensions.format
 import com.github.james9909.warplus.extensions.toLocation
 import com.github.james9909.warplus.structures.MonumentStructure
 import org.bukkit.Location
+import org.bukkit.attribute.Attribute
 import org.bukkit.block.Block
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Player
+import kotlin.math.min
+import kotlin.random.Random
 
 fun createMonumentObjective(plugin: WarPlus, warzone: Warzone, config: ConfigurationSection): MonumentObjective? {
     val monuments: MutableList<MonumentStructure> = mutableListOf()
@@ -65,6 +69,23 @@ class MonumentObjective(
         warzone.broadcast("Team ${playerInfo.team} has captured monument ${monument.name}!")
         monument.owner = playerInfo.team.kind
         return false
+    }
+
+    override fun handlePlayerMove(player: Player, from: Location, to: Location) {
+        val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
+        if (playerInfo.team.warzone != warzone) {
+            return
+        }
+        monuments.firstOrNull { it.owner == playerInfo.team.kind && it.origin.distanceSquared(to) < 36 } ?: return
+        val maxHealth = player.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.baseValue ?: warzone.warzoneSettings.get(
+            WarzoneConfigType.MAX_HEALTH
+        )
+        val currHealth = player.health
+        if (currHealth < maxHealth && Random.Default.nextDouble() < warzone.warzoneSettings.get(WarzoneConfigType.MONUMENT_HEAL_CHANCE)) {
+            val newHealth = min(maxHealth, currHealth + warzone.warzoneSettings.get(WarzoneConfigType.MONUMENT_HEAL))
+            player.health = newHealth
+            plugin.playerManager.sendMessage(player, "Your team's monument buffs you!")
+        }
     }
 
     override fun saveConfig(config: ConfigurationSection) {
