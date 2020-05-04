@@ -1,6 +1,5 @@
 package com.github.james9909.warplus.extensions
 
-import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
 import org.bukkit.potion.PotionEffect
 

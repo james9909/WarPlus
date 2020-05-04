@@ -248,6 +248,10 @@ class Warzone(
     }
 
     fun saveVolume(): Result<Unit, WarError> {
+        if (plugin.server.pluginManager.getPlugin("WorldEdit") == null) {
+            return Err(WorldEditError("WorldEdit is not loaded"))
+        }
+
         val (minX, minY, minZ) = region.getMinimumPoint()
         val (maxX, maxY, maxZ) = region.getMaximumPoint()
         val region = CuboidRegion(
@@ -264,6 +268,10 @@ class Warzone(
     }
 
     fun restoreVolume(): Result<Unit, WarError> {
+        if (plugin.server.pluginManager.getPlugin("WorldEdit") == null) {
+            return Err(WorldEditError("WorldEdit is not loaded"))
+        }
+
         val clipboard = loadSchematic(volumePath)
         if (clipboard is Err) {
             return clipboard

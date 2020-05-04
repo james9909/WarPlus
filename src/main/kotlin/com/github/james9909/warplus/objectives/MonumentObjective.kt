@@ -100,6 +100,7 @@ class MonumentObjective(
     override fun reset() {
         monuments.forEach {
             it.build()
+            println("Building monument ${it.name}")
             it.owner = null
         }
     }

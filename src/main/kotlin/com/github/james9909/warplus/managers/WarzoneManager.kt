@@ -39,7 +39,6 @@ class WarzoneManager(val plugin: WarPlus) {
             when (val result = loadWarzone(name, YamlConfiguration.loadConfiguration(it))) {
                 is Ok -> {
                     warzones[name.toLowerCase()] = result.value
-                    result.value.restoreVolume()
                     plugin.logger.info("Loaded zone $name")
                 }
                 is Err -> plugin.logger.warning("Failed to load warzone $name: ${result.error}")
@@ -105,6 +104,7 @@ class WarzoneManager(val plugin: WarPlus) {
                 )
             )
         )
+        warzone.restoreVolume()
 
         // Get teams
         val teamNames = teamsSection.getKeys(false)
@@ -115,7 +115,7 @@ class WarzoneManager(val plugin: WarPlus) {
             val teamSection = teamsSection.getConfigurationSection(teamName) ?: continue
             try {
                 for (spawnLocation in teamSection.getStringList("spawns")) {
-                    spawns.add(
+                    val spawn =
                         TeamSpawnStructure(
                             plugin,
                             spawnLocation.toLocation(),
@@ -125,7 +125,7 @@ class WarzoneManager(val plugin: WarPlus) {
                                 ?: "SMALL").toUpperCase()
                             )
                         )
-                    )
+                    spawns.add(spawn)
                 }
             } catch (e: LocationFormatException) {
                 return Err(
@@ -160,6 +160,7 @@ class WarzoneManager(val plugin: WarPlus) {
                 warzone = warzone,
                 settings = CascadingConfig(overloadedTeamSettings, warzone.teamSettings)
             )
+            team.resetSpawns()
             teams.add(team)
             warzone.addTeam(team)
         }
@@ -177,6 +178,7 @@ class WarzoneManager(val plugin: WarPlus) {
                 else -> null
             }
             if (objective != null) {
+                objective.reset()
                 warzone.objectives[objective.name] = objective
             } else {
                 plugin.logger.warning("Could not parse objective: $objectiveName")
