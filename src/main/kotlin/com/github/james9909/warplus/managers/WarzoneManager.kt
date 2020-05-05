@@ -160,7 +160,9 @@ class WarzoneManager(val plugin: WarPlus) {
                 warzone = warzone,
                 settings = CascadingConfig(overloadedTeamSettings, warzone.teamSettings)
             )
-            team.resetSpawns()
+            if (plugin.hasPlugin("WorldEdit")) {
+                team.resetSpawns()
+            }
             teams.add(team)
             warzone.addTeam(team)
         }
@@ -178,7 +180,9 @@ class WarzoneManager(val plugin: WarPlus) {
                 else -> null
             }
             if (objective != null) {
-                objective.reset()
+                if (plugin.hasPlugin("WorldEdit")) {
+                    objective.reset()
+                }
                 warzone.objectives[objective.name] = objective
             } else {
                 plugin.logger.warning("Could not parse objective: $objectiveName")

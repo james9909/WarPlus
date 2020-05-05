@@ -106,6 +106,8 @@ class WarPlus : JavaPlugin {
         loaded.set(false)
     }
 
+    fun hasPlugin(plugin: String): Boolean = server.pluginManager.isPluginEnabled(plugin)
+
     private fun setupRunnables() {
         usr.runTaskTimerAsynchronously(this, 0, 10)
     }

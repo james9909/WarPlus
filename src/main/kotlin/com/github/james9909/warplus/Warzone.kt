@@ -248,7 +248,7 @@ class Warzone(
     }
 
     fun saveVolume(): Result<Unit, WarError> {
-        if (plugin.server.pluginManager.getPlugin("WorldEdit") == null) {
+        if (!plugin.hasPlugin("WorldEdit")) {
             return Err(WorldEditError("WorldEdit is not loaded"))
         }
 
@@ -268,7 +268,7 @@ class Warzone(
     }
 
     fun restoreVolume(): Result<Unit, WarError> {
-        if (plugin.server.pluginManager.getPlugin("WorldEdit") == null) {
+        if (!plugin.hasPlugin("WorldEdit")) {
             return Err(WorldEditError("WorldEdit is not loaded"))
         }
 
