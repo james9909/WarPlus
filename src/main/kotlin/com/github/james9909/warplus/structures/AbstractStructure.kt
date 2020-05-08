@@ -1,7 +1,8 @@
-package com.github.james9909.warplus.structure
+package com.github.james9909.warplus.structures
 
 import com.github.james9909.warplus.WarError
 import com.github.james9909.warplus.WarPlus
+import com.github.james9909.warplus.WorldEditError
 import com.github.james9909.warplus.region.Region
 import com.github.james9909.warplus.util.Orientation
 import com.github.james9909.warplus.util.copyRegion
@@ -46,6 +47,9 @@ abstract class AbstractStructure(val plugin: WarPlus, val origin: Location) {
     }
 
     fun saveVolume(): Result<Unit, WarError> {
+        if (plugin.server.pluginManager.getPlugin("WorldEdit") == null) {
+            return Err(WorldEditError("WorldEdit is not loaded"))
+        }
         val (pos1, pos2) = corners
         val region = CuboidRegion(
             BukkitAdapter.adapt(pos1.world ?: plugin.server.worlds[0]),
@@ -61,6 +65,10 @@ abstract class AbstractStructure(val plugin: WarPlus, val origin: Location) {
     }
 
     fun restoreVolume(): Result<Unit, WarError> {
+        if (plugin.server.pluginManager.getPlugin("WorldEdit") == null) {
+            return Err(WorldEditError("WorldEdit is not loaded"))
+        }
+
         val clipboard = loadSchematic(getVolumePath())
         if (clipboard is Err) {
             return clipboard

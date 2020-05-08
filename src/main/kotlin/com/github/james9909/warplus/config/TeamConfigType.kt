@@ -1,6 +1,6 @@
 package com.github.james9909.warplus.config
 
-import com.github.james9909.warplus.structure.SpawnStyle
+import com.github.james9909.warplus.structures.SpawnStyle
 
 class TeamConfigType {
     companion object {

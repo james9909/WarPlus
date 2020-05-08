@@ -9,5 +9,7 @@ class WarzoneConfigType {
         val DEATH_MESSAGES = booleanKey("death-messages", true)
         val MAX_HEALTH = doubleKey("max-health", 20.0)
         val REMOVE_ENTITIES_ON_RESET = booleanKey("remove-entities-on-reset", true)
+        val MONUMENT_HEAL = integerKey("monument-heal", 1)
+        val MONUMENT_HEAL_CHANCE = doubleKey("monument-heal-chance", 0.2)
     }
 }

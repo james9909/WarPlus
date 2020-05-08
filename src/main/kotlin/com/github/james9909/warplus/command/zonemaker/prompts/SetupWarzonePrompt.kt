@@ -1,18 +1,18 @@
 package com.github.james9909.warplus.command.zonemaker.prompts
 
-import com.github.james9909.warplus.WarTeam
 import com.github.james9909.warplus.TeamKind
 import com.github.james9909.warplus.WarPlus
+import com.github.james9909.warplus.WarTeam
 import com.github.james9909.warplus.Warzone
 import com.github.james9909.warplus.WarzoneState
 import com.github.james9909.warplus.config.TeamConfigType
 import com.github.james9909.warplus.extensions.blockLocation
 import com.github.james9909.warplus.extensions.color
-import com.github.james9909.warplus.extensions.get
 import com.github.james9909.warplus.extensions.isFinite
-import com.github.james9909.warplus.structure.FlagStructure
-import com.github.james9909.warplus.structure.SpawnStyle
-import com.github.james9909.warplus.structure.TeamSpawnStructure
+import com.github.james9909.warplus.structures.FlagStructure
+import com.github.james9909.warplus.structures.MonumentStructure
+import com.github.james9909.warplus.structures.SpawnStyle
+import com.github.james9909.warplus.structures.TeamSpawnStructure
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.conversations.Conversation
@@ -35,7 +35,8 @@ import org.bukkit.inventory.ItemStack
 private enum class TOOL(val display: String) {
     CORNERS("Corners"),
     SPAWN("Spawns"),
-    FLAG("Flags")
+    FLAG("Flags"),
+    MONUMENT("Monuments")
 }
 
 class SetupWarzonePrompt(val plugin: WarPlus, val player: Player, val warzone: Warzone) : Prompt,
@@ -161,6 +162,7 @@ class SetupWarzonePrompt(val plugin: WarPlus, val player: Player, val warzone: W
                 }
                 TOOL.SPAWN.display -> handleSpawn(event)
                 TOOL.FLAG.display -> handleFlag(event)
+                TOOL.MONUMENT.display -> handleMonument(event)
             }
         }
         player.sendRawMessage(getPromptText(conversation.context))
@@ -234,7 +236,12 @@ class SetupWarzonePrompt(val plugin: WarPlus, val player: Player, val warzone: W
                     return
                 }
                 val teamSpawn =
-                    TeamSpawnStructure(plugin, location.subtract(0.0, 1.0, 0.0).blockLocation(), team.kind, spawnStyle).also {
+                    TeamSpawnStructure(
+                        plugin,
+                        location.subtract(0.0, 1.0, 0.0).blockLocation(),
+                        team.kind,
+                        spawnStyle
+                    ).also {
                         it.saveVolume()
                         it.build()
                     }
@@ -278,6 +285,7 @@ class SetupWarzonePrompt(val plugin: WarPlus, val player: Player, val warzone: W
                 val flagStructure = FlagStructure(plugin, location.subtract(0.0, 1.0, 0.0).blockLocation(), team.kind)
                 flagStructure.saveVolume()
                 flagStructure.build()
+                warzone.addFlag(flagStructure)
                 warzone.saveConfig()
                 text = "Flag for team ${currTeamKind.name.toLowerCase()} created!"
             }
@@ -289,7 +297,36 @@ class SetupWarzonePrompt(val plugin: WarPlus, val player: Player, val warzone: W
                 }
                 flag.restoreVolume()
                 warzone.removeFlag(flag)
+                warzone.saveConfig()
                 text = "Flag removed!"
+            }
+            else -> {
+                // Do nothing
+            }
+        }
+    }
+
+    private fun handleMonument(event: PlayerInteractEvent) {
+        val location = player.location
+        when (event.action) {
+            Action.LEFT_CLICK_AIR, Action.LEFT_CLICK_BLOCK -> {
+                val monument = MonumentStructure(plugin, location.subtract(0.0, 1.0, 0.0).blockLocation(), "Monument1")
+                monument.saveVolume()
+                monument.build()
+                warzone.addMonument(monument)
+                warzone.saveConfig()
+                text = "Monument created! Change its name in the config."
+            }
+            Action.RIGHT_CLICK_AIR, Action.RIGHT_CLICK_BLOCK -> {
+                val monument = warzone.getMonumentAtLocation(location)
+                if (monument == null) {
+                    text = "There is no monument here"
+                    return
+                }
+                monument.restoreVolume()
+                warzone.removeMonument(monument)
+                warzone.saveConfig()
+                text = "Monument removed!"
             }
             else -> {
                 // Do nothing
@@ -301,7 +338,8 @@ class SetupWarzonePrompt(val plugin: WarPlus, val player: Player, val warzone: W
         private val TOOLS = arrayOf(
             createTool(Material.WOODEN_AXE, TOOL.CORNERS, "Set corner 1", "Set corner 2"),
             createTool(Material.WOODEN_SWORD, TOOL.SPAWN, "Add spawn", "Remove spawn"),
-            createTool(Material.WOODEN_HOE, TOOL.FLAG, "Create flag", "Remove flag")
+            createTool(Material.WOODEN_HOE, TOOL.FLAG, "Create flag", "Remove flag"),
+            createTool(Material.WOODEN_PICKAXE, TOOL.MONUMENT, "Create monument", "Remove monument")
         )
 
         private fun createTool(material: Material, name: TOOL, left: String, right: String): ItemStack {
