@@ -282,12 +282,11 @@ class SetupWarzonePrompt(val plugin: WarPlus, val player: Player, val warzone: W
                     return
                 }
 
-                val flagStructure = FlagStructure(plugin, location.subtract(0.0, 1.0, 0.0).blockLocation(), team.kind)
-                flagStructure.saveVolume()
-                flagStructure.build()
-                warzone.addFlag(flagStructure)
-                warzone.saveConfig()
-                text = "Flag for team ${currTeamKind.name.toLowerCase()} created!"
+                text = if (warzone.addFlagObjective(location.subtract(0.0, 1.0, 0.0).blockLocation(), team.kind)) {
+                    "Flag for team ${currTeamKind.name.toLowerCase()} created!"
+                } else {
+                    "Flags cannot overlap with any other structures"
+                }
             }
             Action.RIGHT_CLICK_AIR, Action.RIGHT_CLICK_BLOCK -> {
                 val flag = warzone.getFlagAtLocation(location)

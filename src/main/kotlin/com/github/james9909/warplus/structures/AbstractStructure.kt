@@ -21,7 +21,7 @@ import org.bukkit.Material
 import org.bukkit.block.BlockFace
 
 abstract class AbstractStructure(val plugin: WarPlus, val origin: Location) {
-    private val region by lazy {
+    val region by lazy {
         val (p1, p2) = corners
         Region(
             origin.world ?: plugin.server.worlds[0],

@@ -23,6 +23,19 @@ data class Region(
         (y >= getMinY() && y <= getMaxY()) &&
         (z >= getMinZ() && z <= getMaxZ())
 
+    fun overlapsWith(other: Region): Boolean {
+        val minPoint = getMinimumPoint()
+        val maxPoint = getMaximumPoint()
+        val otherMinPoint = other.getMinimumPoint()
+        val otherMaxPoint = other.getMaximumPoint()
+        return minPoint.first <= otherMaxPoint.first
+            && maxPoint.first >= otherMinPoint.first
+            && minPoint.second <= otherMaxPoint.second
+            && maxPoint.second >= otherMinPoint.second
+            && minPoint.third <= otherMaxPoint.third
+            && maxPoint.third >= otherMinPoint.third
+    }
+
     private fun getMaxX(): Int {
         return max(p1.blockX, p2.blockX)
     }

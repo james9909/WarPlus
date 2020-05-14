@@ -3,6 +3,7 @@ package com.github.james9909.warplus
 import com.github.james9909.warplus.config.CascadingConfig
 import com.github.james9909.warplus.config.TeamConfigType
 import com.github.james9909.warplus.config.WarzoneConfigType
+import com.github.james9909.warplus.extensions.blockLocation
 import com.github.james9909.warplus.extensions.clearPotionEffects
 import com.github.james9909.warplus.extensions.format
 import com.github.james9909.warplus.objectives.AbstractObjective
@@ -469,6 +470,32 @@ class Warzone(
     fun getFlagAtLocation(location: Location): FlagStructure? {
         val objective = objectives["flags"] as? FlagObjective ?: return null
         return objective.getFlagAtLocation(location)
+    }
+
+    fun addFlagObjective(location: Location, kind: TeamKind): Boolean {
+        val flagStructure = FlagStructure(plugin, location, kind)
+        teams.values.forEach { team ->
+            team.spawns.forEach { spawn ->
+                if (flagStructure.region.overlapsWith(spawn.region)) {
+                    return false
+                }
+            }
+        }
+        (objectives["flags"] as? FlagObjective)?.flags?.forEach { flag ->
+            if (flagStructure.region.overlapsWith(flag.region)) {
+                return false
+            }
+        }
+        (objectives["monuments"] as? MonumentObjective)?.monuments?.forEach { monument ->
+            if (flagStructure.region.overlapsWith(monument.region)) {
+                return false
+            }
+        }
+        flagStructure.saveVolume()
+        flagStructure.build()
+        addFlag(flagStructure)
+        saveConfig()
+        return true
     }
 
     fun addFlag(flag: FlagStructure) {
