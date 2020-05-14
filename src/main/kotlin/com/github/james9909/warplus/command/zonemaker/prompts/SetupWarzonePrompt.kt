@@ -9,7 +9,6 @@ import com.github.james9909.warplus.config.TeamConfigType
 import com.github.james9909.warplus.extensions.blockLocation
 import com.github.james9909.warplus.extensions.color
 import com.github.james9909.warplus.extensions.isFinite
-import com.github.james9909.warplus.structures.FlagStructure
 import com.github.james9909.warplus.structures.MonumentStructure
 import com.github.james9909.warplus.structures.SpawnStyle
 import com.github.james9909.warplus.structures.TeamSpawnStructure

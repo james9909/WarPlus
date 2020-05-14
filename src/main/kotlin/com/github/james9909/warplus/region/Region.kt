@@ -28,12 +28,12 @@ data class Region(
         val maxPoint = getMaximumPoint()
         val otherMinPoint = other.getMinimumPoint()
         val otherMaxPoint = other.getMaximumPoint()
-        return minPoint.first <= otherMaxPoint.first
-            && maxPoint.first >= otherMinPoint.first
-            && minPoint.second <= otherMaxPoint.second
-            && maxPoint.second >= otherMinPoint.second
-            && minPoint.third <= otherMaxPoint.third
-            && maxPoint.third >= otherMinPoint.third
+        return minPoint.first <= otherMaxPoint.first &&
+            maxPoint.first >= otherMinPoint.first &&
+            minPoint.second <= otherMaxPoint.second &&
+            maxPoint.second >= otherMinPoint.second &&
+            minPoint.third <= otherMaxPoint.third &&
+            maxPoint.third >= otherMinPoint.third
     }
 
     private fun getMaxX(): Int {
