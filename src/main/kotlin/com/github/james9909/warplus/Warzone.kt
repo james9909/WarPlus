@@ -473,6 +473,9 @@ class Warzone(
 
     fun addFlagObjective(location: Location, kind: TeamKind): Boolean {
         val flagStructure = FlagStructure(plugin, location, kind)
+        if (!region.contains(flagStructure.region)) {
+            return false
+        }
         teams.values.forEach { team ->
             team.spawns.forEach { spawn ->
                 if (flagStructure.region.intersects(spawn.region)) {
