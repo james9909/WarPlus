@@ -3,7 +3,6 @@ package com.github.james9909.warplus.command.zonemaker
 import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.command.AbstractCommand
 import com.github.james9909.warplus.extensions.blockLocation
-import com.github.james9909.warplus.structures.MonumentStructure
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import org.bukkit.command.CommandSender

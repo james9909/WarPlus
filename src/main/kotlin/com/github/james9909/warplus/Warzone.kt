@@ -11,6 +11,7 @@ import com.github.james9909.warplus.objectives.MonumentObjective
 import com.github.james9909.warplus.region.Region
 import com.github.james9909.warplus.structures.FlagStructure
 import com.github.james9909.warplus.structures.MonumentStructure
+import com.github.james9909.warplus.structures.TeamSpawnStructure
 import com.github.james9909.warplus.util.Message
 import com.github.james9909.warplus.util.PlayerState
 import com.github.james9909.warplus.util.copyRegion
@@ -471,25 +472,25 @@ class Warzone(
         return objective.getFlagAtLocation(location)
     }
 
-    fun validateObjectiveRegion(objectiveRegion: Region): Result<Unit, WarError> {
+    fun validateStructureRegion(objectiveRegion: Region): Result<Unit, WarError> {
         if (!region.contains(objectiveRegion)) {
-            return Err(WarStructureError("Flag must be fully contained within the warzone"))
+            return Err(WarStructureError("Structures must be fully contained within the warzone"))
         }
         teams.values.forEach { team ->
             team.spawns.forEach { spawn ->
                 if (objectiveRegion.intersects(spawn.region)) {
-                    return Err(WarStructureError("Flag cannot overlap with a spawn"))
+                    return Err(WarStructureError("A structure cannot overlap with a spawn"))
                 }
             }
         }
         (objectives["flags"] as? FlagObjective)?.flags?.forEach { flag ->
             if (objectiveRegion.intersects(flag.region)) {
-                return Err(WarStructureError("Flag cannot overlap with another flag"))
+                return Err(WarStructureError("A structure cannot overlap with a flag"))
             }
         }
         (objectives["monuments"] as? MonumentObjective)?.monuments?.forEach { monument ->
             if (objectiveRegion.intersects(monument.region)) {
-                return Err(WarStructureError("Flag cannot overlap with monuments"))
+                return Err(WarStructureError("A structure cannot overlap with a monument"))
             }
         }
         return Ok(Unit)
@@ -497,7 +498,7 @@ class Warzone(
 
     fun addFlagObjective(location: Location, kind: TeamKind): Result<Unit, WarError> {
         val flagStructure = FlagStructure(plugin, location, kind)
-        val result = validateObjectiveRegion(flagStructure.region)
+        val result = validateStructureRegion(flagStructure.region)
         when (result) {
             is Ok -> {
                 flagStructure.saveVolume()
@@ -537,7 +538,7 @@ class Warzone(
     fun addMonumentObjective(location: Location, name: String): Result<Unit, WarError> {
         val monumentStructure =
             MonumentStructure(plugin, location, name)
-        val result = validateObjectiveRegion(monumentStructure.region)
+        val result = validateStructureRegion(monumentStructure.region)
         when (result) {
             is Ok -> {
                 monumentStructure.saveVolume()
@@ -562,6 +563,31 @@ class Warzone(
     fun removeMonument(monument: MonumentStructure): Boolean {
         val objective = objectives["monuments"] as? MonumentObjective ?: return false
         return objective.removeMonument(monument)
+    }
+
+    fun addTeamSpawn(origin: Location, kind: TeamKind): Result<Unit, WarError> {
+        var team = teams[kind]
+        if (team == null) {
+            team = WarTeam(kind, mutableListOf(), this)
+            addTeam(team)
+        }
+        val spawnStyle = try {
+            team.settings.get(TeamConfigType.SPAWN_STYLE)
+        } catch (e: IllegalArgumentException) {
+            return Err(WarStructureError("Invalid spawn style for $team"))
+        }
+        val teamSpawn = TeamSpawnStructure(plugin, origin, team.kind, spawnStyle)
+        val result = validateStructureRegion(teamSpawn.region)
+        when (result) {
+            is Ok -> {
+                teamSpawn.saveVolume()
+                teamSpawn.build()
+                team.addTeamSpawn(teamSpawn)
+                saveConfig()
+            }
+            is Err -> {} // Do nothing, just return
+        }
+        return result
     }
 
     private fun resetObjectives() {
