@@ -217,32 +217,12 @@ class SetupWarzonePrompt(val plugin: WarPlus, val player: Player, val warzone: W
                     text = "A team has not been set yet. Input \"team <team>\" to set the team."
                     return
                 }
-                var team = warzone.teams[currTeamKind]
-                if (team == null) {
-                    team = WarTeam(currTeamKind, mutableListOf(), warzone)
-                    warzone.addTeam(team)
-                }
 
-                val spawnStyle: SpawnStyle
-                try {
-                    spawnStyle = team.settings.get(TeamConfigType.SPAWN_STYLE)
-                } catch (e: IllegalArgumentException) {
-                    text = "Invalid spawn style for $team"
-                    return
+                val origin = player.location.subtract(0.0, 1.0, 0.0).blockLocation()
+                text = when (val result = warzone.addTeamSpawn(origin, currTeamKind)) {
+                    is Ok -> "Spawn for team ${currTeamKind.name.toLowerCase()} created!"
+                    is Err -> result.error.toString()
                 }
-                val teamSpawn =
-                    TeamSpawnStructure(
-                        plugin,
-                        location.subtract(0.0, 1.0, 0.0).blockLocation(),
-                        team.kind,
-                        spawnStyle
-                    ).also {
-                        it.saveVolume()
-                        it.build()
-                    }
-                team.addTeamSpawn(teamSpawn)
-                warzone.saveConfig()
-                text = "Spawn for team ${currTeamKind.name.toLowerCase()} created!"
             }
             Action.RIGHT_CLICK_AIR, Action.RIGHT_CLICK_BLOCK -> {
                 if (spawn == null) {
