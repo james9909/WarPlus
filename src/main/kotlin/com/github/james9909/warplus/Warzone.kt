@@ -506,7 +506,8 @@ class Warzone(
                 addFlag(flagStructure)
                 saveConfig()
             }
-            is Err -> {} // Do nothing, just return
+            is Err -> {
+            } // Do nothing, just return
         }
         return result
     }
@@ -546,7 +547,8 @@ class Warzone(
                 addMonument(monumentStructure)
                 saveConfig()
             }
-            is Err -> {} // Do nothing, just return
+            is Err -> {
+            } // Do nothing, just return
         }
         return result
     }
@@ -585,9 +587,18 @@ class Warzone(
                 team.addTeamSpawn(teamSpawn)
                 saveConfig()
             }
-            is Err -> {} // Do nothing, just return
+            is Err -> {
+            } // Do nothing, just return
         }
         return result
+    }
+
+    fun removeTeamSpawn(spawn: TeamSpawnStructure) {
+        val team = teams[spawn.kind] ?: return
+        team.spawns.remove(spawn)
+        if (team.spawns.isEmpty()) {
+            teams.remove(team.kind)
+        }
     }
 
     private fun resetObjectives() {

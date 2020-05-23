@@ -226,9 +226,8 @@ class SetupWarzonePrompt(val plugin: WarPlus, val player: Player, val warzone: W
                     return
                 }
                 // Remove spawn
-                val team = warzone.teams[spawn.kind] ?: return
                 spawn.restoreVolume()
-                team.removeTeamSpawn(spawn)
+                warzone.removeTeamSpawn(spawn)
                 warzone.saveConfig()
                 text = "Spawn removed!"
             }
