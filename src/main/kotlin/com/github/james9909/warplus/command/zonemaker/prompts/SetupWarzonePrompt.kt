@@ -198,11 +198,6 @@ class SetupWarzonePrompt(val plugin: WarPlus, val player: Player, val warzone: W
                 // Do nothing
             }
         }
-
-        if (cornerOneSet && cornerTwoSet) {
-            warzone.saveVolume()
-            warzone.saveConfig()
-        }
     }
 
     private fun handleSpawn(event: PlayerInteractEvent) {
