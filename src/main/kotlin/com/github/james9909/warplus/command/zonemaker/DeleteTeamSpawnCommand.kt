@@ -18,10 +18,10 @@ class DeleteTeamSpawnCommand(plugin: WarPlus, sender: CommandSender, args: List<
             return true
         }
         warzone.teams.forEach { (_, team) ->
-            team.spawns.forEach {
-                if (it.contains(sender.location)) {
-                    it.restoreVolume()
-                    team.spawns.remove(it)
+            team.spawns.forEach { spawn ->
+                if (spawn.contains(sender.location)) {
+                    spawn.restoreVolume()
+                    warzone.removeTeamSpawn(spawn)
                     warzone.saveConfig()
                     plugin.playerManager.sendMessage(sender, "Spawn removed!")
                     return true

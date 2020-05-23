@@ -11,6 +11,7 @@ import com.github.james9909.warplus.objectives.MonumentObjective
 import com.github.james9909.warplus.region.Region
 import com.github.james9909.warplus.structures.FlagStructure
 import com.github.james9909.warplus.structures.MonumentStructure
+import com.github.james9909.warplus.structures.TeamSpawnStructure
 import com.github.james9909.warplus.util.Message
 import com.github.james9909.warplus.util.PlayerState
 import com.github.james9909.warplus.util.copyRegion
@@ -471,7 +472,47 @@ class Warzone(
         return objective.getFlagAtLocation(location)
     }
 
-    fun addFlag(flag: FlagStructure) {
+    fun validateStructureRegion(objectiveRegion: Region): Result<Unit, WarError> {
+        if (!region.contains(objectiveRegion)) {
+            return Err(WarStructureError("Structures must be fully contained within the warzone"))
+        }
+        teams.values.forEach { team ->
+            team.spawns.forEach { spawn ->
+                if (objectiveRegion.intersects(spawn.region)) {
+                    return Err(WarStructureError("A structure cannot overlap with a spawn"))
+                }
+            }
+        }
+        (objectives["flags"] as? FlagObjective)?.flags?.forEach { flag ->
+            if (objectiveRegion.intersects(flag.region)) {
+                return Err(WarStructureError("A structure cannot overlap with a flag"))
+            }
+        }
+        (objectives["monuments"] as? MonumentObjective)?.monuments?.forEach { monument ->
+            if (objectiveRegion.intersects(monument.region)) {
+                return Err(WarStructureError("A structure cannot overlap with a monument"))
+            }
+        }
+        return Ok(Unit)
+    }
+
+    fun addFlagObjective(location: Location, kind: TeamKind): Result<Unit, WarError> {
+        val flagStructure = FlagStructure(plugin, location, kind)
+        val result = validateStructureRegion(flagStructure.region)
+        when (result) {
+            is Ok -> {
+                flagStructure.saveVolume()
+                flagStructure.build()
+                addFlag(flagStructure)
+                saveConfig()
+            }
+            is Err -> {
+            } // Do nothing, just return
+        }
+        return result
+    }
+
+    private fun addFlag(flag: FlagStructure) {
         val objective = objectives["flags"] as? FlagObjective ?: run {
             val temp = FlagObjective(plugin, this, mutableListOf())
             objectives[temp.name] = temp
@@ -495,7 +536,24 @@ class Warzone(
         return objective.getMonumentAtLocation(location)
     }
 
-    fun addMonument(monument: MonumentStructure) {
+    fun addMonumentObjective(location: Location, name: String): Result<Unit, WarError> {
+        val monumentStructure =
+            MonumentStructure(plugin, location, name)
+        val result = validateStructureRegion(monumentStructure.region)
+        when (result) {
+            is Ok -> {
+                monumentStructure.saveVolume()
+                monumentStructure.build()
+                addMonument(monumentStructure)
+                saveConfig()
+            }
+            is Err -> {
+            } // Do nothing, just return
+        }
+        return result
+    }
+
+    private fun addMonument(monument: MonumentStructure) {
         val objective = objectives["monuments"] as? MonumentObjective ?: run {
             val temp = MonumentObjective(plugin, this, mutableListOf())
             objectives[temp.name] = temp
@@ -507,6 +565,40 @@ class Warzone(
     fun removeMonument(monument: MonumentStructure): Boolean {
         val objective = objectives["monuments"] as? MonumentObjective ?: return false
         return objective.removeMonument(monument)
+    }
+
+    fun addTeamSpawn(origin: Location, kind: TeamKind): Result<Unit, WarError> {
+        var team = teams[kind]
+        if (team == null) {
+            team = WarTeam(kind, mutableListOf(), this)
+            addTeam(team)
+        }
+        val spawnStyle = try {
+            team.settings.get(TeamConfigType.SPAWN_STYLE)
+        } catch (e: IllegalArgumentException) {
+            return Err(WarStructureError("Invalid spawn style for $team"))
+        }
+        val teamSpawn = TeamSpawnStructure(plugin, origin, team.kind, spawnStyle)
+        val result = validateStructureRegion(teamSpawn.region)
+        when (result) {
+            is Ok -> {
+                teamSpawn.saveVolume()
+                teamSpawn.build()
+                team.addTeamSpawn(teamSpawn)
+                saveConfig()
+            }
+            is Err -> {
+            } // Do nothing, just return
+        }
+        return result
+    }
+
+    fun removeTeamSpawn(spawn: TeamSpawnStructure) {
+        val team = teams[spawn.kind] ?: return
+        team.spawns.remove(spawn)
+        if (team.spawns.isEmpty()) {
+            teams.remove(team.kind)
+        }
     }
 
     private fun resetObjectives() {
@@ -545,5 +637,37 @@ class Warzone(
                 }
             }
         }
+    }
+
+    fun pruneStructures(): Boolean {
+        var pruned = false
+        teams.entries.removeIf { (_, team) ->
+            team.spawns.retainAll { spawn ->
+                if (region.contains(spawn.region)) {
+                    return@retainAll true
+                }
+                spawn.restoreVolume()
+                pruned = true
+                return@retainAll false
+            }
+            team.spawns.isEmpty()
+        }
+        (objectives["flags"] as? FlagObjective)?.flags?.retainAll { flag ->
+            if (teams[flag.kind] != null && region.contains(flag.region)) {
+                return@retainAll true
+            }
+            flag.restoreVolume()
+            pruned = true
+            return@retainAll false
+        }
+        (objectives["monuments"] as? MonumentObjective)?.monuments?.retainAll { monument ->
+            if (region.contains(monument.region)) {
+                return@retainAll true
+            }
+            monument.restoreVolume()
+            pruned = true
+            return@retainAll false
+        }
+        return pruned
     }
 }

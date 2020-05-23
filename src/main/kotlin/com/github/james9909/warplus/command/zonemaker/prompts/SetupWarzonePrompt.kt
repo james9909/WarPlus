@@ -2,17 +2,13 @@ package com.github.james9909.warplus.command.zonemaker.prompts
 
 import com.github.james9909.warplus.TeamKind
 import com.github.james9909.warplus.WarPlus
-import com.github.james9909.warplus.WarTeam
 import com.github.james9909.warplus.Warzone
 import com.github.james9909.warplus.WarzoneState
-import com.github.james9909.warplus.config.TeamConfigType
 import com.github.james9909.warplus.extensions.blockLocation
 import com.github.james9909.warplus.extensions.color
 import com.github.james9909.warplus.extensions.isFinite
-import com.github.james9909.warplus.structures.FlagStructure
-import com.github.james9909.warplus.structures.MonumentStructure
-import com.github.james9909.warplus.structures.SpawnStyle
-import com.github.james9909.warplus.structures.TeamSpawnStructure
+import com.github.michaelbull.result.Err
+import com.github.michaelbull.result.Ok
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.conversations.Conversation
@@ -124,6 +120,9 @@ class SetupWarzonePrompt(val plugin: WarPlus, val player: Player, val warzone: W
 
         if (cornerOneSet && cornerTwoSet) {
             player.sendMessage("Saving warzone ${warzone.name}...")
+            if (warzone.pruneStructures()) {
+                player.sendMessage("Structures that are no longer within the warzone have been removed")
+            }
             warzone.saveConfig()
             player.sendMessage("Setup complete!")
             warzone.state = WarzoneState.IDLING
@@ -195,13 +194,8 @@ class SetupWarzonePrompt(val plugin: WarPlus, val player: Player, val warzone: W
                 text = "Corner 2 set"
             }
             else -> {
-                // Do nothing
+                text = "Please click on a block"
             }
-        }
-
-        if (cornerOneSet && cornerTwoSet) {
-            warzone.saveVolume()
-            warzone.saveConfig()
         }
     }
 
@@ -222,32 +216,12 @@ class SetupWarzonePrompt(val plugin: WarPlus, val player: Player, val warzone: W
                     text = "A team has not been set yet. Input \"team <team>\" to set the team."
                     return
                 }
-                var team = warzone.teams[currTeamKind]
-                if (team == null) {
-                    team = WarTeam(currTeamKind, mutableListOf(), warzone)
-                    warzone.addTeam(team)
-                }
 
-                val spawnStyle: SpawnStyle
-                try {
-                    spawnStyle = team.settings.get(TeamConfigType.SPAWN_STYLE)
-                } catch (e: IllegalArgumentException) {
-                    text = "Invalid spawn style for $team"
-                    return
+                val origin = player.location.subtract(0.0, 1.0, 0.0).blockLocation()
+                text = when (val result = warzone.addTeamSpawn(origin, currTeamKind)) {
+                    is Ok -> "Spawn for team ${currTeamKind.name.toLowerCase()} created!"
+                    is Err -> result.error.toString()
                 }
-                val teamSpawn =
-                    TeamSpawnStructure(
-                        plugin,
-                        location.subtract(0.0, 1.0, 0.0).blockLocation(),
-                        team.kind,
-                        spawnStyle
-                    ).also {
-                        it.saveVolume()
-                        it.build()
-                    }
-                team.addTeamSpawn(teamSpawn)
-                warzone.saveConfig()
-                text = "Spawn for team ${currTeamKind.name.toLowerCase()} created!"
             }
             Action.RIGHT_CLICK_AIR, Action.RIGHT_CLICK_BLOCK -> {
                 if (spawn == null) {
@@ -255,9 +229,8 @@ class SetupWarzonePrompt(val plugin: WarPlus, val player: Player, val warzone: W
                     return
                 }
                 // Remove spawn
-                val team = warzone.teams[spawn.kind] ?: return
                 spawn.restoreVolume()
-                team.removeTeamSpawn(spawn)
+                warzone.removeTeamSpawn(spawn)
                 warzone.saveConfig()
                 text = "Spawn removed!"
             }
@@ -282,12 +255,11 @@ class SetupWarzonePrompt(val plugin: WarPlus, val player: Player, val warzone: W
                     return
                 }
 
-                val flagStructure = FlagStructure(plugin, location.subtract(0.0, 1.0, 0.0).blockLocation(), team.kind)
-                flagStructure.saveVolume()
-                flagStructure.build()
-                warzone.addFlag(flagStructure)
-                warzone.saveConfig()
-                text = "Flag for team ${currTeamKind.name.toLowerCase()} created!"
+                val origin = location.subtract(0.0, 1.0, 0.0).blockLocation()
+                text = when (val result = warzone.addFlagObjective(origin, team.kind)) {
+                    is Ok -> "Flag for team ${currTeamKind.name.toLowerCase()} created!"
+                    is Err -> result.error.toString()
+                }
             }
             Action.RIGHT_CLICK_AIR, Action.RIGHT_CLICK_BLOCK -> {
                 val flag = warzone.getFlagAtLocation(location)
@@ -310,12 +282,11 @@ class SetupWarzonePrompt(val plugin: WarPlus, val player: Player, val warzone: W
         val location = player.location
         when (event.action) {
             Action.LEFT_CLICK_AIR, Action.LEFT_CLICK_BLOCK -> {
-                val monument = MonumentStructure(plugin, location.subtract(0.0, 1.0, 0.0).blockLocation(), "Monument1")
-                monument.saveVolume()
-                monument.build()
-                warzone.addMonument(monument)
-                warzone.saveConfig()
-                text = "Monument created! Change its name in the config."
+                val origin = location.subtract(0.0, 1.0, 0.0).blockLocation()
+                text = when (val result = warzone.addMonumentObjective(origin, "Monument")) {
+                    is Ok -> "Monument created! Change its name in the config."
+                    is Err -> result.error.toString()
+                }
             }
             Action.RIGHT_CLICK_AIR, Action.RIGHT_CLICK_BLOCK -> {
                 val monument = warzone.getMonumentAtLocation(location)

@@ -3,7 +3,8 @@ package com.github.james9909.warplus.command.zonemaker
 import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.command.AbstractCommand
 import com.github.james9909.warplus.extensions.blockLocation
-import com.github.james9909.warplus.structures.MonumentStructure
+import com.github.michaelbull.result.Err
+import com.github.michaelbull.result.Ok
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
@@ -23,14 +24,14 @@ class AddMonumentCommand(plugin: WarPlus, sender: CommandSender, args: List<Stri
             plugin.playerManager.sendMessage(sender, "You're not in a warzone")
             return true
         }
-        val monumentStructure =
-            MonumentStructure(plugin, sender.location.subtract(0.0, 1.0, 0.0).blockLocation(), args[0])
-        monumentStructure.saveVolume()
-        monumentStructure.build()
 
-        warzone.addMonument(monumentStructure)
-        warzone.saveConfig()
-        plugin.playerManager.sendMessage(sender, "Monument ${args[0]} created!")
+        val origin = sender.location.subtract(0.0, 1.0, 0.0).blockLocation()
+        val result = warzone.addMonumentObjective(origin, args[0])
+        val message = when (result) {
+            is Ok -> "Monument ${args[0]} created!"
+            is Err -> result.error.toString()
+        }
+        plugin.playerManager.sendMessage(sender, message)
         return true
     }
 }
