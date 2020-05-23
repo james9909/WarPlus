@@ -471,33 +471,33 @@ class Warzone(
         return objective.getFlagAtLocation(location)
     }
 
-    fun addFlagObjective(location: Location, kind: TeamKind): Boolean {
+    fun addFlagObjective(location: Location, kind: TeamKind): Result<Unit, WarError> {
         val flagStructure = FlagStructure(plugin, location, kind)
         if (!region.contains(flagStructure.region)) {
-            return false
+            return Err(WarStructureError("Flag must be fully contained within the warzone"))
         }
         teams.values.forEach { team ->
             team.spawns.forEach { spawn ->
                 if (flagStructure.region.intersects(spawn.region)) {
-                    return false
+                    return Err(WarStructureError("Flag cannot overlap with a spawn"))
                 }
             }
         }
         (objectives["flags"] as? FlagObjective)?.flags?.forEach { flag ->
             if (flagStructure.region.intersects(flag.region)) {
-                return false
+                return Err(WarStructureError("Flag cannot overlap with another flag"))
             }
         }
         (objectives["monuments"] as? MonumentObjective)?.monuments?.forEach { monument ->
             if (flagStructure.region.intersects(monument.region)) {
-                return false
+                return Err(WarStructureError("Flag cannot overlap with monuments"))
             }
         }
         flagStructure.saveVolume()
         flagStructure.build()
         addFlag(flagStructure)
         saveConfig()
-        return true
+        return Ok(Unit)
     }
 
     fun addFlag(flag: FlagStructure) {

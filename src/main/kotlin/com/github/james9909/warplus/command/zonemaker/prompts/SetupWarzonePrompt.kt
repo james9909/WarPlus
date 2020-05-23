@@ -12,6 +12,8 @@ import com.github.james9909.warplus.extensions.isFinite
 import com.github.james9909.warplus.structures.MonumentStructure
 import com.github.james9909.warplus.structures.SpawnStyle
 import com.github.james9909.warplus.structures.TeamSpawnStructure
+import com.github.michaelbull.result.Err
+import com.github.michaelbull.result.Ok
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.conversations.Conversation
@@ -281,10 +283,10 @@ class SetupWarzonePrompt(val plugin: WarPlus, val player: Player, val warzone: W
                     return
                 }
 
-                text = if (warzone.addFlagObjective(location.subtract(0.0, 1.0, 0.0).blockLocation(), team.kind)) {
-                    "Flag for team ${currTeamKind.name.toLowerCase()} created!"
-                } else {
-                    "Flags cannot overlap with any other structures"
+                val origin = location.subtract(0.0, 1.0, 0.0).blockLocation()
+                text = when (val result = warzone.addFlagObjective(origin, team.kind)) {
+                    is Ok -> "Flag for team ${currTeamKind.name.toLowerCase()} created!"
+                    is Err -> result.error.toString()
                 }
             }
             Action.RIGHT_CLICK_AIR, Action.RIGHT_CLICK_BLOCK -> {

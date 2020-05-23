@@ -147,9 +147,7 @@ class WarzoneManager(val plugin: WarPlus) {
                 teamKind = TeamKind.valueOf(teamName.toUpperCase())
             } catch (e: IllegalArgumentException) {
                 return Err(
-                    IllegalTeamKindError(
-                        "Bad team kind: $teamName"
-                    )
+                    IllegalTeamKindError(teamName)
                 )
             }
             // Settings for this specific team

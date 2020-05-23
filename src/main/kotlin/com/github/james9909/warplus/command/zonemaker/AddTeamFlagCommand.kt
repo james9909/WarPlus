@@ -4,6 +4,9 @@ import com.github.james9909.warplus.TeamKind
 import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.command.AbstractCommand
 import com.github.james9909.warplus.extensions.blockLocation
+import com.github.michaelbull.result.Err
+import com.github.michaelbull.result.Ok
+import com.github.michaelbull.result.unwrap
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
@@ -34,10 +37,10 @@ class AddTeamFlagCommand(plugin: WarPlus, sender: CommandSender, args: List<Stri
             return true
         }
 
-        val message = if (warzone.addFlagObjective(sender.location.subtract(0.0, 1.0, 0.0).blockLocation(), team.kind)) {
-            "Flag for team ${args[0]} created!"
-        } else {
-            "Flags cannot overlap with any other structures"
+        val origin = sender.location.subtract(0.0, 1.0, 0.0).blockLocation()
+        val message = when (val result = warzone.addFlagObjective(origin, team.kind)) {
+            is Ok -> "Flag for team ${args[0]} created!"
+            is Err -> result.error.toString()
         }
         plugin.playerManager.sendMessage(sender, message)
         return true
