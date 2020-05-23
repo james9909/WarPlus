@@ -310,12 +310,11 @@ class SetupWarzonePrompt(val plugin: WarPlus, val player: Player, val warzone: W
         val location = player.location
         when (event.action) {
             Action.LEFT_CLICK_AIR, Action.LEFT_CLICK_BLOCK -> {
-                val monument = MonumentStructure(plugin, location.subtract(0.0, 1.0, 0.0).blockLocation(), "Monument1")
-                monument.saveVolume()
-                monument.build()
-                warzone.addMonument(monument)
-                warzone.saveConfig()
-                text = "Monument created! Change its name in the config."
+                val origin = location.subtract(0.0, 1.0, 0.0).blockLocation()
+                text = when (val result = warzone.addMonumentObjective(origin, "Monument")) {
+                    is Ok -> "Monument created! Change its name in the config."
+                    is Err -> result.error.toString()
+                }
             }
             Action.RIGHT_CLICK_AIR, Action.RIGHT_CLICK_BLOCK -> {
                 val monument = warzone.getMonumentAtLocation(location)

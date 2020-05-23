@@ -471,36 +471,46 @@ class Warzone(
         return objective.getFlagAtLocation(location)
     }
 
-    fun addFlagObjective(location: Location, kind: TeamKind): Result<Unit, WarError> {
-        val flagStructure = FlagStructure(plugin, location, kind)
-        if (!region.contains(flagStructure.region)) {
+    fun validateObjectiveRegion(objectiveRegion: Region): Result<Unit, WarError> {
+        if (!region.contains(objectiveRegion)) {
             return Err(WarStructureError("Flag must be fully contained within the warzone"))
         }
         teams.values.forEach { team ->
             team.spawns.forEach { spawn ->
-                if (flagStructure.region.intersects(spawn.region)) {
+                if (objectiveRegion.intersects(spawn.region)) {
                     return Err(WarStructureError("Flag cannot overlap with a spawn"))
                 }
             }
         }
         (objectives["flags"] as? FlagObjective)?.flags?.forEach { flag ->
-            if (flagStructure.region.intersects(flag.region)) {
+            if (objectiveRegion.intersects(flag.region)) {
                 return Err(WarStructureError("Flag cannot overlap with another flag"))
             }
         }
         (objectives["monuments"] as? MonumentObjective)?.monuments?.forEach { monument ->
-            if (flagStructure.region.intersects(monument.region)) {
+            if (objectiveRegion.intersects(monument.region)) {
                 return Err(WarStructureError("Flag cannot overlap with monuments"))
             }
         }
-        flagStructure.saveVolume()
-        flagStructure.build()
-        addFlag(flagStructure)
-        saveConfig()
         return Ok(Unit)
     }
 
-    fun addFlag(flag: FlagStructure) {
+    fun addFlagObjective(location: Location, kind: TeamKind): Result<Unit, WarError> {
+        val flagStructure = FlagStructure(plugin, location, kind)
+        val result = validateObjectiveRegion(flagStructure.region)
+        when (result) {
+            is Ok -> {
+                flagStructure.saveVolume()
+                flagStructure.build()
+                addFlag(flagStructure)
+                saveConfig()
+            }
+            is Err -> {} // Do nothing, just return
+        }
+        return result
+    }
+
+    private fun addFlag(flag: FlagStructure) {
         val objective = objectives["flags"] as? FlagObjective ?: run {
             val temp = FlagObjective(plugin, this, mutableListOf())
             objectives[temp.name] = temp
@@ -524,7 +534,23 @@ class Warzone(
         return objective.getMonumentAtLocation(location)
     }
 
-    fun addMonument(monument: MonumentStructure) {
+    fun addMonumentObjective(location: Location, name: String): Result<Unit, WarError> {
+        val monumentStructure =
+            MonumentStructure(plugin, location, name)
+        val result = validateObjectiveRegion(monumentStructure.region)
+        when (result) {
+            is Ok -> {
+                monumentStructure.saveVolume()
+                monumentStructure.build()
+                addMonument(monumentStructure)
+                saveConfig()
+            }
+            is Err -> {} // Do nothing, just return
+        }
+        return result
+    }
+
+    private fun addMonument(monument: MonumentStructure) {
         val objective = objectives["monuments"] as? MonumentObjective ?: run {
             val temp = MonumentObjective(plugin, this, mutableListOf())
             objectives[temp.name] = temp
