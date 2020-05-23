@@ -194,7 +194,7 @@ class SetupWarzonePrompt(val plugin: WarPlus, val player: Player, val warzone: W
                 text = "Corner 2 set"
             }
             else -> {
-                // Do nothing
+                text = "Please click on a block"
             }
         }
     }
