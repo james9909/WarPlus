@@ -638,4 +638,36 @@ class Warzone(
             }
         }
     }
+
+    fun pruneStructures(): Boolean {
+        var pruned = false
+        teams.entries.removeIf { (_, team) ->
+            team.spawns.retainAll { spawn ->
+                if (region.contains(spawn.region)) {
+                    return@retainAll true
+                }
+                spawn.restoreVolume()
+                pruned = true
+                return@retainAll false
+            }
+            team.spawns.isEmpty()
+        }
+        (objectives["flags"] as? FlagObjective)?.flags?.retainAll { flag ->
+            if (teams[flag.kind] != null && region.contains(flag.region)) {
+                return@retainAll true
+            }
+            flag.restoreVolume()
+            pruned = true
+            return@retainAll false
+        }
+        (objectives["monuments"] as? MonumentObjective)?.monuments?.retainAll { monument ->
+            if (region.contains(monument.region)) {
+                return@retainAll true
+            }
+            monument.restoreVolume()
+            pruned = true
+            return@retainAll false
+        }
+        return pruned
+    }
 }

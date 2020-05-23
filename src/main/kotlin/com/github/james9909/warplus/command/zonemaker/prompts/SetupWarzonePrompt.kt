@@ -120,6 +120,9 @@ class SetupWarzonePrompt(val plugin: WarPlus, val player: Player, val warzone: W
 
         if (cornerOneSet && cornerTwoSet) {
             player.sendMessage("Saving warzone ${warzone.name}...")
+            if (warzone.pruneStructures()) {
+                player.sendMessage("Structures that are no longer within the warzone have been removed")
+            }
             warzone.saveConfig()
             player.sendMessage("Setup complete!")
             warzone.state = WarzoneState.IDLING
