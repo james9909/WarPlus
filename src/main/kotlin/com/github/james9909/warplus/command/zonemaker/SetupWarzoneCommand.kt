@@ -8,10 +8,11 @@ import org.bukkit.command.CommandSender
 import org.bukkit.conversations.Conversation
 import org.bukkit.entity.Player
 
-class SetupWarzoneCommand(plugin: WarPlus, sender: CommandSender, args: List<String>) :
-    AbstractCommand(plugin, sender, args) {
+class SetupWarzoneCommand : AbstractCommand() {
+    override val USAGE_STRING = "/war setup <name>"
+    override val DESCRIPTION = "Setup an existing warzone created with /war create."
 
-    override fun handle(): Boolean {
+    override fun execute(plugin: WarPlus, sender: CommandSender, args: List<String>): Boolean {
         if (args.isEmpty()) {
             return false
         }

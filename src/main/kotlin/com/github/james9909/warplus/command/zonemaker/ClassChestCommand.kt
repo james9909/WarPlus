@@ -8,9 +8,11 @@ import org.bukkit.block.Chest
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
-class ClassChestCommand(plugin: WarPlus, sender: CommandSender, args: List<String>) :
-    AbstractCommand(plugin, sender, args) {
-    override fun handle(): Boolean {
+class ClassChestCommand : AbstractCommand() {
+    override val USAGE_STRING = "/war classchest <set|remove> <name>"
+    override val DESCRIPTION = "Set or remove a classchest"
+
+    override fun execute(plugin: WarPlus, sender: CommandSender, args: List<String>): Boolean {
         if (args.size != 2) {
             return false
         }

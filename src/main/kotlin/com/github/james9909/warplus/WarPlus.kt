@@ -12,8 +12,6 @@ import com.github.james9909.warplus.managers.PlayerManager
 import com.github.james9909.warplus.managers.WarzoneManager
 import com.github.james9909.warplus.runnable.UpdateScoreboardRunnable
 import net.milkbowl.vault.economy.Economy
-import org.bukkit.command.Command
-import org.bukkit.command.CommandSender
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.event.HandlerList
 import org.bukkit.plugin.PluginDescriptionFile
@@ -48,7 +46,6 @@ class WarPlus : JavaPlugin {
     val warzoneManager = WarzoneManager(this)
     val playerManager = PlayerManager(this)
     private val databaseManager = DatabaseManager(this, "jdbc:sqlite:$dataFolder/war.db")
-    private val commandHandler = CommandHandler()
     private var usr = UpdateScoreboardRunnable(this)
     var loaded = AtomicBoolean()
         private set
@@ -90,6 +87,7 @@ class WarPlus : JavaPlugin {
         classManager.loadClasses()
         warzoneManager.loadWarzones()
         databaseManager.createTables()
+        getCommand("war")?.setExecutor(CommandHandler(this))
         setupRunnables()
         setupEconomy()
         loaded.set(true)
@@ -122,11 +120,6 @@ class WarPlus : JavaPlugin {
         pluginManager.registerEvents(BlockListener(this), this)
         pluginManager.registerEvents(EntityListener(this), this)
         pluginManager.registerEvents(PlayerListener(this), this)
-    }
-
-    override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<String>): Boolean {
-        val warCommand = commandHandler.getCommand(this, sender, args) ?: return false
-        return warCommand.handle()
     }
 
     private fun setupEconomy() {

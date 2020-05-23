@@ -6,10 +6,11 @@ import com.github.james9909.warplus.objectives.FlagObjective
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
-class DeleteTeamFlagCommand(plugin: WarPlus, sender: CommandSender, args: List<String>) :
-    AbstractCommand(plugin, sender, args) {
+class DeleteTeamFlagCommand : AbstractCommand() {
+    override val USAGE_STRING = "/war deleteteamflag"
+    override val DESCRIPTION = "Delete the flag at your current location"
 
-    override fun handle(): Boolean {
+    override fun execute(plugin: WarPlus, sender: CommandSender, args: List<String>): Boolean {
         if (sender !is Player) {
             plugin.playerManager.sendMessage(sender, "Only in-game players may do that")
             return true

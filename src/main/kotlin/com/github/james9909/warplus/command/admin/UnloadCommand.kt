@@ -5,10 +5,11 @@ import com.github.james9909.warplus.command.AbstractCommand
 import com.github.james9909.warplus.util.Message
 import org.bukkit.command.CommandSender
 
-class UnloadCommand(plugin: WarPlus, sender: CommandSender, args: List<String>) :
-    AbstractCommand(plugin, sender, args) {
+class UnloadCommand : AbstractCommand() {
+    override val USAGE_STRING = "/war unload"
+    override val DESCRIPTION = "Unload the plugin."
 
-    override fun handle(): Boolean {
+    override fun execute(plugin: WarPlus, sender: CommandSender, args: List<String>): Boolean {
         if (!plugin.loaded.get()) {
             plugin.playerManager.sendMessage(sender, Message.ALREADY_UNLOADED)
             return true

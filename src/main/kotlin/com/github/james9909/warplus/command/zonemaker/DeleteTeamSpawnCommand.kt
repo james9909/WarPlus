@@ -5,9 +5,11 @@ import com.github.james9909.warplus.command.AbstractCommand
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
-class DeleteTeamSpawnCommand(plugin: WarPlus, sender: CommandSender, args: List<String>) :
-    AbstractCommand(plugin, sender, args) {
-    override fun handle(): Boolean {
+class DeleteTeamSpawnCommand : AbstractCommand() {
+    override val USAGE_STRING = "/war deleteteamspawn"
+    override val DESCRIPTION = "Delete the spawn at your current location"
+
+    override fun execute(plugin: WarPlus, sender: CommandSender, args: List<String>): Boolean {
         if (sender !is Player) {
             plugin.playerManager.sendMessage(sender, "Only in-game players may do that")
             return true

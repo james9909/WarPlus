@@ -8,10 +8,11 @@ import com.github.michaelbull.result.Ok
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
-class AddMonumentCommand(plugin: WarPlus, sender: CommandSender, args: List<String>) :
-    AbstractCommand(plugin, sender, args) {
+class AddMonumentCommand : AbstractCommand() {
+    override val USAGE_STRING = "/war addmonument <name>"
+    override val DESCRIPTION = "Create a monument at the current location"
 
-    override fun handle(): Boolean {
+    override fun execute(plugin: WarPlus, sender: CommandSender, args: List<String>): Boolean {
         if (args.isEmpty()) {
             return false
         }

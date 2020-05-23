@@ -15,35 +15,54 @@ import com.github.james9909.warplus.command.zonemaker.DeleteMonumentCommand
 import com.github.james9909.warplus.command.zonemaker.DeleteTeamFlagCommand
 import com.github.james9909.warplus.command.zonemaker.DeleteTeamSpawnCommand
 import com.github.james9909.warplus.command.zonemaker.SetupWarzoneCommand
+import org.bukkit.command.Command
+import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
+import org.bukkit.command.TabCompleter
+import org.bukkit.entity.Player
 
-class CommandHandler {
+class CommandHandler(val plugin: WarPlus) : CommandExecutor, TabCompleter {
+    private val COMMANDS: MutableMap<String, AbstractCommand> = mutableMapOf()
 
-    fun getCommand(plugin: WarPlus, sender: CommandSender, args: Array<String>): AbstractCommand? {
+    init {
+        COMMANDS["setup"] = SetupWarzoneCommand()
+        COMMANDS["create"] = CreateWarzoneCommand()
+        COMMANDS["join"] = JoinWarzoneCommand()
+        COMMANDS["leave"] = LeaveWarzoneCommand()
+        COMMANDS["load"] = LoadCommand()
+        COMMANDS["unload"] = UnloadCommand()
+        COMMANDS["addteamflag"] = AddTeamFlagCommand()
+        COMMANDS["deleteteamflag"] = DeleteTeamFlagCommand()
+        COMMANDS["addteamspawn"] = AddTeamSpawnCommand()
+        COMMANDS["deleteteamspawn"] = DeleteTeamSpawnCommand()
+        COMMANDS["classchest"] = ClassChestCommand()
+        COMMANDS["class"] = ClassCommand()
+        COMMANDS["addmonument"] = AddMonumentCommand()
+        COMMANDS["deletemonument"] = DeleteMonumentCommand()
+    }
+
+    override fun onTabComplete(
+        sender: CommandSender,
+        command: Command,
+        alias: String,
+        args: Array<out String>
+    ): MutableList<String> {
+        if (sender !is Player) {
+            return mutableListOf()
+        }
+        if (sender.isConversing) {
+            return mutableListOf()
+        }
+        return mutableListOf()
+    }
+
+    override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         if (args.isEmpty()) {
-            return null
+            return false
         }
-
         val subCommand = args[0]
+        val warCommand = COMMANDS[subCommand] ?: return false
         val rest = args.drop(1)
-
-        val command = when (subCommand) {
-            "setup" -> SetupWarzoneCommand(plugin, sender, rest)
-            "create" -> CreateWarzoneCommand(plugin, sender, rest)
-            "join" -> JoinWarzoneCommand(plugin, sender, rest)
-            "load" -> LoadCommand(plugin, sender, rest)
-            "unload" -> UnloadCommand(plugin, sender, rest)
-            "addteamflag" -> AddTeamFlagCommand(plugin, sender, rest)
-            "deleteteamflag" -> DeleteTeamFlagCommand(plugin, sender, rest)
-            "addteamspawn" -> AddTeamSpawnCommand(plugin, sender, rest)
-            "deleteteamspawn" -> DeleteTeamSpawnCommand(plugin, sender, rest)
-            "classchest" -> ClassChestCommand(plugin, sender, rest)
-            "class" -> ClassCommand(plugin, sender, rest)
-            "leave" -> LeaveWarzoneCommand(plugin, sender, rest)
-            "addmonument" -> AddMonumentCommand(plugin, sender, rest)
-            "deletemonument" -> DeleteMonumentCommand(plugin, sender, rest)
-            else -> null
-        }
-        return command
+        return warCommand.execute(plugin, sender, rest)
     }
 }

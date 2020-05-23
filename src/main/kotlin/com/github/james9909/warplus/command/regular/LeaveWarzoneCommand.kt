@@ -5,9 +5,11 @@ import com.github.james9909.warplus.command.AbstractCommand
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
-class LeaveWarzoneCommand(plugin: WarPlus, sender: CommandSender, args: List<String>) :
-    AbstractCommand(plugin, sender, args) {
-    override fun handle(): Boolean {
+class LeaveWarzoneCommand : AbstractCommand() {
+    override val USAGE_STRING = "/war leave"
+    override val DESCRIPTION = "Leave the current warzone"
+
+    override fun execute(plugin: WarPlus, sender: CommandSender, args: List<String>): Boolean {
         if (sender !is Player) {
             plugin.playerManager.sendMessage(sender, "Only in-game players may do that")
             return true
