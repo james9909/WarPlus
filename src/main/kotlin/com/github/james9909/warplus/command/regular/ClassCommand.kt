@@ -38,4 +38,8 @@ class ClassCommand : AbstractCommand() {
         plugin.playerManager.sendMessage(sender, "Equipped $className class")
         return true
     }
+
+    override fun tab(plugin: WarPlus, sender: CommandSender, args: List<String>): MutableList<String> {
+        return mutableListOf()
+    }
 }

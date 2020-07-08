@@ -1,5 +1,6 @@
 package com.github.james9909.warplus.command.zonemaker
 
+import com.github.james9909.warplus.TeamKind
 import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.command.AbstractCommand
 import org.bukkit.command.CommandSender
@@ -32,5 +33,9 @@ class DeleteTeamSpawnCommand : AbstractCommand() {
         }
         plugin.playerManager.sendMessage(sender, "There is no spawn at this location")
         return true
+    }
+
+    override fun tab(plugin: WarPlus, sender: CommandSender, args: List<String>): MutableList<String> {
+        return mutableListOf()
     }
 }

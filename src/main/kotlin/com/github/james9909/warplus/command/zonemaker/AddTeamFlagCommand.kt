@@ -47,4 +47,8 @@ class AddTeamFlagCommand : AbstractCommand() {
         plugin.playerManager.sendMessage(sender, message)
         return true
     }
+
+    override fun tab(plugin: WarPlus, sender: CommandSender, args: List<String>): MutableList<String> {
+        return TeamKind.values().map { it.name.toLowerCase() }.toMutableList()
+    }
 }

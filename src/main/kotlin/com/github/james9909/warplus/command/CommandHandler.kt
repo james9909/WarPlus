@@ -53,7 +53,15 @@ class CommandHandler(val plugin: WarPlus) : CommandExecutor, TabCompleter {
         if (sender.isConversing) {
             return mutableListOf()
         }
-        return mutableListOf()
+        if (args.isEmpty()) {
+            return COMMANDS.keys.toMutableList()
+        }
+        if (args.size == 1) {
+            // We only have the base subcommand
+            return COMMANDS.keys.filter { it.startsWith(args[0]) }.toMutableList()
+        }
+        val command = COMMANDS[args[0]] ?: return mutableListOf()
+        return command.tab(plugin, sender, args.drop(1))
     }
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {

@@ -35,4 +35,8 @@ class AddMonumentCommand : AbstractCommand() {
         plugin.playerManager.sendMessage(sender, message)
         return true
     }
+
+    override fun tab(plugin: WarPlus, sender: CommandSender, args: List<String>): MutableList<String> {
+        return mutableListOf()
+    }
 }

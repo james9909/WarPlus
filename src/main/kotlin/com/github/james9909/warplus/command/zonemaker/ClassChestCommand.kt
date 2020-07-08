@@ -50,4 +50,22 @@ class ClassChestCommand : AbstractCommand() {
         }
         return true
     }
+
+    override fun tab(plugin: WarPlus, sender: CommandSender, args: List<String>): MutableList<String> {
+        return when {
+            args.isEmpty() -> {
+                mutableListOf("set", "remove")
+            }
+            args.size == 1 -> {
+                mutableListOf("set", "remove").filter {
+                    it.startsWith(args[0])
+                }.toMutableList()
+            }
+            else -> {
+                plugin.classManager.getClassNames().filter {
+                    it.startsWith(args[1].toLowerCase())
+                }.toMutableList()
+            }
+        }
+    }
 }

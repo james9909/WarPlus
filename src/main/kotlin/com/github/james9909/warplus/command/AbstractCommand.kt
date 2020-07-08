@@ -8,4 +8,5 @@ abstract class AbstractCommand {
     abstract val DESCRIPTION: String
 
     abstract fun execute(plugin: WarPlus, sender: CommandSender, args: List<String>): Boolean
+    abstract fun tab(plugin: WarPlus, sender: CommandSender, args: List<String>): MutableList<String>
 }

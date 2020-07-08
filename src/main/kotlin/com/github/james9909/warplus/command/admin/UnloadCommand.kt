@@ -19,4 +19,8 @@ class UnloadCommand : AbstractCommand() {
         plugin.playerManager.sendMessage(sender, Message.UNLOADING_WAR_DONE)
         return true
     }
+
+    override fun tab(plugin: WarPlus, sender: CommandSender, args: List<String>): MutableList<String> {
+        return mutableListOf()
+    }
 }

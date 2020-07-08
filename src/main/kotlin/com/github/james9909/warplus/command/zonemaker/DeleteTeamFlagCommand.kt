@@ -36,4 +36,8 @@ class DeleteTeamFlagCommand : AbstractCommand() {
         plugin.playerManager.sendMessage(sender, "Flag removed!")
         return true
     }
+
+    override fun tab(plugin: WarPlus, sender: CommandSender, args: List<String>): MutableList<String> {
+        return mutableListOf()
+    }
 }

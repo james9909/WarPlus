@@ -189,6 +189,10 @@ class WarzoneManager(val plugin: WarPlus) {
         return Ok(warzone)
     }
 
+    fun getWarzoneNames(): List<String> {
+        return this.warzones.keys.toList()
+    }
+
     fun getWarzone(name: String): Warzone? {
         return this.warzones[name.toLowerCase()]
     }

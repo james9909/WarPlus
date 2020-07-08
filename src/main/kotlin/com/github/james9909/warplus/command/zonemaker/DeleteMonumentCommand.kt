@@ -34,4 +34,8 @@ class DeleteMonumentCommand : AbstractCommand() {
         plugin.playerManager.sendMessage(sender, "Monument ${monument.name} has been deleted")
         return true
     }
+
+    override fun tab(plugin: WarPlus, sender: CommandSender, args: List<String>): MutableList<String> {
+        return mutableListOf()
+    }
 }

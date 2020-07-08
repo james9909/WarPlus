@@ -24,4 +24,8 @@ class LeaveWarzoneCommand : AbstractCommand() {
         warzone.removePlayer(sender, playerInfo.team)
         return true
     }
+
+    override fun tab(plugin: WarPlus, sender: CommandSender, args: List<String>): MutableList<String> {
+        return mutableListOf()
+    }
 }

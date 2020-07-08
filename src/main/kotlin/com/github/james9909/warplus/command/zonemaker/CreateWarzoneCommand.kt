@@ -35,4 +35,8 @@ class CreateWarzoneCommand : AbstractCommand() {
         plugin.playerManager.sendMessage(sender, "Warzone ${args[0]} has been created!")
         return true
     }
+
+    override fun tab(plugin: WarPlus, sender: CommandSender, args: List<String>): MutableList<String> {
+        return mutableListOf()
+    }
 }
