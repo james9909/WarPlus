@@ -38,6 +38,10 @@ class ClassManager(private val plugin: WarPlus) {
         return classes[name.toLowerCase()]
     }
 
+    fun getClassNames(): List<String> {
+        return classes.keys.toList()
+    }
+
     fun saveConfig() {
         val file = File(plugin.dataFolder, "classes.yml")
         val config = YamlConfiguration()

@@ -9,8 +9,11 @@ import com.github.michaelbull.result.Ok
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
-class AddTeamFlagCommand(plugin: WarPlus, sender: CommandSender, args: List<String>) : AbstractCommand(plugin, sender, args) {
-    override fun handle(): Boolean {
+class AddTeamFlagCommand : AbstractCommand() {
+    override val USAGE_STRING = "/war addteamflag <team>"
+    override val DESCRIPTION = "Add a flag for a team"
+
+    override fun execute(plugin: WarPlus, sender: CommandSender, args: List<String>): Boolean {
         if (args.isEmpty()) {
             return false
         }
@@ -43,5 +46,9 @@ class AddTeamFlagCommand(plugin: WarPlus, sender: CommandSender, args: List<Stri
         }
         plugin.playerManager.sendMessage(sender, message)
         return true
+    }
+
+    override fun tab(plugin: WarPlus, sender: CommandSender, args: List<String>): MutableList<String> {
+        return TeamKind.values().map { it.name.toLowerCase() }.toMutableList()
     }
 }

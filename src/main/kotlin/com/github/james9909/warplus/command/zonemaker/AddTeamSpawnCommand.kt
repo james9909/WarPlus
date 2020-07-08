@@ -9,9 +9,11 @@ import com.github.michaelbull.result.Ok
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
-class AddTeamSpawnCommand(plugin: WarPlus, sender: CommandSender, args: List<String>) :
-    AbstractCommand(plugin, sender, args) {
-    override fun handle(): Boolean {
+class AddTeamSpawnCommand : AbstractCommand() {
+    override val USAGE_STRING = "/war addteamspawn <team>"
+    override val DESCRIPTION = "Add a spawn for a team"
+
+    override fun execute(plugin: WarPlus, sender: CommandSender, args: List<String>): Boolean {
         if (args.isEmpty()) {
             return false
         }
@@ -38,5 +40,9 @@ class AddTeamSpawnCommand(plugin: WarPlus, sender: CommandSender, args: List<Str
         }
         plugin.playerManager.sendMessage(sender, message)
         return true
+    }
+
+    override fun tab(plugin: WarPlus, sender: CommandSender, args: List<String>): MutableList<String> {
+        return TeamKind.values().map { it.name.toLowerCase() }.toMutableList()
     }
 }

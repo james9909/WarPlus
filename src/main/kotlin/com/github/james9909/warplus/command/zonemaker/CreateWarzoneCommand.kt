@@ -7,10 +7,11 @@ import com.github.james9909.warplus.region.Region
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
-class CreateWarzoneCommand(plugin: WarPlus, sender: CommandSender, args: List<String>) :
-    AbstractCommand(plugin, sender, args) {
+class CreateWarzoneCommand : AbstractCommand() {
+    override val USAGE_STRING = "/war create <name>"
+    override val DESCRIPTION = "Create a new warzone."
 
-    override fun handle(): Boolean {
+    override fun execute(plugin: WarPlus, sender: CommandSender, args: List<String>): Boolean {
         if (args.isEmpty()) {
             return false
         }
@@ -33,5 +34,9 @@ class CreateWarzoneCommand(plugin: WarPlus, sender: CommandSender, args: List<St
         warzone.saveConfig()
         plugin.playerManager.sendMessage(sender, "Warzone ${args[0]} has been created!")
         return true
+    }
+
+    override fun tab(plugin: WarPlus, sender: CommandSender, args: List<String>): MutableList<String> {
+        return mutableListOf()
     }
 }

@@ -5,10 +5,11 @@ import com.github.james9909.warplus.command.AbstractCommand
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
-class DeleteMonumentCommand(plugin: WarPlus, sender: CommandSender, args: List<String>) :
-    AbstractCommand(plugin, sender, args) {
+class DeleteMonumentCommand : AbstractCommand() {
+    override val USAGE_STRING = "/war deletemonument [name]"
+    override val DESCRIPTION = "Delete a monument by its name. If no name is provided, delete the monument at your current location."
 
-    override fun handle(): Boolean {
+    override fun execute(plugin: WarPlus, sender: CommandSender, args: List<String>): Boolean {
         if (sender !is Player) {
             plugin.playerManager.sendMessage(sender, "Only in-game players may do that")
             return true
@@ -32,5 +33,9 @@ class DeleteMonumentCommand(plugin: WarPlus, sender: CommandSender, args: List<S
         warzone.saveConfig()
         plugin.playerManager.sendMessage(sender, "Monument ${monument.name} has been deleted")
         return true
+    }
+
+    override fun tab(plugin: WarPlus, sender: CommandSender, args: List<String>): MutableList<String> {
+        return mutableListOf()
     }
 }

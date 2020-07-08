@@ -5,8 +5,11 @@ import com.github.james9909.warplus.command.AbstractCommand
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
-class ClassCommand(plugin: WarPlus, sender: CommandSender, args: List<String>) : AbstractCommand(plugin, sender, args) {
-    override fun handle(): Boolean {
+class ClassCommand : AbstractCommand() {
+    override val USAGE_STRING = "/war class <name>"
+    override val DESCRIPTION = "Select and equip a class"
+
+    override fun execute(plugin: WarPlus, sender: CommandSender, args: List<String>): Boolean {
         if (args.isEmpty()) {
             return false
         }
@@ -34,5 +37,9 @@ class ClassCommand(plugin: WarPlus, sender: CommandSender, args: List<String>) :
         warClass.giveToPlayer(sender)
         plugin.playerManager.sendMessage(sender, "Equipped $className class")
         return true
+    }
+
+    override fun tab(plugin: WarPlus, sender: CommandSender, args: List<String>): MutableList<String> {
+        return mutableListOf()
     }
 }

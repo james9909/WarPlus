@@ -5,6 +5,3 @@ warzone:
 team:
   default:
     config:
-extensions:
-  worldedit:
-    enabled: true

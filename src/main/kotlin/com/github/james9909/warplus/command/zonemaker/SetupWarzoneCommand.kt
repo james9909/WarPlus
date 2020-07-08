@@ -8,10 +8,11 @@ import org.bukkit.command.CommandSender
 import org.bukkit.conversations.Conversation
 import org.bukkit.entity.Player
 
-class SetupWarzoneCommand(plugin: WarPlus, sender: CommandSender, args: List<String>) :
-    AbstractCommand(plugin, sender, args) {
+class SetupWarzoneCommand : AbstractCommand() {
+    override val USAGE_STRING = "/war setup <name>"
+    override val DESCRIPTION = "Setup an existing warzone created with /war create."
 
-    override fun handle(): Boolean {
+    override fun execute(plugin: WarPlus, sender: CommandSender, args: List<String>): Boolean {
         if (args.isEmpty()) {
             return false
         }
@@ -33,5 +34,16 @@ class SetupWarzoneCommand(plugin: WarPlus, sender: CommandSender, args: List<Str
         conversation.isLocalEchoEnabled = false
         conversation.begin()
         return true
+    }
+
+    override fun tab(plugin: WarPlus, sender: CommandSender, args: List<String>): MutableList<String> {
+        val warzoneNames = plugin.warzoneManager.getWarzoneNames()
+        return if (args.isNotEmpty()) {
+            warzoneNames.filter {
+                it.startsWith(args[0].toLowerCase())
+            }
+        } else {
+            warzoneNames
+        }.toMutableList()
     }
 }

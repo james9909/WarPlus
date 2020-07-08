@@ -7,10 +7,11 @@ import com.github.james9909.warplus.util.Message
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
-class JoinWarzoneCommand(plugin: WarPlus, sender: CommandSender, args: List<String>) :
-    AbstractCommand(plugin, sender, args) {
+class JoinWarzoneCommand : AbstractCommand() {
+    override val USAGE_STRING = "/war join <name>"
+    override val DESCRIPTION = "Join a warzone."
 
-    override fun handle(): Boolean {
+    override fun execute(plugin: WarPlus, sender: CommandSender, args: List<String>): Boolean {
         if (args.isEmpty()) {
             return false
         }
@@ -41,5 +42,16 @@ class JoinWarzoneCommand(plugin: WarPlus, sender: CommandSender, args: List<Stri
 
         warzone.addPlayer(sender)
         return true
+    }
+
+    override fun tab(plugin: WarPlus, sender: CommandSender, args: List<String>): MutableList<String> {
+        val warzoneNames = plugin.warzoneManager.getWarzoneNames()
+        return if (args.isNotEmpty()) {
+            warzoneNames.filter {
+                it.startsWith(args[0].toLowerCase())
+            }
+        } else {
+            warzoneNames
+        }.toMutableList()
     }
 }

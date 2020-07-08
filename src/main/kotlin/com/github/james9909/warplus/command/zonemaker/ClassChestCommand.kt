@@ -8,9 +8,11 @@ import org.bukkit.block.Chest
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
-class ClassChestCommand(plugin: WarPlus, sender: CommandSender, args: List<String>) :
-    AbstractCommand(plugin, sender, args) {
-    override fun handle(): Boolean {
+class ClassChestCommand : AbstractCommand() {
+    override val USAGE_STRING = "/war classchest <set|remove> <name>"
+    override val DESCRIPTION = "Set or remove a classchest"
+
+    override fun execute(plugin: WarPlus, sender: CommandSender, args: List<String>): Boolean {
         if (args.size != 2) {
             return false
         }
@@ -47,5 +49,23 @@ class ClassChestCommand(plugin: WarPlus, sender: CommandSender, args: List<Strin
             else -> plugin.playerManager.sendMessage(sender, "Unknown action $action. Please try 'set' or 'remove'")
         }
         return true
+    }
+
+    override fun tab(plugin: WarPlus, sender: CommandSender, args: List<String>): MutableList<String> {
+        return when {
+            args.isEmpty() -> {
+                mutableListOf("set", "remove")
+            }
+            args.size == 1 -> {
+                mutableListOf("set", "remove").filter {
+                    it.startsWith(args[0])
+                }.toMutableList()
+            }
+            else -> {
+                plugin.classManager.getClassNames().filter {
+                    it.startsWith(args[1].toLowerCase())
+                }.toMutableList()
+            }
+        }
     }
 }
