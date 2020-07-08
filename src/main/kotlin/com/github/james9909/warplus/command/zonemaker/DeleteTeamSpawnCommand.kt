@@ -1,6 +1,5 @@
 package com.github.james9909.warplus.command.zonemaker
 
-import com.github.james9909.warplus.TeamKind
 import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.command.AbstractCommand
 import org.bukkit.command.CommandSender
