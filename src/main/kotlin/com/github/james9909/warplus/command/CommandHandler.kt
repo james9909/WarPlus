@@ -71,6 +71,9 @@ class CommandHandler(val plugin: WarPlus) : CommandExecutor, TabCompleter {
         val subCommand = args[0]
         val warCommand = COMMANDS[subCommand] ?: return false
         val rest = args.drop(1)
-        return warCommand.execute(plugin, sender, rest)
+        if (!warCommand.execute(plugin, sender, rest)) {
+            plugin.playerManager.sendMessage(sender, "Usage: ${warCommand.USAGE_STRING}\n${warCommand.DESCRIPTION}")
+        }
+        return true
     }
 }
