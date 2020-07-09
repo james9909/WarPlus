@@ -91,7 +91,7 @@ class WarPlus : JavaPlugin {
         getCommand("war")?.setExecutor(CommandHandler(this))
         setupRunnables()
         setupEconomy()
-        setupMagicspells()
+        setupMagicSpells()
         loaded.set(true)
     }
 
@@ -138,10 +138,11 @@ class WarPlus : JavaPlugin {
         }
     }
 
-    private fun setupMagicspells() {
+    private fun setupMagicSpells() {
         if (server.pluginManager.getPlugin("MagicSpells") == null) {
             return
         }
+        logger.info("MagicSpells found, enabling integration")
         server.pluginManager.registerEvents(MagicSpellsListener(this), this)
     }
 }
