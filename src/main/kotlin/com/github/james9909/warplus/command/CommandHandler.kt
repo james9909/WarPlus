@@ -2,6 +2,7 @@ package com.github.james9909.warplus.command
 
 import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.command.admin.LoadCommand
+import com.github.james9909.warplus.command.admin.ReloadCommand
 import com.github.james9909.warplus.command.admin.UnloadCommand
 import com.github.james9909.warplus.command.regular.ClassCommand
 import com.github.james9909.warplus.command.regular.JoinWarzoneCommand
@@ -39,6 +40,7 @@ class CommandHandler(val plugin: WarPlus) : CommandExecutor, TabCompleter {
         COMMANDS["class"] = ClassCommand()
         COMMANDS["addmonument"] = AddMonumentCommand()
         COMMANDS["deletemonument"] = DeleteMonumentCommand()
+        COMMANDS["reload"] = ReloadCommand()
     }
 
     override fun onTabComplete(
