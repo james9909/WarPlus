@@ -43,12 +43,16 @@ repositories {
     maven { url = "http://maven.sk89q.com/repo/" }
     maven { url = "https://dl.bintray.com/michaelbull/maven" }
     maven { url = "https://jitpack.io" }
+    flatDir {
+        dirs "lib"
+    }
 }
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     compile "com.michael-bull.kotlin-result:kotlin-result:1.1.0"
     compile "org.xerial:sqlite-jdbc:3.7.2"
+    compileOnly ":MagicSpells-4.0-Beta-6"
     compileOnly "com.sk89q.worldedit:worldedit-bukkit:7.0.0-SNAPSHOT"
     compileOnly "org.spigotmc:spigot-api:1.13.2-R0.1-SNAPSHOT"
     compileOnly "com.github.MilkBowl:VaultAPI:1.7"

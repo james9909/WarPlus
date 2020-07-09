@@ -120,6 +120,8 @@ class FlagObjective(
 
     override fun handlePlayerDropItem(player: Player, item: Item): Boolean = flagThieves.containsKey(player)
 
+    override fun handleSpellCast(player: Player): Boolean = flagThieves.containsKey(player)
+
     override fun handleDeath(player: Player) = dropFlag(player)
 
     override fun handleLeave(player: Player) = dropFlag(player)

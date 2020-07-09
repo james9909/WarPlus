@@ -32,6 +32,10 @@ abstract class AbstractObjective(plugin: WarPlus, warzone: Warzone) {
         return false
     }
 
+    open fun handleSpellCast(player: Player): Boolean {
+        return false
+    }
+
     open fun handlePlayerMove(player: Player, from: Location, to: Location) {}
 
     open fun handleDeath(player: Player) {}
