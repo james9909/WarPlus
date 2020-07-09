@@ -5,6 +5,7 @@ import com.github.james9909.warplus.config.TeamConfigType
 import com.github.james9909.warplus.config.WarzoneConfigType
 import com.github.james9909.warplus.listeners.BlockListener
 import com.github.james9909.warplus.listeners.EntityListener
+import com.github.james9909.warplus.listeners.MagicSpellsListener
 import com.github.james9909.warplus.listeners.PlayerListener
 import com.github.james9909.warplus.managers.ClassManager
 import com.github.james9909.warplus.managers.DatabaseManager
@@ -90,6 +91,7 @@ class WarPlus : JavaPlugin {
         getCommand("war")?.setExecutor(CommandHandler(this))
         setupRunnables()
         setupEconomy()
+        setupMagicSpells()
         loaded.set(true)
     }
 
@@ -134,5 +136,13 @@ class WarPlus : JavaPlugin {
         } else {
             logger.info("Vault found, but no economy plugin was detected. Economy rewards will be disabled")
         }
+    }
+
+    private fun setupMagicSpells() {
+        if (server.pluginManager.getPlugin("MagicSpells") == null) {
+            return
+        }
+        logger.info("MagicSpells found, enabling integration")
+        server.pluginManager.registerEvents(MagicSpellsListener(this), this)
     }
 }

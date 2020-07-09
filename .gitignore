@@ -37,3 +37,6 @@ out/
 
 # Database files
 *.db
+
+# Avoid ignoring external lib jars
+!lib/*.jar

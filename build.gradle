@@ -3,8 +3,13 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
     id 'idea'
-    id 'org.jetbrains.kotlin.jvm' version '1.3.0'
+    id 'org.jetbrains.kotlin.jvm' version '1.3.70'
     id 'com.github.johnrengelman.shadow' version '4.0.2'
+}
+
+wrapper {
+    gradleVersion = "6.5"
+    setDistributionType(Wrapper.DistributionType.ALL)
 }
 
 group 'com.github.james9909'
@@ -19,7 +24,8 @@ tasks.build.dependsOn tasks.shadowJar
 
 shadowJar {
     minimize()
-    archiveName = "${baseName}-${version}.${extension}"
+    relocate("com.github.michaelbull.result", "com.github.james9909.warplus.shaded.result")
+    relocate("kotlin", "com.github.james9909.warplus.shaded.kotlin")
 }
 
 idea {
@@ -37,12 +43,16 @@ repositories {
     maven { url = "http://maven.sk89q.com/repo/" }
     maven { url = "https://dl.bintray.com/michaelbull/maven" }
     maven { url = "https://jitpack.io" }
+    flatDir {
+        dirs "lib"
+    }
 }
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     compile "com.michael-bull.kotlin-result:kotlin-result:1.1.0"
     compile "org.xerial:sqlite-jdbc:3.7.2"
+    compileOnly ":MagicSpells-4.0-Beta-6"
     compileOnly "com.sk89q.worldedit:worldedit-bukkit:7.0.0-SNAPSHOT"
     compileOnly "org.spigotmc:spigot-api:1.13.2-R0.1-SNAPSHOT"
     compileOnly "com.github.MilkBowl:VaultAPI:1.7"

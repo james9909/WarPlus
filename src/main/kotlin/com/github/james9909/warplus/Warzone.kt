@@ -456,6 +456,15 @@ class Warzone(
         return false
     }
 
+    fun onSpellCast(player: Player): Boolean {
+        objectives.values.forEach {
+            if (it.handleSpellCast(player)) {
+                return true
+            }
+        }
+        return false
+    }
+
     fun isSpawnBlock(block: Block): Boolean {
         for ((_, team) in teams) {
             for (spawn in team.spawns) {
