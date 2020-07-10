@@ -23,10 +23,12 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 val DEFAULT_TEAM_CONFIG by lazy {
     val config = YamlConfiguration()
+    config[TeamConfigType.ECON_REWARD.path] = TeamConfigType.ECON_REWARD.default
     config[TeamConfigType.LIVES.path] = TeamConfigType.LIVES.default
-    config[TeamConfigType.MIN_PLAYERS.path] = TeamConfigType.MIN_PLAYERS.default
     config[TeamConfigType.MAX_PLAYERS.path] = TeamConfigType.MAX_PLAYERS.default
     config[TeamConfigType.MAX_SCORE.path] = TeamConfigType.MAX_SCORE.default
+    config[TeamConfigType.MIN_PLAYERS.path] = TeamConfigType.MIN_PLAYERS.default
+    config[TeamConfigType.PLACE_BLOCKS.path] = TeamConfigType.PLACE_BLOCKS.default
     config[TeamConfigType.SPAWN_STYLE.path] = TeamConfigType.SPAWN_STYLE.default
     config
 }
