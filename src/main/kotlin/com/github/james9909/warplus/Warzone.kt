@@ -39,6 +39,7 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause
 import org.bukkit.event.inventory.InventoryAction
+import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
@@ -197,6 +198,9 @@ class Warzone(
 
         // Equip class
         playerInfo.warClass?.giveToPlayer(player)
+        if (warzoneSettings.get(WarzoneConfigType.BLOCK_HEADS)) {
+            player.inventory.helmet = ItemStack(playerInfo.team.kind.material)
+        }
 
         // Pick a random spawn
         val spawn = playerInfo.team.spawns.random()

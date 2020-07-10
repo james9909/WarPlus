@@ -6,11 +6,13 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.event.inventory.InventoryType
 import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerItemDamageEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.player.PlayerTeleportEvent
+import org.bukkit.inventory.ItemStack
 
 class PlayerListener(val plugin: WarPlus) : Listener {
 
@@ -88,6 +90,14 @@ class PlayerListener(val plugin: WarPlus) : Listener {
     fun onInventoryClickEvent(event: InventoryClickEvent) {
         val player = event.whoClicked as? Player ?: return
         val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
+        val teamMaterial = playerInfo.team.kind.material
+        if (event.slotType == InventoryType.SlotType.ARMOR && event.currentItem?.type == teamMaterial) {
+            if (event.isRightClick) {
+                event.whoClicked.setItemOnCursor(ItemStack(teamMaterial))
+            }
+            event.isCancelled = true
+            return
+        }
         event.isCancelled = playerInfo.team.warzone.onInventoryClick(player, event.action)
     }
 }
