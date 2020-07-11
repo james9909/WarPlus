@@ -18,6 +18,7 @@ import org.bukkit.event.HandlerList
 import org.bukkit.plugin.PluginDescriptionFile
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.plugin.java.JavaPluginLoader
+import org.yaml.snakeyaml.error.YAMLException
 import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -96,7 +97,11 @@ class WarPlus : JavaPlugin {
         if (!configFile.exists()) {
             saveDefaultConfig()
         }
-        reloadConfig()
+        try {
+            reloadConfig()
+        } catch (e: YAMLException) {
+            logger.warning("Failed to load config: $e")
+        }
         classManager.loadClasses()
         warzoneManager.loadWarzones()
         databaseManager.createTables()
