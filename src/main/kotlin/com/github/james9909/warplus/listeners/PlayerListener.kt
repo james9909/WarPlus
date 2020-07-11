@@ -1,6 +1,7 @@
 package com.github.james9909.warplus.listeners
 
 import com.github.james9909.warplus.WarPlus
+import com.github.james9909.warplus.config.WarzoneConfigType
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -84,7 +85,12 @@ class PlayerListener(val plugin: WarPlus) : Listener {
     fun onPlayerDropItem(event: PlayerDropItemEvent) {
         val player = event.player
         val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
-        event.isCancelled = playerInfo.team.warzone.onPlayerDropItem(player, event.itemDrop)
+        val warzone = playerInfo.team.warzone
+        if (warzone.warzoneSettings.get(WarzoneConfigType.NO_DROPS)) {
+            event.isCancelled = true
+            return
+        }
+        event.isCancelled = warzone.onPlayerDropItem(player, event.itemDrop)
     }
 
     @EventHandler
