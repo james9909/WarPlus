@@ -94,7 +94,7 @@ class PlayerListener(val plugin: WarPlus) : Listener {
         val player = event.player
         val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
         val warzone = playerInfo.team.warzone
-        if (warzone.warzoneSettings.get(WarzoneConfigType.NO_DROPS)) {
+        if (warzone.warzoneSettings.get(WarzoneConfigType.NO_DROPS) || playerInfo.inSpawn) {
             event.isCancelled = true
             return
         }
