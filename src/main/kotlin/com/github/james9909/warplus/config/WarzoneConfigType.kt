@@ -5,7 +5,6 @@ class WarzoneConfigType {
         val BLOCK_HEADS = booleanKey("block-heads", true)
         val CLASS_CMD = stringKey("class-cmd", "")
         val DEATH_MESSAGES = booleanKey("death-messages", true)
-        val DEFAULT_CLASS = stringKey("default-class", "")
         val ENABLED = booleanKey("enabled", true)
         val MAX_HEALTH = doubleKey("max-health", 20.0)
         val MIN_TEAMS = integerKey("min-teams", 2)

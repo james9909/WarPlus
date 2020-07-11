@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 val DEFAULT_TEAM_CONFIG by lazy {
     val config = YamlConfiguration()
+    config[TeamConfigType.DEFAULT_CLASS.path] = TeamConfigType.DEFAULT_CLASS.default
     config[TeamConfigType.ECON_REWARD.path] = TeamConfigType.ECON_REWARD.default
     config[TeamConfigType.LIVES.path] = TeamConfigType.LIVES.default
     config[TeamConfigType.MAX_PLAYERS.path] = TeamConfigType.MAX_PLAYERS.default
@@ -39,7 +40,6 @@ val DEFAULT_WARZONE_CONFIG by lazy {
     config[WarzoneConfigType.BLOCK_HEADS.path] = WarzoneConfigType.BLOCK_HEADS.default
     config[WarzoneConfigType.CLASS_CMD.path] = WarzoneConfigType.CLASS_CMD.default
     config[WarzoneConfigType.DEATH_MESSAGES.path] = WarzoneConfigType.DEATH_MESSAGES.default
-    config[WarzoneConfigType.DEFAULT_CLASS.path] = WarzoneConfigType.DEFAULT_CLASS.default
     config[WarzoneConfigType.ENABLED.path] = WarzoneConfigType.ENABLED.default
     config[WarzoneConfigType.MAX_HEALTH.path] = WarzoneConfigType.MAX_HEALTH.default
     config[WarzoneConfigType.MIN_TEAMS.path] = WarzoneConfigType.MIN_TEAMS.default

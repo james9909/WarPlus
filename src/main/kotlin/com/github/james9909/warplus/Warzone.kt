@@ -161,8 +161,16 @@ class Warzone(
         team.addPlayer(player)
         plugin.playerManager.savePlayerState(player, team)
 
-        // Equip default loadout (first one)
-        val className = team.resolveClasses()[0]
+        // Equip default class
+        val defaultClass = team.settings.get(TeamConfigType.DEFAULT_CLASS)
+        val possibleClasses = team.resolveClasses()
+        val className = if (defaultClass in possibleClasses) {
+            // Equip specified with the default-class setting
+            defaultClass
+        } else {
+            // Select the first class
+            possibleClasses[0]
+        }
         val warClass = plugin.classManager.getClass(className)
         if (warClass == null) {
             plugin.playerManager.sendMessage(player, "Failed to equip class $className")

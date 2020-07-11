@@ -6,7 +6,6 @@ warzone:
       block-heads: true
       class-cmd: ""
       death-messages: true
-      default-class: ""
       enabled: true
       max-health: 20
       min-teams: 1
@@ -18,6 +17,7 @@ warzone:
 team:
   default:
     config:
+      default-class: ""
       econ-reward: 5
       lives: 20
       max-players: 20

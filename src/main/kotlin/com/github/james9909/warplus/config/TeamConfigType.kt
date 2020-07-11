@@ -4,6 +4,7 @@ import com.github.james9909.warplus.structures.SpawnStyle
 
 class TeamConfigType {
     companion object {
+        val DEFAULT_CLASS = stringKey("default-class", "")
         val ECON_REWARD = doubleKey("econ-reward", 5.0)
         val LIVES = integerKey("lives", 20)
         val MAX_PLAYERS = integerKey("max-players", 20)
