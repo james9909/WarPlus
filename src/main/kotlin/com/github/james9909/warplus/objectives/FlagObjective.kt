@@ -74,8 +74,7 @@ class FlagObjective(
         ) {
             return true
         }
-        stealFlag(player, flagStructure)
-        return false
+        return stealFlag(player, flagStructure)
     }
 
     override fun handleBlockPlace(player: Player, block: Block): Boolean {
@@ -99,20 +98,27 @@ class FlagObjective(
         val inSpawn = team.spawns.any {
             it.contains(to)
         }
-        if (inSpawn) {
-            val flag = flagThieves[player] ?: return // Null case should never happen
-            flag.build()
-            team.warzone.broadcast("${player.name} captured ${flag.kind.format()}'s flag. Team $team scores one point.")
-            team.addPoint()
-
-            // Detect win condition
-            if (team.score >= team.settings.get(TeamConfigType.MAX_SCORE)) {
-                team.warzone.handleWin(listOf(team))
-                return
-            }
-            flagThieves.remove(player)
-            team.warzone.respawnPlayer(player)
+        if (!inSpawn) {
+            return
         }
+        val flag = flagThieves[player] ?: return // Null case should never happen
+        val otherTeam = warzone.teams[flag.kind]
+        if (otherTeam != null && !otherTeam.hasEnoughPlayers()) {
+            plugin.playerManager.sendMessage(player, "You can't capture ${otherTeam}'s flag since there are not enough players on that team!")
+            return
+        }
+
+        flag.build()
+        team.warzone.broadcast("${player.name} captured ${flag.kind.format()}'s flag. Team $team scores one point.")
+        team.addPoint()
+
+        // Detect win condition
+        if (team.score >= team.settings.get(TeamConfigType.MAX_SCORE)) {
+            team.warzone.handleWin(listOf(team))
+            return
+        }
+        flagThieves.remove(player)
+        team.warzone.respawnPlayer(player)
     }
 
     override fun handleInventoryClick(player: Player, action: InventoryAction): Boolean =
@@ -135,8 +141,12 @@ class FlagObjective(
         warzone.broadcast("${player.name} has dropped ${flag.kind.format()}'s flag!")
     }
 
-    private fun stealFlag(player: Player, flag: FlagStructure) {
-        val team = warzone.teams[flag.kind] ?: return
+    private fun stealFlag(player: Player, flag: FlagStructure): Boolean {
+        val team = warzone.teams[flag.kind] ?: return false
+        if (!team.hasEnoughPlayers()) {
+            plugin.playerManager.sendMessage(player, "You can't steal ${team}'s flag since there are not enough players on that team!")
+            return true
+        }
         flagThieves[player] = flag
 
         // Fill the player's inventory with wool
@@ -149,6 +159,7 @@ class FlagObjective(
 
         player.clearPotionEffects()
         warzone.broadcast("${player.name} stole team $team's flag")
+        return false
     }
 
     override fun saveConfig(config: ConfigurationSection) {
