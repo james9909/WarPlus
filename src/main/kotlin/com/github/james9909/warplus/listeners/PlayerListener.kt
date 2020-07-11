@@ -128,6 +128,15 @@ class PlayerListener(val plugin: WarPlus) : Listener {
         if (!playerInfo.inSpawn) {
             return
         }
+
+        val warzone = playerInfo.team.warzone
+        val classCmd = warzone.warzoneSettings.get(WarzoneConfigType.CLASS_CMD)
+        if (classCmd != "") {
+            // Execute custom class-choosing command
+            player.performCommand(classCmd)
+            return
+        }
+
         val classes = playerInfo.team.resolveClasses()
         if (classes.isEmpty()) {
             return
