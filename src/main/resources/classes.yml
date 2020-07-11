@@ -1,0 +1,20 @@
+classes:
+  ranger:
+    items:
+      0:
+        type: bow
+      1:
+        type: arrow
+        amount: 64
+    chestplate:
+      type: chainmail_chestplate
+  tank:
+    items:
+      0:
+        type: wooden_sword
+    chestplate:
+      type: diamond_chestplate
+    leggings:
+      type: diamond_leggings
+    boots:
+      type: diamond_boots

@@ -7,14 +7,10 @@ import java.io.File
 
 class ClassManager(private val plugin: WarPlus) {
 
-    private val classes: MutableMap<String, WarClass> = HashMap()
+    private val classes: MutableMap<String, WarClass> = LinkedHashMap()
 
-    fun loadClasses() {
-        val file = File(plugin.dataFolder, "classes.yml")
-        if (!file.exists()) {
-            return
-        }
-        val config = YamlConfiguration.loadConfiguration(file)
+    fun loadClasses(config: YamlConfiguration) {
+        classes.clear()
         val classList = config.getConfigurationSection("classes") ?: return
         for (className in classList.getKeys(false)) {
             plugin.logger.info("Loading class $className")
@@ -24,6 +20,15 @@ class ClassManager(private val plugin: WarPlus) {
             )
             plugin.logger.info("Loaded class $className")
         }
+    }
+
+    fun loadClasses() {
+        val file = File(plugin.dataFolder, "classes.yml")
+        if (!file.exists()) {
+            plugin.saveResource("classes.yml", true)
+        }
+        val config = YamlConfiguration.loadConfiguration(file)
+        loadClasses(config)
     }
 
     fun addClass(name: String, warClass: WarClass) {
@@ -36,6 +41,10 @@ class ClassManager(private val plugin: WarPlus) {
 
     fun getClass(name: String): WarClass? {
         return classes[name.toLowerCase()]
+    }
+
+    fun containsClass(name: String): Boolean {
+        return classes.containsKey(name.toLowerCase())
     }
 
     fun getClassNames(): List<String> {

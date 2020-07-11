@@ -45,8 +45,10 @@ class PlayerManager(plugin: WarPlus) {
         return players[player]
     }
 
-    fun savePlayerState(player: Player, team: WarTeam) {
-        players[player] = PlayerInfo(team, PlayerState.fromPlayer(player), true, null)
+    fun savePlayerState(player: Player, team: WarTeam): PlayerInfo {
+        val playerInfo = PlayerInfo(team, PlayerState.fromPlayer(player), true, null)
+        players[player] = playerInfo
+        return playerInfo
     }
 
     fun removePlayer(player: Player) = players.remove(player)

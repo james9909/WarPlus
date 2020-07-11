@@ -6,6 +6,7 @@ import org.bukkit.event.server.PluginEnableEvent
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import java.io.File
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class WarTest {
@@ -26,5 +27,13 @@ class WarTest {
         server.pluginManager.assertEventFired(PluginEnableEvent::class.java) { event: PluginEnableEvent -> event.plugin == plugin }
         assertNotNull(server.pluginManager.getPlugin("WarPlus"))
         assert(plugin.isEnabled)
+    }
+
+    @Test
+    fun `plugin saves default config if necessary`() {
+        val actualConfigFile = File(plugin.dataFolder, "config.yml")
+        val testConfigFile = File("src/main/resources/config.yml")
+        assert(actualConfigFile.exists())
+        assert(actualConfigFile.readText().trim() == testConfigFile.readText().trim())
     }
 }

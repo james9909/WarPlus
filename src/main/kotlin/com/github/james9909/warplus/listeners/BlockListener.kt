@@ -1,6 +1,7 @@
 package com.github.james9909.warplus.listeners
 
 import com.github.james9909.warplus.WarPlus
+import com.github.james9909.warplus.config.TeamConfigType
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
@@ -42,7 +43,10 @@ class BlockListener(val plugin: WarPlus) : Listener {
 
         val block = event.block
         val warzone = plugin.warzoneManager.getWarzoneByLocation(block.location)
-        if (warzone == null || warzone != playerInfo.team.warzone || warzone.isSpawnBlock(block)) {
+        if (warzone == null ||
+                warzone != playerInfo.team.warzone ||
+                warzone.isSpawnBlock(block) ||
+                !playerInfo.team.settings.get(TeamConfigType.PLACE_BLOCKS)) {
             event.isCancelled = true
             return
         }

@@ -39,6 +39,7 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause
 import org.bukkit.event.inventory.InventoryAction
+import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
@@ -58,7 +59,8 @@ class Warzone(
     val region: Region,
     val teamSettings: CascadingConfig = CascadingConfig(),
     val warzoneSettings: CascadingConfig = CascadingConfig(),
-    val objectives: HashMap<String, AbstractObjective> = hashMapOf()
+    val objectives: HashMap<String, AbstractObjective> = hashMapOf(),
+    val classes: List<String> = emptyList()
 ) {
     var state = WarzoneState.IDLING
     val teams = ConcurrentHashMap<TeamKind, WarTeam>()
@@ -90,27 +92,17 @@ class Warzone(
         plugin.logger.info("Starting warzone $name")
         state = WarzoneState.RUNNING
 
-        initialize()
+        initialize(resetTeamScores = true)
     }
 
-    private fun initialize() {
-        for ((_, team) in teams) {
-            team.resetAttributes()
-            team.resetSpawns()
-            for (player in team.players) {
-                respawnPlayer(player)
+    private fun initialize(resetTeamScores: Boolean) {
+        restoreVolume()
+        teams.values.forEach { team ->
+            if (resetTeamScores) {
+                team.resetAttributes()
             }
-        }
-        if (warzoneSettings.get(WarzoneConfigType.REMOVE_ENTITIES_ON_RESET)) {
-            removeEntities()
-        }
-        resetObjectives()
-    }
-
-    private fun reinitialize() {
-        for ((_, team) in teams) {
             team.resetSpawns()
-            for (player in team.players) {
+            team.players.forEach { player ->
                 respawnPlayer(player)
             }
         }
@@ -123,6 +115,7 @@ class Warzone(
     @Synchronized
     fun removePlayer(player: Player, team: WarTeam) {
         team.removePlayer(player)
+        broadcast("${player.name} left the zone")
         removePlayer(player)
     }
 
@@ -132,9 +125,16 @@ class Warzone(
         }
 
         // Remove player before restoring their state so the teleport doesn't get canceled
-        val state = plugin.playerManager.getPlayerInfo(player)
+        val playerState = plugin.playerManager.getPlayerInfo(player)
         plugin.playerManager.removePlayer(player)
-        state?.state?.restore(player)
+        playerState?.state?.restore(player)
+
+        if (numPlayers() == 0 && state == WarzoneState.RUNNING && warzoneSettings.get(WarzoneConfigType.RESET_ON_EMPTY)) {
+            // Only reinitialize the zone if everyone left in the middle of the game
+            plugin.logger.info("Last player left warzone $name. Reinitializing the warzone...")
+            initialize(resetTeamScores = true)
+            state = WarzoneState.IDLING
+        }
     }
 
     @Synchronized
@@ -160,6 +160,24 @@ class Warzone(
         assert(!team.isFull())
         team.addPlayer(player)
         plugin.playerManager.savePlayerState(player, team)
+
+        // Equip default class
+        val defaultClass = team.settings.get(TeamConfigType.DEFAULT_CLASS)
+        val possibleClasses = team.resolveClasses()
+        val className = if (defaultClass in possibleClasses) {
+            // Equip specified with the default-class setting
+            defaultClass
+        } else {
+            // Select the first class
+            possibleClasses[0]
+        }
+        val warClass = plugin.classManager.getClass(className)
+        if (warClass == null) {
+            plugin.playerManager.sendMessage(player, "Failed to equip class $className")
+            return false
+        }
+        equipClass(player, warClass, true)
+
         player.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.baseValue = warzoneSettings.get(WarzoneConfigType.MAX_HEALTH)
         respawnPlayer(player)
         broadcast("${player.name} joined team $team")
@@ -196,7 +214,10 @@ class Warzone(
         Bukkit.getScheduler().runTaskLater(plugin, { -> player.fireTicks = 0 }, 3)
 
         // Equip class
-        playerInfo.warClass?.giveToPlayer(player)
+        val warClass = playerInfo.warClass
+        if (warClass != null) {
+            equipClass(player, warClass, false)
+        }
 
         // Pick a random spawn
         val spawn = playerInfo.team.spawns.random()
@@ -221,6 +242,9 @@ class Warzone(
         config.set("info.p1", region.p1.format(false))
         config.set("info.p2", region.p2.format(false))
 
+        if (classes.isNotEmpty()) {
+            config.set("classes", classes)
+        }
         config.set("settings", warzoneSettings.config)
         config.set("team-settings", teamSettings.config)
         val teamsSection = config.createSection("teams")
@@ -319,8 +343,7 @@ class Warzone(
         }
         broadcast("The battle is over. Team $team lost: ${player.name} died and there were no lives left in their life pool.")
         if (winningTeams.isEmpty()) {
-            restoreVolume()
-            reinitialize()
+            initialize(resetTeamScores = false)
         } else {
             handleWin(winningTeams)
         }
@@ -328,6 +351,7 @@ class Warzone(
 
     fun handleWin(winningTeams: List<WarTeam>) {
         broadcast("Score cap reached. Game is over! Winning teams: ${winningTeams.joinToString()}")
+        state = WarzoneState.IDLING
         for ((_, team) in teams) {
             val won = team in winningTeams
             val econReward = getEconReward(team.settings.get(TeamConfigType.ECON_REWARD))
@@ -345,8 +369,7 @@ class Warzone(
                 }
             }
         }
-        restoreVolume()
-        initialize()
+        initialize(resetTeamScores = true)
     }
 
     fun handleSuicide(player: Player) {
@@ -678,5 +701,25 @@ class Warzone(
             return@retainAll false
         }
         return pruned
+    }
+
+    fun resolveClasses(): List<String> {
+        if (classes.isNotEmpty()) {
+            return classes
+        }
+        return plugin.classManager.getClassNames()
+    }
+
+    fun equipClass(player: Player, warClass: WarClass, updatePlayerInfo: Boolean) {
+        val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
+
+        warClass.giveToPlayer(player)
+        if (warzoneSettings.get(WarzoneConfigType.BLOCK_HEADS)) {
+            player.inventory.helmet = ItemStack(playerInfo.team.kind.material)
+        }
+
+        if (updatePlayerInfo) {
+            playerInfo.warClass = warClass
+        }
     }
 }

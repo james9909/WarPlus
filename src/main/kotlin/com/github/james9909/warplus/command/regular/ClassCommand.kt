@@ -33,8 +33,8 @@ class ClassCommand : AbstractCommand() {
             return true
         }
         sender.inventory.clear()
-        playerInfo.warClass = warClass
-        warClass.giveToPlayer(sender)
+        playerInfo.team.warzone.equipClass(sender, warClass, true)
+
         plugin.playerManager.sendMessage(sender, "Equipped $className class")
         return true
     }

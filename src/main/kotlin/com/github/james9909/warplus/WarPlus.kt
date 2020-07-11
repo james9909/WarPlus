@@ -18,27 +18,37 @@ import org.bukkit.event.HandlerList
 import org.bukkit.plugin.PluginDescriptionFile
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.plugin.java.JavaPluginLoader
+import org.yaml.snakeyaml.error.YAMLException
 import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
 
 val DEFAULT_TEAM_CONFIG by lazy {
     val config = YamlConfiguration()
+    config[TeamConfigType.DEFAULT_CLASS.path] = TeamConfigType.DEFAULT_CLASS.default
+    config[TeamConfigType.ECON_REWARD.path] = TeamConfigType.ECON_REWARD.default
     config[TeamConfigType.LIVES.path] = TeamConfigType.LIVES.default
-    config[TeamConfigType.MIN_PLAYERS.path] = TeamConfigType.MIN_PLAYERS.default
     config[TeamConfigType.MAX_PLAYERS.path] = TeamConfigType.MAX_PLAYERS.default
     config[TeamConfigType.MAX_SCORE.path] = TeamConfigType.MAX_SCORE.default
+    config[TeamConfigType.MIN_PLAYERS.path] = TeamConfigType.MIN_PLAYERS.default
+    config[TeamConfigType.HUNGER.path] = TeamConfigType.HUNGER.default
+    config[TeamConfigType.PLACE_BLOCKS.path] = TeamConfigType.PLACE_BLOCKS.default
     config[TeamConfigType.SPAWN_STYLE.path] = TeamConfigType.SPAWN_STYLE.default
     config
 }
 
 val DEFAULT_WARZONE_CONFIG by lazy {
     val config = YamlConfiguration()
+    config[WarzoneConfigType.BLOCK_HEADS.path] = WarzoneConfigType.BLOCK_HEADS.default
     config[WarzoneConfigType.CLASS_CMD.path] = WarzoneConfigType.CLASS_CMD.default
     config[WarzoneConfigType.DEATH_MESSAGES.path] = WarzoneConfigType.DEATH_MESSAGES.default
-    config[WarzoneConfigType.DEFAULT_CLASS.path] = WarzoneConfigType.DEFAULT_CLASS.default
     config[WarzoneConfigType.ENABLED.path] = WarzoneConfigType.ENABLED.default
     config[WarzoneConfigType.MAX_HEALTH.path] = WarzoneConfigType.MAX_HEALTH.default
     config[WarzoneConfigType.MIN_TEAMS.path] = WarzoneConfigType.MIN_TEAMS.default
+    config[WarzoneConfigType.MONUMENT_HEAL.path] = WarzoneConfigType.MONUMENT_HEAL.default
+    config[WarzoneConfigType.MONUMENT_HEAL_CHANCE.path] = WarzoneConfigType.MONUMENT_HEAL_CHANCE.default
+    config[WarzoneConfigType.ITEM_DROPS.path] = WarzoneConfigType.ITEM_DROPS.default
+    config[WarzoneConfigType.REMOVE_ENTITIES_ON_RESET.path] = WarzoneConfigType.REMOVE_ENTITIES_ON_RESET.default
+    config[WarzoneConfigType.RESET_ON_EMPTY.path] = WarzoneConfigType.RESET_ON_EMPTY.default
     config
 }
 
@@ -84,7 +94,15 @@ class WarPlus : JavaPlugin {
         if (!dataFolder.exists()) {
             dataFolder.mkdir()
         }
-        reloadConfig()
+        val configFile = File(dataFolder, "config.yml")
+        if (!configFile.exists()) {
+            saveDefaultConfig()
+        }
+        try {
+            reloadConfig()
+        } catch (e: YAMLException) {
+            logger.warning("Failed to load config: $e")
+        }
         classManager.loadClasses()
         warzoneManager.loadWarzones()
         databaseManager.createTables()

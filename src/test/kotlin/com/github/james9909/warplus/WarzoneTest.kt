@@ -15,12 +15,15 @@ import java.util.UUID
 class WarzoneTest {
     private val server = MockBukkit.mock()
     private val plugin = MockBukkit.load(WarPlus::class.java)
+    private val classConfig = File("src/test/resources/fixtures/config/classes.yml")
     private val configFile = File("src/test/resources/fixtures/config/warzone-valid.yml")
     private val warzone: Warzone
 
     init {
         server.addSimpleWorld("flat")
 
+        val classesConfig = YamlConfiguration.loadConfiguration(classConfig)
+        plugin.classManager.loadClasses(classesConfig)
         val config = YamlConfiguration.loadConfiguration(configFile)
         warzone = plugin.warzoneManager.loadWarzone("valid", config).unwrap()
     }
