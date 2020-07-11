@@ -104,7 +104,7 @@ class FlagObjective(
         val flag = flagThieves[player] ?: return // Null case should never happen
         val otherTeam = warzone.teams[flag.kind]
         if (otherTeam != null && !otherTeam.hasEnoughPlayers()) {
-            plugin.playerManager.sendMessage(player, "You can't capture ${otherTeam}'s flag since there are not enough players on that team!")
+            plugin.playerManager.sendMessage(player, "You can't capture $otherTeam's flag since there are not enough players on that team!")
             return
         }
 
@@ -144,7 +144,7 @@ class FlagObjective(
     private fun stealFlag(player: Player, flag: FlagStructure): Boolean {
         val team = warzone.teams[flag.kind] ?: return false
         if (!team.hasEnoughPlayers()) {
-            plugin.playerManager.sendMessage(player, "You can't steal ${team}'s flag since there are not enough players on that team!")
+            plugin.playerManager.sendMessage(player, "You can't steal $team's flag since there are not enough players on that team!")
             return true
         }
         flagThieves[player] = flag
