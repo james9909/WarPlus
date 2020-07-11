@@ -92,27 +92,17 @@ class Warzone(
         plugin.logger.info("Starting warzone $name")
         state = WarzoneState.RUNNING
 
-        initialize()
+        initialize(resetTeamScores = true)
     }
 
-    private fun initialize() {
-        for ((_, team) in teams) {
-            team.resetAttributes()
-            team.resetSpawns()
-            for (player in team.players) {
-                respawnPlayer(player)
+    private fun initialize(resetTeamScores: Boolean) {
+        restoreVolume()
+        teams.values.forEach { team ->
+            if (resetTeamScores) {
+                team.resetAttributes()
             }
-        }
-        if (warzoneSettings.get(WarzoneConfigType.REMOVE_ENTITIES_ON_RESET)) {
-            removeEntities()
-        }
-        resetObjectives()
-    }
-
-    private fun reinitialize() {
-        for ((_, team) in teams) {
             team.resetSpawns()
-            for (player in team.players) {
+            team.players.forEach { player ->
                 respawnPlayer(player)
             }
         }
@@ -125,6 +115,7 @@ class Warzone(
     @Synchronized
     fun removePlayer(player: Player, team: WarTeam) {
         team.removePlayer(player)
+        broadcast("${player.name} left the zone")
         removePlayer(player)
     }
 
@@ -134,9 +125,16 @@ class Warzone(
         }
 
         // Remove player before restoring their state so the teleport doesn't get canceled
-        val state = plugin.playerManager.getPlayerInfo(player)
+        val playerState = plugin.playerManager.getPlayerInfo(player)
         plugin.playerManager.removePlayer(player)
-        state?.state?.restore(player)
+        playerState?.state?.restore(player)
+
+        if (numPlayers() == 0 && state == WarzoneState.RUNNING && warzoneSettings.get(WarzoneConfigType.RESET_ON_EMPTY)) {
+            // Only reinitialize the zone if everyone left in the middle of the game
+            plugin.logger.info("Last player left warzone $name. Reinitializing the warzone...")
+            initialize(resetTeamScores = true)
+            state = WarzoneState.IDLING
+        }
     }
 
     @Synchronized
@@ -335,8 +333,7 @@ class Warzone(
         }
         broadcast("The battle is over. Team $team lost: ${player.name} died and there were no lives left in their life pool.")
         if (winningTeams.isEmpty()) {
-            restoreVolume()
-            reinitialize()
+            initialize(resetTeamScores = false)
         } else {
             handleWin(winningTeams)
         }
@@ -344,6 +341,7 @@ class Warzone(
 
     fun handleWin(winningTeams: List<WarTeam>) {
         broadcast("Score cap reached. Game is over! Winning teams: ${winningTeams.joinToString()}")
+        state = WarzoneState.IDLING
         for ((_, team) in teams) {
             val won = team in winningTeams
             val econReward = getEconReward(team.settings.get(TeamConfigType.ECON_REWARD))
@@ -361,8 +359,7 @@ class Warzone(
                 }
             }
         }
-        restoreVolume()
-        initialize()
+        initialize(resetTeamScores = true)
     }
 
     fun handleSuicide(player: Player) {

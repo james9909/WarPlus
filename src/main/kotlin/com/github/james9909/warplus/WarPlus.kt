@@ -46,6 +46,7 @@ val DEFAULT_WARZONE_CONFIG by lazy {
     config[WarzoneConfigType.MONUMENT_HEAL_CHANCE.path] = WarzoneConfigType.MONUMENT_HEAL_CHANCE.default
     config[WarzoneConfigType.NO_DROPS.path] = WarzoneConfigType.NO_DROPS.default
     config[WarzoneConfigType.REMOVE_ENTITIES_ON_RESET.path] = WarzoneConfigType.REMOVE_ENTITIES_ON_RESET.default
+    config[WarzoneConfigType.RESET_ON_EMPTY.path] = WarzoneConfigType.RESET_ON_EMPTY.default
     config
 }
 

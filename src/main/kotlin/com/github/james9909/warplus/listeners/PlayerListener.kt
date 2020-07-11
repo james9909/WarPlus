@@ -1,6 +1,7 @@
 package com.github.james9909.warplus.listeners
 
 import com.github.james9909.warplus.WarPlus
+import com.github.james9909.warplus.WarzoneState
 import com.github.james9909.warplus.config.WarzoneConfigType
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -74,6 +75,13 @@ class PlayerListener(val plugin: WarPlus) : Listener {
         if (playerInfo.inSpawn) {
             if (!inSpawn) {
                 // Player has exited the spawn
+                val warzone = team.warzone
+                if (warzone.state != WarzoneState.RUNNING) {
+                    // Players cannot leave if the warzone has not started yet
+                    plugin.playerManager.sendMessage(player, "You cannot leave until the warzone has started")
+                    event.isCancelled = true
+                    return
+                }
                 playerInfo.inSpawn = false
             }
             return

@@ -13,5 +13,6 @@ class WarzoneConfigType {
         val MONUMENT_HEAL = integerKey("monument-heal", 1)
         val MONUMENT_HEAL_CHANCE = doubleKey("monument-heal-chance", 0.2)
         val REMOVE_ENTITIES_ON_RESET = booleanKey("remove-entities-on-reset", true)
+        val RESET_ON_EMPTY = booleanKey("reset-on-empty", true)
     }
 }
