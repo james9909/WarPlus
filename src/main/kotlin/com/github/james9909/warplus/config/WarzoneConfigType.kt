@@ -8,7 +8,7 @@ class WarzoneConfigType {
         val ENABLED = booleanKey("enabled", true)
         val MAX_HEALTH = doubleKey("max-health", 20.0)
         val MIN_TEAMS = integerKey("min-teams", 2)
-        val NO_DROPS = booleanKey("no-drops", true)
+        val ITEM_DROPS = booleanKey("item-drops", false)
         val MONUMENT_HEAL = integerKey("monument-heal", 1)
         val MONUMENT_HEAL_CHANCE = doubleKey("monument-heal-chance", 0.2)
         val REMOVE_ENTITIES_ON_RESET = booleanKey("remove-entities-on-reset", true)

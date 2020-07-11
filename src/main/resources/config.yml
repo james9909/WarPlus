@@ -9,7 +9,7 @@ warzone:
       enabled: true
       max-health: 20
       min-teams: 1
-      no-drops: true
+      item-drops: false
       monument-heal: 1
       monument-heal-chance: 0.2
       remove-entities-on-reset: true
