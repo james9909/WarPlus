@@ -2,6 +2,9 @@ info:
   world: flat
   p1: flat:0.0,0.0,0.0
   p2: flat:100.0,100.0,100.0
+classes:
+- class1
+- class2
 settings:
   enabled: true
   min-teams: 1
@@ -16,6 +19,9 @@ teams:
       spawn-style: small
     spawns:
     - flat:50.0,50.0,50.0,0.0,0.0
+    classes:
+    - class3
+    - class4
   red:
     settings:
       lives: 5

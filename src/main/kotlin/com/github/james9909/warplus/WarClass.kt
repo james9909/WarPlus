@@ -33,6 +33,8 @@ data class WarClass(
 ) {
 
     fun giveToPlayer(player: Player) {
+        player.inventory.clear()
+
         val cc = classchest
         if (cc == null) {
             giveToPlayer(player, offhand, items, armor)

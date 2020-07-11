@@ -102,7 +102,8 @@ class WarzoneManager(val plugin: WarPlus) {
                         DEFAULT_WARZONE_CONFIG
                     )
                 )
-            )
+            ),
+            classes = config.getStringList("classes")
         )
         warzone.restoreVolume()
 
@@ -152,11 +153,15 @@ class WarzoneManager(val plugin: WarPlus) {
             }
             // Settings for this specific team
             val overloadedTeamSettings = teamSection.getConfigurationSection("settings") ?: YamlConfiguration()
+            val classes = teamSection.getStringList("classes").filter {
+                plugin.classManager.containsClass(it)
+            }
             val team = WarTeam(
                 kind = teamKind,
                 spawns = spawns,
                 warzone = warzone,
-                settings = CascadingConfig(overloadedTeamSettings, warzone.teamSettings)
+                settings = CascadingConfig(overloadedTeamSettings, warzone.teamSettings),
+                classes = classes
             )
             if (plugin.hasPlugin("WorldEdit")) {
                 team.resetSpawns()

@@ -43,10 +43,10 @@ class BlockListener(val plugin: WarPlus) : Listener {
 
         val block = event.block
         val warzone = plugin.warzoneManager.getWarzoneByLocation(block.location)
-        if (warzone == null
-                || warzone != playerInfo.team.warzone
-                || warzone.isSpawnBlock(block)
-                || !playerInfo.team.settings.get(TeamConfigType.PLACE_BLOCKS)) {
+        if (warzone == null ||
+                warzone != playerInfo.team.warzone ||
+                warzone.isSpawnBlock(block) ||
+                !playerInfo.team.settings.get(TeamConfigType.PLACE_BLOCKS)) {
             event.isCancelled = true
             return
         }

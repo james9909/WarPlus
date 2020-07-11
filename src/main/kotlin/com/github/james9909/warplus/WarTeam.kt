@@ -37,7 +37,8 @@ class WarTeam(
     val kind: TeamKind,
     val spawns: MutableList<TeamSpawnStructure>,
     val warzone: Warzone,
-    val settings: CascadingConfig = CascadingConfig()
+    val settings: CascadingConfig = CascadingConfig(),
+    val classes: List<String> = emptyList()
 ) {
     val players = mutableSetOf<Player>()
     var lives = maxLives()
@@ -105,12 +106,22 @@ class WarTeam(
             spawnsStringList.add(spawn.origin.format())
         }
         teamSection.set("spawns", spawnsStringList)
+        if (classes.isNotEmpty()) {
+            teamSection.set("classes", classes)
+        }
     }
 
     fun broadcast(message: String) {
         players.forEach {
             warzone.plugin.playerManager.sendMessage(it, message)
         }
+    }
+
+    fun resolveClasses(): List<String> {
+        if (classes.isNotEmpty()) {
+            return classes
+        }
+        return warzone.resolveClasses()
     }
 
     @Synchronized

@@ -59,7 +59,8 @@ class Warzone(
     val region: Region,
     val teamSettings: CascadingConfig = CascadingConfig(),
     val warzoneSettings: CascadingConfig = CascadingConfig(),
-    val objectives: HashMap<String, AbstractObjective> = hashMapOf()
+    val objectives: HashMap<String, AbstractObjective> = hashMapOf(),
+    val classes: List<String> = emptyList()
 ) {
     var state = WarzoneState.IDLING
     val teams = ConcurrentHashMap<TeamKind, WarTeam>()
@@ -161,6 +162,16 @@ class Warzone(
         assert(!team.isFull())
         team.addPlayer(player)
         plugin.playerManager.savePlayerState(player, team)
+
+        // Equip default loadout (first one)
+        val className = team.resolveClasses()[0]
+        val warClass = plugin.classManager.getClass(className)
+        if (warClass == null) {
+            plugin.playerManager.sendMessage(player, "Failed to equip class $className")
+            return false
+        }
+        equipClass(player, warClass, true)
+
         player.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.baseValue = warzoneSettings.get(WarzoneConfigType.MAX_HEALTH)
         respawnPlayer(player)
         broadcast("${player.name} joined team $team")
@@ -197,9 +208,9 @@ class Warzone(
         Bukkit.getScheduler().runTaskLater(plugin, { -> player.fireTicks = 0 }, 3)
 
         // Equip class
-        playerInfo.warClass?.giveToPlayer(player)
-        if (warzoneSettings.get(WarzoneConfigType.BLOCK_HEADS)) {
-            player.inventory.helmet = ItemStack(playerInfo.team.kind.material)
+        val warClass = playerInfo.warClass
+        if (warClass != null) {
+            equipClass(player, warClass, false)
         }
 
         // Pick a random spawn
@@ -225,6 +236,7 @@ class Warzone(
         config.set("info.p1", region.p1.format(false))
         config.set("info.p2", region.p2.format(false))
 
+        config.set("classes", classes)
         config.set("settings", warzoneSettings.config)
         config.set("team-settings", teamSettings.config)
         val teamsSection = config.createSection("teams")
@@ -682,5 +694,25 @@ class Warzone(
             return@retainAll false
         }
         return pruned
+    }
+
+    fun resolveClasses(): List<String> {
+        if (classes.isNotEmpty()) {
+            return classes
+        }
+        return plugin.classManager.getClassNames()
+    }
+
+    fun equipClass(player: Player, warClass: WarClass, updatePlayerInfo: Boolean) {
+        val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
+
+        warClass.giveToPlayer(player)
+        if (warzoneSettings.get(WarzoneConfigType.BLOCK_HEADS)) {
+            player.inventory.helmet = ItemStack(playerInfo.team.kind.material)
+        }
+
+        if (updatePlayerInfo) {
+            playerInfo.warClass = warClass
+        }
     }
 }

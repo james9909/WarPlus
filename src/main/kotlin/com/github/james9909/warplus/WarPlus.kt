@@ -42,6 +42,9 @@ val DEFAULT_WARZONE_CONFIG by lazy {
     config[WarzoneConfigType.ENABLED.path] = WarzoneConfigType.ENABLED.default
     config[WarzoneConfigType.MAX_HEALTH.path] = WarzoneConfigType.MAX_HEALTH.default
     config[WarzoneConfigType.MIN_TEAMS.path] = WarzoneConfigType.MIN_TEAMS.default
+    config[WarzoneConfigType.MONUMENT_HEAL.path] = WarzoneConfigType.MONUMENT_HEAL.default
+    config[WarzoneConfigType.MONUMENT_HEAL_CHANCE.path] = WarzoneConfigType.MONUMENT_HEAL_CHANCE.default
+    config[WarzoneConfigType.REMOVE_ENTITIES_ON_RESET.path] = WarzoneConfigType.REMOVE_ENTITIES_ON_RESET.default
     config
 }
 

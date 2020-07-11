@@ -12,6 +12,7 @@ import org.bukkit.event.player.PlayerItemDamageEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.player.PlayerTeleportEvent
+import org.bukkit.event.player.PlayerToggleSneakEvent
 import org.bukkit.inventory.ItemStack
 
 class PlayerListener(val plugin: WarPlus) : Listener {
@@ -99,5 +100,29 @@ class PlayerListener(val plugin: WarPlus) : Listener {
             return
         }
         event.isCancelled = playerInfo.team.warzone.onInventoryClick(player, event.action)
+    }
+
+    @EventHandler
+    fun onPlayerToggleSneakEvent(event: PlayerToggleSneakEvent) {
+        if (!event.isSneaking) {
+            // Only handle the initial sneak, not release
+            return
+        }
+
+        val player = event.player
+        val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
+        if (!playerInfo.inSpawn) {
+            return
+        }
+        val classes = playerInfo.team.resolveClasses()
+        if (classes.isEmpty()) {
+            return
+        }
+        val currentClass = playerInfo.warClass ?: return
+        val idx = classes.indexOf(currentClass.name)
+        val nextClassName = if (idx + 1 < classes.size) classes[idx + 1] else classes[0]
+        val nextClass = plugin.classManager.getClass(nextClassName) ?: return
+        playerInfo.team.warzone.equipClass(player, nextClass, true)
+        plugin.playerManager.sendMessage(player, "Equipped $nextClassName class")
     }
 }
