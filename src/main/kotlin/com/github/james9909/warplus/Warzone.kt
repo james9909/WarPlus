@@ -242,7 +242,9 @@ class Warzone(
         config.set("info.p1", region.p1.format(false))
         config.set("info.p2", region.p2.format(false))
 
-        config.set("classes", classes)
+        if (classes.isNotEmpty()) {
+            config.set("classes", classes)
+        }
         config.set("settings", warzoneSettings.config)
         config.set("team-settings", teamSettings.config)
         val teamsSection = config.createSection("teams")
