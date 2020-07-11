@@ -1,7 +1,27 @@
-global: {}
+global:
+  prefix: "&7WarPlus>&f "
 warzone:
   default:
     config:
+      block-heads: true
+      class-cmd: ""
+      death-messages: true
+      default-class: ""
+      enabled: true
+      max-health: 20
+      min-teams: 1
+      no-drops: true
+      monument-heal: 1
+      monument-heal-chance: 0.2
+      remove-entities-on-reset: true
+      reset-on-empty: true
 team:
   default:
     config:
+      econ-reward: 5
+      lives: 20
+      max-players: 20
+      max-score: 5
+      min-players: 1
+      place-blocks: true
+      spawn-style: small

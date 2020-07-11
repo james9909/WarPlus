@@ -92,6 +92,10 @@ class WarPlus : JavaPlugin {
         if (!dataFolder.exists()) {
             dataFolder.mkdir()
         }
+        val configFile = File(dataFolder, "config.yml")
+        if (!configFile.exists()) {
+            saveDefaultConfig()
+        }
         reloadConfig()
         classManager.loadClasses()
         warzoneManager.loadWarzones()
