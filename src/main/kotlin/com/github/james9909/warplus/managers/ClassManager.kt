@@ -10,12 +10,13 @@ class ClassManager(private val plugin: WarPlus) {
     private val classes: MutableMap<String, WarClass> = LinkedHashMap()
 
     fun loadClasses(config: YamlConfiguration) {
+        classes.clear()
         val classList = config.getConfigurationSection("classes") ?: return
         for (className in classList.getKeys(false)) {
             plugin.logger.info("Loading class $className")
             addClass(
-                    className,
-                    WarClass.fromConfig(className, classList.getConfigurationSection(className)!!) // NPE is impossible
+                className,
+                WarClass.fromConfig(className, classList.getConfigurationSection(className)!!) // NPE is impossible
             )
             plugin.logger.info("Loaded class $className")
         }
@@ -24,7 +25,7 @@ class ClassManager(private val plugin: WarPlus) {
     fun loadClasses() {
         val file = File(plugin.dataFolder, "classes.yml")
         if (!file.exists()) {
-            return
+            plugin.saveResource("classes.yml", true)
         }
         val config = YamlConfiguration.loadConfiguration(file)
         loadClasses(config)
