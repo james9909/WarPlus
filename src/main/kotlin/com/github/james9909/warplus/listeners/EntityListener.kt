@@ -1,6 +1,7 @@
 package com.github.james9909.warplus.listeners
 
 import com.github.james9909.warplus.WarPlus
+import com.github.james9909.warplus.config.TeamConfigType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.entity.Projectile
@@ -168,7 +169,11 @@ class EntityListener(val plugin: WarPlus) : Listener {
 
     @EventHandler
     fun onFoodLevelChange(event: FoodLevelChangeEvent) {
-        // TODO: Implement me
+        val player = event.entity as? Player ?: return
+        val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
+        if (!playerInfo.team.settings.get(TeamConfigType.HUNGER)) {
+            event.isCancelled = true
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -247,5 +252,14 @@ class EntityListener(val plugin: WarPlus) : Listener {
         val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
         val warzone = playerInfo.team.warzone
         event.isCancelled = warzone.onPlayerPickupItem(player, event.item)
+    }
+
+    @EventHandler
+    fun onEntityRegainHealthEvent(event: EntityRegainHealthEvent) {
+        val player = event.entity as? Player ?: return
+        val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
+        if (event.regainReason == EntityRegainHealthEvent.RegainReason.REGEN) {
+            event.isCancelled = true
+        }
     }
 }

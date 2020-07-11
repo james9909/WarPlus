@@ -23,5 +23,6 @@ team:
       max-players: 20
       max-score: 5
       min-players: 1
+      hunger: true
       place-blocks: true
       spawn-style: small

@@ -30,6 +30,7 @@ val DEFAULT_TEAM_CONFIG by lazy {
     config[TeamConfigType.MAX_PLAYERS.path] = TeamConfigType.MAX_PLAYERS.default
     config[TeamConfigType.MAX_SCORE.path] = TeamConfigType.MAX_SCORE.default
     config[TeamConfigType.MIN_PLAYERS.path] = TeamConfigType.MIN_PLAYERS.default
+    config[TeamConfigType.HUNGER.path] = TeamConfigType.HUNGER.default
     config[TeamConfigType.PLACE_BLOCKS.path] = TeamConfigType.PLACE_BLOCKS.default
     config[TeamConfigType.SPAWN_STYLE.path] = TeamConfigType.SPAWN_STYLE.default
     config
