@@ -44,14 +44,9 @@ class JoinWarzoneCommand : AbstractCommand() {
         return true
     }
 
-    override fun tab(plugin: WarPlus, sender: CommandSender, args: List<String>): MutableList<String> {
-        val warzoneNames = plugin.warzoneManager.getWarzoneNames()
-        return if (args.isNotEmpty()) {
-            warzoneNames.filter {
-                it.startsWith(args[0].toLowerCase())
-            }
-        } else {
-            warzoneNames
-        }.toMutableList()
+    override fun tab(plugin: WarPlus, sender: CommandSender, args: List<String>): List<String> {
+        return plugin.warzoneManager.getWarzoneNames().filter {
+            it.startsWith(args[0].toLowerCase())
+        }
     }
 }

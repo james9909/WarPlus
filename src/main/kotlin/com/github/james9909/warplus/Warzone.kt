@@ -3,6 +3,7 @@ package com.github.james9909.warplus
 import com.github.james9909.warplus.config.CascadingConfig
 import com.github.james9909.warplus.config.TeamConfigType
 import com.github.james9909.warplus.config.WarzoneConfigType
+import com.github.james9909.warplus.extensions.blockLocation
 import com.github.james9909.warplus.extensions.clearPotionEffects
 import com.github.james9909.warplus.extensions.format
 import com.github.james9909.warplus.objectives.AbstractObjective
@@ -12,6 +13,7 @@ import com.github.james9909.warplus.region.Region
 import com.github.james9909.warplus.structures.FlagStructure
 import com.github.james9909.warplus.structures.MonumentStructure
 import com.github.james9909.warplus.structures.TeamSpawnStructure
+import com.github.james9909.warplus.structures.WarzonePortalStructure
 import com.github.james9909.warplus.util.Message
 import com.github.james9909.warplus.util.PlayerState
 import com.github.james9909.warplus.util.copyRegion
@@ -60,12 +62,20 @@ class Warzone(
     val teamSettings: CascadingConfig = CascadingConfig(),
     val warzoneSettings: CascadingConfig = CascadingConfig(),
     val objectives: HashMap<String, AbstractObjective> = hashMapOf(),
-    val classes: List<String> = emptyList()
+    val classes: List<String> = emptyList(),
+    private val portals: HashMap<String, WarzonePortalStructure> = hashMapOf()
 ) {
     var state = WarzoneState.IDLING
     val teams = ConcurrentHashMap<TeamKind, WarTeam>()
     private val volumeFolder = "${plugin.dataFolder.absolutePath}/volumes/warzones"
     private val volumePath = "$volumeFolder/$name.schem"
+    private val portalsByLocation: HashMap<String, WarzonePortalStructure> = hashMapOf()
+
+    init {
+        portals.values.forEach {
+            portalsByLocation[it.origin.blockLocation().format(direction = false)] = it
+        }
+    }
 
     fun isEnabled(): Boolean = warzoneSettings.get(WarzoneConfigType.ENABLED)
 
@@ -257,6 +267,12 @@ class Warzone(
         objectives.toSortedMap().values.forEach {
             val objectiveSection = objectivesSection.createSection(it.name)
             it.saveConfig(objectiveSection)
+        }
+
+        val portalsSection = config.createSection("portals")
+        portals.toSortedMap().values.forEach {
+            val portalSection = portalsSection.createSection(it.name)
+            portalSection.set("origin", it.origin.format())
         }
         config.save(file)
     }
@@ -721,5 +737,27 @@ class Warzone(
         if (updatePlayerInfo) {
             playerInfo.warClass = warClass
         }
+    }
+
+    fun addPortal(portal: WarzonePortalStructure) {
+        portals[portal.name.toLowerCase()] = portal
+        portalsByLocation[portal.origin.blockLocation().format(direction = false)] = portal
+    }
+
+    fun removePortal(portal: WarzonePortalStructure) {
+        portals.remove(portal.name.toLowerCase())
+        portalsByLocation.remove(portal.origin.blockLocation().format(direction = false))
+    }
+
+    fun getPortalByLocation(location: Location): WarzonePortalStructure? {
+        return portalsByLocation[location.blockLocation().format(direction = false)]
+    }
+
+    fun getPortalByName(name: String): WarzonePortalStructure? {
+        return portals[name.toLowerCase()]
+    }
+
+    fun getPortals(): List<WarzonePortalStructure> {
+        return portals.values.toList()
     }
 }

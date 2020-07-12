@@ -67,7 +67,19 @@ class PlayerListener(val plugin: WarPlus) : Listener {
             return
         }
 
-        val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
+        val playerInfo = plugin.playerManager.getPlayerInfo(player)
+        if (playerInfo == null) {
+            // Handle player movement outside of warzones
+            plugin.warzoneManager.getWarzones().forEach { warzone ->
+                if (!warzone.isEnabled() || warzone.state == WarzoneState.EDITING) {
+                    return@forEach
+                }
+                warzone.getPortalByLocation(to) ?: return@forEach
+                warzone.addPlayer(player)
+            }
+            return
+        }
+
         val team = playerInfo.team
         val inSpawn = team.spawns.any {
             it.contains(to)

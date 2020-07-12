@@ -19,6 +19,7 @@ import com.sk89q.worldedit.regions.CuboidRegion
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
+import java.io.File
 
 abstract class AbstractStructure(val plugin: WarPlus, val origin: Location) {
     val region by lazy {
@@ -79,6 +80,14 @@ abstract class AbstractStructure(val plugin: WarPlus, val origin: Location) {
         return Ok(Unit)
     }
 
+    fun deleteVolume(): Boolean {
+        val file = File(getVolumePath())
+        if (file.exists()) {
+            return file.delete()
+        }
+        return false
+    }
+
     fun build() {
         val structure = getStructure()
         val (topLeft, _) = corners
@@ -93,5 +102,8 @@ abstract class AbstractStructure(val plugin: WarPlus, val origin: Location) {
                 }
             }
         }
+        postBuild()
     }
+
+    open fun postBuild() {}
 }
