@@ -2,7 +2,6 @@ package com.github.james9909.warplus.structures
 
 import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.Warzone
-import com.github.james9909.warplus.util.Orientation
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
