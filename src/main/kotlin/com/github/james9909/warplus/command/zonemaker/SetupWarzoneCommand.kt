@@ -37,13 +37,11 @@ class SetupWarzoneCommand : AbstractCommand() {
     }
 
     override fun tab(plugin: WarPlus, sender: CommandSender, args: List<String>): List<String> {
-        val warzoneNames = plugin.warzoneManager.getWarzoneNames()
-        return if (args.isNotEmpty()) {
-            warzoneNames.filter {
+        return when (args.size) {
+            1 -> plugin.warzoneManager.getWarzoneNames().filter {
                 it.startsWith(args[0].toLowerCase())
             }
-        } else {
-            warzoneNames
+            else -> emptyList()
         }
     }
 }
