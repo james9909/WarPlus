@@ -134,7 +134,7 @@ class EntityListener(val plugin: WarPlus) : Listener {
         when (damager) {
             is Player -> handleMobDamageByPlayer(event, defender, damager)
             null -> {
-               // Do nothing
+                // Do nothing
             }
         }
     }
