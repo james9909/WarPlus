@@ -108,9 +108,7 @@ class Warzone(
     private fun initialize(resetTeamScores: Boolean) {
         restoreVolume()
         teams.values.forEach { team ->
-            if (resetTeamScores) {
-                team.resetAttributes()
-            }
+            team.resetAttributes(resetTeamScores)
             team.resetSpawns()
             team.players.forEach { player ->
                 respawnPlayer(player)

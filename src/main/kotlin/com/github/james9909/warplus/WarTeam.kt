@@ -75,9 +75,11 @@ class WarTeam(
 
     fun maxLives(): Int = settings.get(TeamConfigType.LIVES)
 
-    fun resetAttributes() {
+    fun resetAttributes(resetTeamScore: Boolean) {
         lives = maxLives()
-        score = 0
+        if (resetTeamScore) {
+            score = 0
+        }
     }
 
     fun reset() {
