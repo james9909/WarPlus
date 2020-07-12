@@ -78,6 +78,11 @@ class EntityListener(val plugin: WarPlus) : Listener {
         }
 
         // At this point, both players are in a warzone
+        if (damagerInfo.inSpawn || defenderInfo.inSpawn) {
+            event.isCancelled = true
+            return
+        }
+
         if (damagerInfo.team.warzone != defenderInfo.team.warzone) {
             // Players in different warzones cannot damage each other
             event.isCancelled = true
