@@ -139,6 +139,7 @@ class Warzone(
         plugin.playerManager.removePlayer(player)
         playerState?.state?.restore(player)
 
+        portals.forEach { it.value.updateBlocks() }
         if (numPlayers() == 0 && state == WarzoneState.RUNNING && warzoneSettings.get(WarzoneConfigType.RESET_ON_EMPTY)) {
             // Only reinitialize the zone if everyone left in the middle of the game
             plugin.logger.info("Last player left warzone $name. Reinitializing the warzone...")
@@ -170,6 +171,7 @@ class Warzone(
         assert(!team.isFull())
         team.addPlayer(player)
         plugin.playerManager.savePlayerState(player, team)
+        portals.forEach { it.value.updateBlocks() }
 
         // Equip default class
         val defaultClass = team.settings.get(TeamConfigType.DEFAULT_CLASS)

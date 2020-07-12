@@ -34,10 +34,10 @@ class WarzonePortalStructure(plugin: WarPlus, origin: Location, val name: String
         val signData = signBlock.blockData as Directional
         signData.facing = orientation.back.toBlockFace()
         signBlock.blockData = signData
-        updateSign()
+        updateBlocks()
     }
 
-    fun updateSign() {
+    fun updateBlocks() {
         val block = signBlock.state
         val sign = block as org.bukkit.block.Sign
         sign.setLine(0, "Warzone")
@@ -45,5 +45,17 @@ class WarzonePortalStructure(plugin: WarPlus, origin: Location, val name: String
         sign.setLine(2, "${warzone.numPlayers()}/${warzone.maxPlayers()}")
         sign.setLine(3, "${warzone.teams.size} teams")
         block.update(true)
+        if (warzone.numPlayers() > 0) {
+            origin.block
+                .getRelative(orientation.left.toBlockFace())
+                .getRelative(BlockFace.UP, 2)
+                .type = Material.REDSTONE_BLOCK
+            origin.block
+                .getRelative(orientation.right.toBlockFace())
+                .getRelative(BlockFace.UP, 2)
+                .type = Material.REDSTONE_BLOCK
+        } else {
+            restoreVolume()
+        }
     }
 }
