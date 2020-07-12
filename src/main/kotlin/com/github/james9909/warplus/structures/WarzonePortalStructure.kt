@@ -12,7 +12,6 @@ class WarzonePortalStructure(plugin: WarPlus, origin: Location, val name: String
     override val prefix = "zone/portals"
     // Origin starts at the player's legs, not beneath it
     override val corners by lazy {
-        val orientation = Orientation.fromLocation(origin)
         val topLeft = origin.block
             .getRelative(orientation.left.toBlockFace())
         val bottomRight = origin.block
@@ -21,7 +20,6 @@ class WarzonePortalStructure(plugin: WarPlus, origin: Location, val name: String
         Pair(topLeft.location, bottomRight.location)
     }
     val signBlock by lazy {
-        val orientation = Orientation.fromLocation(origin)
         origin.block
             .getRelative(orientation.back.toBlockFace())
             .getRelative(BlockFace.UP, 2)
@@ -32,7 +30,6 @@ class WarzonePortalStructure(plugin: WarPlus, origin: Location, val name: String
     }
 
     override fun postBuild() {
-        val orientation = Orientation.fromLocation(origin)
         signBlock.type = Material.WALL_SIGN
         val signData = signBlock.blockData as Directional
         signData.facing = orientation.back.toBlockFace()

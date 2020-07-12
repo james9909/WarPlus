@@ -30,6 +30,7 @@ abstract class AbstractStructure(val plugin: WarPlus, val origin: Location) {
             p2
         )
     }
+    val orientation = Orientation.fromLocation(origin)
 
     abstract val prefix: String
     abstract val corners: Pair<Location, Location>
@@ -91,7 +92,6 @@ abstract class AbstractStructure(val plugin: WarPlus, val origin: Location) {
     fun build() {
         val structure = getStructure()
         val (topLeft, _) = corners
-        val orientation = Orientation.fromLocation(origin)
         for ((yOffset, layer) in structure.withIndex()) {
             val blockY = topLeft.block.getRelative(BlockFace.UP, yOffset)
             for ((zOffset, row) in layer.withIndex()) {
