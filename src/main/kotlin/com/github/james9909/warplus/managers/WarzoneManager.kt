@@ -19,6 +19,7 @@ import com.github.james9909.warplus.objectives.createMonumentObjective
 import com.github.james9909.warplus.region.Region
 import com.github.james9909.warplus.structures.SpawnStyle
 import com.github.james9909.warplus.structures.TeamSpawnStructure
+import com.github.james9909.warplus.structures.WarzonePortalStructure
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
@@ -30,6 +31,7 @@ class WarzoneManager(val plugin: WarPlus) {
     private val warzones = mutableMapOf<String, Warzone>()
 
     fun loadWarzones() {
+        warzones.clear()
         plugin.dataFolder.listFiles()?.forEach {
             if (!it.name.startsWith("warzone-") || it.extension != "yml") {
                 return@forEach
@@ -55,6 +57,7 @@ class WarzoneManager(val plugin: WarPlus) {
         val teamSettings = config.getOrCreateSection("team-settings")
         val teamsSection = config.getOrCreateSection("teams")
         val objectivesSection = config.getOrCreateSection("objectives")
+        val portalsSection = config.getOrCreateSection("portals")
 
         // Get region information
         val worldName = infoSection.getString("world") ?: plugin.server.worlds[0].name
@@ -191,11 +194,32 @@ class WarzoneManager(val plugin: WarPlus) {
                 plugin.logger.warning("Could not parse objective: $objectiveName")
             }
         }
+
+        // Load portals
+        for (portalName in portalsSection.getKeys(false)) {
+            val portalSection = portalsSection.getConfigurationSection(portalName) ?: continue
+            val origin = portalSection.getLocation("origin")
+            if (origin == null) {
+                plugin.logger.warning("Invalid location for portal $portalName")
+                continue
+            }
+            val portal = WarzonePortalStructure(
+                plugin, origin, portalName, warzone
+            )
+            if (plugin.hasPlugin("WorldEdit")) {
+                portal.build()
+            }
+            warzone.addPortal(portal)
+        }
         return Ok(warzone)
     }
 
     fun getWarzoneNames(): List<String> {
         return this.warzones.keys.toList()
+    }
+
+    fun getWarzones(): List<Warzone> {
+        return this.warzones.values.toList()
     }
 
     fun getWarzone(name: String): Warzone? {

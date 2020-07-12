@@ -36,7 +36,7 @@ class SetupWarzoneCommand : AbstractCommand() {
         return true
     }
 
-    override fun tab(plugin: WarPlus, sender: CommandSender, args: List<String>): MutableList<String> {
+    override fun tab(plugin: WarPlus, sender: CommandSender, args: List<String>): List<String> {
         val warzoneNames = plugin.warzoneManager.getWarzoneNames()
         return if (args.isNotEmpty()) {
             warzoneNames.filter {
@@ -44,6 +44,6 @@ class SetupWarzoneCommand : AbstractCommand() {
             }
         } else {
             warzoneNames
-        }.toMutableList()
+        }
     }
 }

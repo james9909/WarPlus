@@ -2,7 +2,6 @@ package com.github.james9909.warplus.structures
 
 import com.github.james9909.warplus.TeamKind
 import com.github.james9909.warplus.WarPlus
-import com.github.james9909.warplus.util.Orientation
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
@@ -11,7 +10,6 @@ class FlagStructure(plugin: WarPlus, origin: Location, val kind: TeamKind) :
     AbstractStructure(plugin, origin) {
     override val prefix = "teams/flags"
     override val corners: Pair<Location, Location> by lazy {
-        val orientation = Orientation.fromLocation(origin)
         val topLeft = origin.block
             .getRelative(orientation.front.toBlockFace())
             .getRelative(orientation.left.toBlockFace())

@@ -23,7 +23,7 @@ class ReloadCommand : AbstractCommand() {
         return true
     }
 
-    override fun tab(plugin: WarPlus, sender: CommandSender, args: List<String>): MutableList<String> {
-        return mutableListOf()
+    override fun tab(plugin: WarPlus, sender: CommandSender, args: List<String>): List<String> {
+        return emptyList()
     }
 }

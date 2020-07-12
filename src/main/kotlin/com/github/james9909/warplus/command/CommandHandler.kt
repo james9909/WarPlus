@@ -8,11 +8,13 @@ import com.github.james9909.warplus.command.regular.ClassCommand
 import com.github.james9909.warplus.command.regular.JoinWarzoneCommand
 import com.github.james9909.warplus.command.regular.LeaveWarzoneCommand
 import com.github.james9909.warplus.command.zonemaker.AddMonumentCommand
+import com.github.james9909.warplus.command.zonemaker.AddPortalCommand
 import com.github.james9909.warplus.command.zonemaker.AddTeamFlagCommand
 import com.github.james9909.warplus.command.zonemaker.AddTeamSpawnCommand
 import com.github.james9909.warplus.command.zonemaker.ClassChestCommand
 import com.github.james9909.warplus.command.zonemaker.CreateWarzoneCommand
 import com.github.james9909.warplus.command.zonemaker.DeleteMonumentCommand
+import com.github.james9909.warplus.command.zonemaker.DeletePortalCommand
 import com.github.james9909.warplus.command.zonemaker.DeleteTeamFlagCommand
 import com.github.james9909.warplus.command.zonemaker.DeleteTeamSpawnCommand
 import com.github.james9909.warplus.command.zonemaker.SetupWarzoneCommand
@@ -41,6 +43,8 @@ class CommandHandler(val plugin: WarPlus) : CommandExecutor, TabCompleter {
         COMMANDS["addmonument"] = AddMonumentCommand()
         COMMANDS["deletemonument"] = DeleteMonumentCommand()
         COMMANDS["reload"] = ReloadCommand()
+        COMMANDS["addportal"] = AddPortalCommand()
+        COMMANDS["deleteportal"] = DeletePortalCommand()
     }
 
     override fun onTabComplete(
@@ -63,7 +67,7 @@ class CommandHandler(val plugin: WarPlus) : CommandExecutor, TabCompleter {
             return COMMANDS.keys.filter { it.startsWith(args[0]) }.toMutableList()
         }
         val command = COMMANDS[args[0]] ?: return mutableListOf()
-        return command.tab(plugin, sender, args.drop(1))
+        return command.tab(plugin, sender, args.drop(1)).toMutableList()
     }
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {

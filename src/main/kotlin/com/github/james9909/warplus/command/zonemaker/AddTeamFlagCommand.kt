@@ -48,7 +48,7 @@ class AddTeamFlagCommand : AbstractCommand() {
         return true
     }
 
-    override fun tab(plugin: WarPlus, sender: CommandSender, args: List<String>): MutableList<String> {
-        return TeamKind.values().map { it.name.toLowerCase() }.toMutableList()
+    override fun tab(plugin: WarPlus, sender: CommandSender, args: List<String>): List<String> {
+        return TeamKind.values().map { it.name.toLowerCase() }
     }
 }
