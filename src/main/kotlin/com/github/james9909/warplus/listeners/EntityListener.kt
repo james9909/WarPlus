@@ -3,6 +3,8 @@ package com.github.james9909.warplus.listeners
 import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.config.TeamConfigType
 import org.bukkit.entity.Entity
+import org.bukkit.entity.FallingBlock
+import org.bukkit.entity.LightningStrike
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.entity.Projectile
@@ -53,7 +55,7 @@ class EntityListener(val plugin: WarPlus) : Listener {
         when (damager) {
             is Player -> handlePlayerDamageByPlayer(event, defender, damager, canFriendlyFire)
             is LivingEntity -> handlePlayerDamageByMonster(event, defender, damager)
-            null -> handleNaturalPlayerDamage(event, defender)
+            is FallingBlock, is LightningStrike, null -> handleNaturalPlayerDamage(event, defender)
             else -> {
                 plugin.logger.severe("Failed to handle damage event:\nevent: $event\ndamager: $damager")
             }
