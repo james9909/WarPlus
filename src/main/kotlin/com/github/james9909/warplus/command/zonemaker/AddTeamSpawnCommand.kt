@@ -43,6 +43,9 @@ class AddTeamSpawnCommand : AbstractCommand() {
     }
 
     override fun tab(plugin: WarPlus, sender: CommandSender, args: List<String>): List<String> {
-        return TeamKind.values().map { it.name.toLowerCase() }
+        return when (args.size) {
+            1 -> TeamKind.values().map { it.name.toLowerCase() }
+            else -> emptyList()
+        }
     }
 }

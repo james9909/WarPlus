@@ -58,11 +58,12 @@ class ClassChestCommand : AbstractCommand() {
                     it.startsWith(args[0])
                 }
             }
-            else -> {
+            2 -> {
                 plugin.classManager.getClassNames().filter {
                     it.startsWith(args[1].toLowerCase())
                 }
             }
+            else -> emptyList()
         }
     }
 }
