@@ -430,6 +430,7 @@ class Warzone(
             DamageCause.DROWNING -> "$playerString drowned"
             DamageCause.FALL -> "$playerString fell to an untimely death"
             DamageCause.SUFFOCATION -> "$playerString suffocated"
+            DamageCause.PROJECTILE -> "$playerString was shot to death"
             else -> {
                 plugin.logger.info("Unhandled cause of death: $cause")
                 "$playerString died"
