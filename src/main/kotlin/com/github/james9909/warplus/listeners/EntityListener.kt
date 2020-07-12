@@ -234,7 +234,17 @@ class EntityListener(val plugin: WarPlus) : Listener {
         val effects = potion.effects
         loop@ for (effect in effects) {
             when (effect.type) {
-                PotionEffectType.HARM, PotionEffectType.POISON, PotionEffectType.WEAKNESS, PotionEffectType.SLOW -> {
+                PotionEffectType.WITHER,
+                PotionEffectType.HARM,
+                PotionEffectType.POISON,
+                PotionEffectType.WEAKNESS,
+                PotionEffectType.BLINDNESS,
+                PotionEffectType.CONFUSION,
+                PotionEffectType.HUNGER,
+                PotionEffectType.SLOW_DIGGING,
+                PotionEffectType.UNLUCK,
+                PotionEffectType.SLOW_DIGGING,
+                PotionEffectType.SLOW -> {
                     beneficial = false
                     break@loop
                 }
@@ -280,8 +290,8 @@ class EntityListener(val plugin: WarPlus) : Listener {
                     continue
                 }
                 val sameTeam = warPlayer.team == warShooter.team
-                if (sameTeam && !beneficial) {
-                    // Don't affect teammates with hurtful potions
+                if (sameTeam && !beneficial || (!sameTeam && beneficial)) {
+                    // Don't affect teammates with hurtful potions and don't affect enemies with beneficial ones
                     event.setIntensity(entity, 0.0)
                 }
             }
