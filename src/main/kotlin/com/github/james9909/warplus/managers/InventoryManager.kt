@@ -29,10 +29,10 @@ class InventoryManager(val plugin: WarPlus) {
             return
         }
         player.inventory.contents = items
+        players.remove(player)
     }
 
     fun restoreInventoryFromFile(player: Player) {
-        println("wat")
         val playerFile = File(baseDirectory, "${player.name}.yml")
         if (!playerFile.exists()) {
             return
