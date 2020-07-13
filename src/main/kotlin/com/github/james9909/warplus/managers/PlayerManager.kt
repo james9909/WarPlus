@@ -3,6 +3,7 @@ package com.github.james9909.warplus.managers
 import com.github.james9909.warplus.WarTeam
 import com.github.james9909.warplus.WarClass
 import com.github.james9909.warplus.WarPlus
+import com.github.james9909.warplus.util.LastDamager
 import com.github.james9909.warplus.util.Message
 import com.github.james9909.warplus.util.PlayerState
 import org.bukkit.ChatColor
@@ -14,7 +15,8 @@ data class PlayerInfo(
     val team: WarTeam,
     val state: PlayerState,
     var inSpawn: Boolean,
-    var warClass: WarClass?
+    var warClass: WarClass?,
+    val lastDamager: LastDamager
 )
 
 class PlayerManager(plugin: WarPlus) {
@@ -46,7 +48,7 @@ class PlayerManager(plugin: WarPlus) {
     }
 
     fun savePlayerState(player: Player, team: WarTeam): PlayerInfo {
-        val playerInfo = PlayerInfo(team, PlayerState.fromPlayer(player), true, null)
+        val playerInfo = PlayerInfo(team, PlayerState.fromPlayer(player), true, null, LastDamager(null))
         players[player] = playerInfo
         return playerInfo
     }
