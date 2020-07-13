@@ -19,7 +19,7 @@ data class PlayerInfo(
     val lastDamager: LastDamager
 )
 
-class PlayerManager(plugin: WarPlus) {
+class PlayerManager(val plugin: WarPlus) {
     private val players = ConcurrentHashMap<Player, PlayerInfo>()
     private val chatPrefix: String
 
@@ -50,6 +50,7 @@ class PlayerManager(plugin: WarPlus) {
     fun savePlayerState(player: Player, team: WarTeam): PlayerInfo {
         val playerInfo = PlayerInfo(team, PlayerState.fromPlayer(player), true, null, LastDamager(null))
         players[player] = playerInfo
+        plugin.inventoryManager.saveInventory(player)
         return playerInfo
     }
 

@@ -136,6 +136,7 @@ class Warzone(
         val playerState = plugin.playerManager.getPlayerInfo(player)
         plugin.playerManager.removePlayer(player)
         playerState?.state?.restore(player)
+        plugin.inventoryManager.restoreInventory(player)
 
         portals.forEach { it.value.updateBlocks() }
         if (numPlayers() == 0 && state == WarzoneState.RUNNING && warzoneSettings.get(WarzoneConfigType.RESET_ON_EMPTY)) {
@@ -209,10 +210,10 @@ class Warzone(
             }
             healthAttr.baseValue
         }
+        player.inventory.clear()
         PlayerState(
             health = maxHealth,
-            maxHealth = maxHealth,
-            inventoryContents = arrayOf()
+            maxHealth = maxHealth
         ).restore(player)
     }
 

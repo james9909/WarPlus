@@ -11,6 +11,7 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerItemDamageEvent
+import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.player.PlayerTeleportEvent
@@ -159,5 +160,10 @@ class PlayerListener(val plugin: WarPlus) : Listener {
         val nextClass = plugin.classManager.getClass(nextClassName) ?: return
         playerInfo.team.warzone.equipClass(player, nextClass, true)
         plugin.playerManager.sendMessage(player, "Equipped $nextClassName class")
+    }
+
+    @EventHandler
+    fun onPlayerJoin(event: PlayerJoinEvent) {
+        plugin.inventoryManager.restoreInventoryFromFile(event.player)
     }
 }

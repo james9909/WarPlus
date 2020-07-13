@@ -26,6 +26,8 @@ class SetupWarzoneCommand : AbstractCommand() {
             return true
         }
         warzone.state = WarzoneState.EDITING
+        plugin.inventoryManager.saveInventory(sender)
+
         val prompt = SetupWarzonePrompt(plugin, sender, warzone)
         val conversation = Conversation(plugin, sender, prompt)
         prompt.conversation = conversation

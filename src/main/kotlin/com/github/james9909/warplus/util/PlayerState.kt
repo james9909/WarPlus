@@ -5,7 +5,6 @@ import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect
 
 const val DEFAULT_MAX_HEALTH = 20.0
@@ -33,8 +32,7 @@ data class PlayerState(
     val allowFlight: Boolean = false,
     val fallDistance: Float = DEFAULT_FALL_DISTANCE,
     val fireTicks: Int = DEFAULT_FIRE_TICKS,
-    val potionEffects: Collection<PotionEffect>? = null,
-    val inventoryContents: Array<ItemStack>? = null
+    val potionEffects: Collection<PotionEffect>? = null
 ) {
 
     fun restore(player: Player) {
@@ -48,11 +46,8 @@ data class PlayerState(
         player.level = level
         player.isFlying = flying
 
-        player.setMaxHealth(maxHealth)
+        player.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.baseValue = maxHealth
 
-        if (inventoryContents != null) {
-            player.inventory.contents = inventoryContents
-        }
         if (potionEffects != null) {
             player.setPotionEffects(potionEffects)
         }
@@ -82,11 +77,6 @@ data class PlayerState(
         if (fallDistance != other.fallDistance) return false
         if (fireTicks != other.fireTicks) return false
         if (potionEffects != other.potionEffects) return false
-        if (inventoryContents != null) {
-            if (other.inventoryContents == null) return false
-            if (!inventoryContents.contentEquals(other.inventoryContents)) return false
-        } else if (other.inventoryContents != null) return false
-
         return true
     }
 
@@ -106,7 +96,6 @@ data class PlayerState(
         result = 31 * result + fallDistance.hashCode()
         result = 31 * result + fireTicks
         result = 31 * result + (potionEffects?.hashCode() ?: 0)
-        result = 31 * result + (inventoryContents?.contentHashCode() ?: 0)
         return result
     }
 
@@ -128,8 +117,7 @@ data class PlayerState(
                 player.allowFlight,
                 player.fallDistance,
                 player.fireTicks,
-                player.activePotionEffects,
-                player.inventory.contents.clone()
+                player.activePotionEffects
             )
         }
     }

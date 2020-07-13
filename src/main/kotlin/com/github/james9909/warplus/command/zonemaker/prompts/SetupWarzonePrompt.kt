@@ -129,6 +129,7 @@ class SetupWarzonePrompt(val plugin: WarPlus, val player: Player, val warzone: W
         } else {
             player.sendMessage("Setup incomplete. Missing points.")
         }
+        plugin.inventoryManager.restoreInventory(player)
     }
 
     @EventHandler
