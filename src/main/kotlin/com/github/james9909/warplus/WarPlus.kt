@@ -9,6 +9,7 @@ import com.github.james9909.warplus.listeners.MagicSpellsListener
 import com.github.james9909.warplus.listeners.PlayerListener
 import com.github.james9909.warplus.managers.ClassManager
 import com.github.james9909.warplus.managers.DatabaseManager
+import com.github.james9909.warplus.managers.InventoryManager
 import com.github.james9909.warplus.managers.PlayerManager
 import com.github.james9909.warplus.managers.WarzoneManager
 import com.github.james9909.warplus.runnable.UpdateScoreboardRunnable
@@ -56,6 +57,7 @@ class WarPlus : JavaPlugin {
     val classManager = ClassManager(this)
     val warzoneManager = WarzoneManager(this)
     val playerManager = PlayerManager(this)
+    val inventoryManager = InventoryManager(this)
     private val databaseManager = DatabaseManager(this, "jdbc:sqlite:$dataFolder/war.db")
     private var usr = UpdateScoreboardRunnable(this)
     var loaded = AtomicBoolean()
