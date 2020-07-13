@@ -123,6 +123,7 @@ class SetupWarzonePrompt(val plugin: WarPlus, val player: Player, val warzone: W
             if (warzone.pruneStructures()) {
                 player.sendMessage("Structures that are no longer within the warzone have been removed")
             }
+            warzone.saveVolume()
             warzone.saveConfig()
             player.sendMessage("Setup complete!")
             warzone.state = WarzoneState.IDLING
