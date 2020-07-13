@@ -401,18 +401,23 @@ class Warzone(
         val defenderInfo = plugin.playerManager.getPlayerInfo(defender) ?: return
 
         if (warzoneSettings.get(WarzoneConfigType.DEATH_MESSAGES)) {
-            val weapon = attacker.inventory.itemInMainHand
-            val weaponName = if (weapon.hasItemMeta() && weapon.itemMeta!!.hasDisplayName()) {
-                weapon.itemMeta!!.displayName
-            } else if (weapon.type == Material.AIR) {
-                "hand"
-            } else {
-                weapon.type.toString()
-            }.toLowerCase().replace('_', ' ')
             val attackerColor = attackerInfo.team.kind.chatColor
             val defenderColor = defenderInfo.team.kind.chatColor
-            val message =
-                "${attackerColor}${attacker.name}${ChatColor.RESET}'s $weaponName killed ${defenderColor}${defender.name}${ChatColor.RESET}"
+            val formattedAttacker = "${attackerColor}${attacker.name}${ChatColor.RESET}"
+            val formattedDefender = "${defenderColor}${defender.name}${ChatColor.RESET}"
+            val message = if (!direct) {
+                "$formattedAttacker killed $formattedDefender"
+            } else {
+                val weapon = attacker.inventory.itemInMainHand
+                val weaponName = if (weapon.hasItemMeta() && weapon.itemMeta!!.hasDisplayName()) {
+                    weapon.itemMeta!!.displayName
+                } else if (weapon.type == Material.AIR) {
+                    "hand"
+                } else {
+                    weapon.type.toString()
+                }.toLowerCase().replace('_', ' ')
+                "$formattedAttacker's $weaponName killed $formattedDefender"
+            }
             broadcast(message)
         }
 
@@ -421,6 +426,13 @@ class Warzone(
 
     fun handleNaturalDeath(player: Player, cause: DamageCause) {
         val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
+        when (val damager = playerInfo.lastDamager.damager) {
+            is Player -> {
+                handleKill(damager, player, damager, false)
+                return
+            }
+            null -> {}
+        }
         val playerString = "${playerInfo.team.kind.chatColor}${player.name}${ChatColor.RESET}"
         val message = when (cause) {
             DamageCause.BLOCK_EXPLOSION -> "$playerString exploded"

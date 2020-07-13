@@ -98,6 +98,7 @@ class EntityListener(val plugin: WarPlus) : Listener {
         }
 
         if (event.finalDamage < defender.health) {
+            defenderInfo.lastDamager.damager = damager
             return
         }
 
