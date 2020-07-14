@@ -156,13 +156,15 @@ class EntityListener(val plugin: WarPlus) : Listener {
 
     @EventHandler
     fun onEntityExplode(event: EntityExplodeEvent) {
-        val warzone = plugin.warzoneManager.getWarzoneByLocation(event.location) ?: return
-
         val originalSize = event.blockList().size
+        // Prevent blocks that are important to any warzone from being blown up
         event.blockList().removeIf { block ->
-            // Prevent blocks that are important to the warzone from being blown up
-            warzone.isSpawnBlock(block) || warzone.objectives.values.any { objective ->
-                objective.handleBlockBreak(null, block)
+            plugin.warzoneManager.getWarzones().any { warzone ->
+                warzone.contains(block.location) &&
+                warzone.isSpawnBlock(block) ||
+                warzone.objectives.values.any { objective ->
+                    objective.handleBlockBreak(null, block)
+                }
             }
         }
 
