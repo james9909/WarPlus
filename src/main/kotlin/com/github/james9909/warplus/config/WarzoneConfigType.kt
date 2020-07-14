@@ -3,6 +3,7 @@ package com.github.james9909.warplus.config
 class WarzoneConfigType {
     companion object {
         val BLOCK_HEADS = booleanKey("block-heads", true)
+        val CAN_BREAK_BLOCKS = booleanKey("can-break-blocks", true)
         val CLASS_CMD = stringKey("class-cmd", "")
         val DEATH_MESSAGES = booleanKey("death-messages", true)
         val ENABLED = booleanKey("enabled", true)
