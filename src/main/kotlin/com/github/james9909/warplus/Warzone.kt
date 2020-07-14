@@ -121,10 +121,12 @@ class Warzone(
     }
 
     @Synchronized
-    fun removePlayer(player: Player, team: WarTeam) {
+    fun removePlayer(player: Player, team: WarTeam, showLeaveMessage: Boolean = true) {
         team.removePlayer(player)
-        broadcast("${player.name} left the zone")
         removePlayer(player)
+        if (showLeaveMessage) {
+            broadcast("${player.name} left the zone")
+        }
     }
 
     private fun removePlayer(player: Player) {
@@ -369,18 +371,23 @@ class Warzone(
     fun handleWin(winningTeams: List<WarTeam>) {
         broadcast("Score cap reached. Game is over! Winning teams: ${winningTeams.joinToString()}")
         state = WarzoneState.IDLING
+        val numPlayers = numPlayers()
+        val maxPlayers = maxPlayers()
         for ((_, team) in teams) {
             val won = team in winningTeams
-            val econReward = getEconReward(team.settings.get(TeamConfigType.ECON_REWARD))
-            for (player in team.players.toList()) {
-                removePlayer(player, team)
+            val econReward = getEconReward(team.settings.get(TeamConfigType.ECON_REWARD), numPlayers, maxPlayers)
+            val teamPlayers = team.players.toList()
+            for (player in teamPlayers) {
+                removePlayer(player, team, showLeaveMessage = false)
             }
             if (won) {
                 plugin.economy?.apply {
-                    team.players.toList().forEach {
+                    teamPlayers.forEach {
                         val response = depositPlayer(it, econReward)
-                        if (response.transactionSuccess()) {
+                        if (!response.transactionSuccess()) {
                             plugin.logger.warning("Failed to reward ${it.name}: ${response.errorMessage}")
+                        } else {
+                            plugin.playerManager.sendMessage(it, "You earned \$${response.amount}")
                         }
                     }
                 }
@@ -670,13 +677,11 @@ class Warzone(
         }
     }
 
-    private fun getEconReward(base: Double): Double {
-        val totalPlayers = numPlayers()
-        val maxCapacity = maxPlayers()
-        if (totalPlayers < 2) {
+    private fun getEconReward(base: Double, numPlayers: Int, maxPlayers: Int): Double {
+        if (numPlayers < 2) {
             return 0.0
         }
-        return max(0.0, base + (base * (totalPlayers - 2) / (sqrt(maxCapacity.toDouble()) * 2)))
+        return max(0.0, base + (base * (numPlayers - 2) / (sqrt(maxPlayers.toDouble()) * 2)))
     }
 
     private fun removeEntities() {
