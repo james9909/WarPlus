@@ -12,6 +12,7 @@ warzone:
   default:
     config:
       block-heads: true
+      can-break-blocks: true
       class-cmd: ""
       death-messages: true
       enabled: true
