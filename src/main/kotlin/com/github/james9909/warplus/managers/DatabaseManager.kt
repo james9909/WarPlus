@@ -2,26 +2,19 @@ package com.github.james9909.warplus.managers
 
 import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.WarSqlError
+import com.github.james9909.warplus.sql.ConnectionFactory
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.unwrap
 import java.sql.Connection
-import java.sql.DriverManager
 
-class DatabaseManager(private val plugin: WarPlus, private val database: String) {
-
-    private fun getConnection(): Result<Connection, WarSqlError> {
-        return try {
-            Class.forName("org.sqlite.JDBC")
-            Ok(DriverManager.getConnection(database))
-        } catch (e: Exception) {
-            Err(WarSqlError("Failed to connect to the database: $e"))
-        }
-    }
-
+class DatabaseManager(
+    private val plugin: WarPlus,
+    private val connectionFactory: ConnectionFactory
+) {
     private fun runSql(func: (conn: Connection) -> Unit): Result<Boolean, WarSqlError> {
-        return when (val connResult = getConnection()) {
+        return when (val connResult = connectionFactory.getConnection()) {
             is Err -> {
                 plugin.logger.info(connResult.error.toString())
                 connResult
@@ -85,5 +78,13 @@ class DatabaseManager(private val plugin: WarPlus, private val database: String)
             statement.execute("DROP TABLE players")
             statement.close()
         }
+    }
+
+    fun init() {
+        connectionFactory.init()
+    }
+
+    fun close() {
+        connectionFactory.close()
     }
 }
