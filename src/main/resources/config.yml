@@ -1,5 +1,13 @@
 global:
   prefix: "&7WarPlus>&f "
+  database:
+    enabled: false
+    dialect: mysql
+    server: localhost
+    port: 3306
+    database-name: WarPlus
+    username: root
+    password: root
 warzone:
   default:
     config:

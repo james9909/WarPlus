@@ -1,8 +1,11 @@
 package com.github.james9909.warplus
 
 import com.github.james9909.warplus.command.CommandHandler
+import com.github.james9909.warplus.config.DatabaseDialect
 import com.github.james9909.warplus.config.TeamConfigType
+import com.github.james9909.warplus.config.WarConfigType
 import com.github.james9909.warplus.config.WarzoneConfigType
+import com.github.james9909.warplus.extensions.get
 import com.github.james9909.warplus.listeners.BlockListener
 import com.github.james9909.warplus.listeners.EntityListener
 import com.github.james9909.warplus.listeners.MagicSpellsListener
@@ -13,6 +16,8 @@ import com.github.james9909.warplus.managers.InventoryManager
 import com.github.james9909.warplus.managers.PlayerManager
 import com.github.james9909.warplus.managers.WarzoneManager
 import com.github.james9909.warplus.runnable.UpdateScoreboardRunnable
+import com.github.james9909.warplus.sql.MySqlConnectionFactory
+import com.github.james9909.warplus.sql.SqliteConnectionFactory
 import net.milkbowl.vault.economy.Economy
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.event.HandlerList
@@ -21,6 +26,7 @@ import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.plugin.java.JavaPluginLoader
 import org.yaml.snakeyaml.error.YAMLException
 import java.io.File
+import java.lang.IllegalArgumentException
 import java.util.concurrent.atomic.AtomicBoolean
 
 val DEFAULT_TEAM_CONFIG by lazy {
@@ -58,7 +64,7 @@ class WarPlus : JavaPlugin {
     val warzoneManager = WarzoneManager(this)
     val playerManager = PlayerManager(this)
     val inventoryManager = InventoryManager(this)
-    private val databaseManager = DatabaseManager(this, "jdbc:sqlite:$dataFolder/war.db")
+    private var databaseManager: DatabaseManager? = null // late initialization
     private var usr = UpdateScoreboardRunnable(this)
     var loaded = AtomicBoolean()
         private set
@@ -107,7 +113,7 @@ class WarPlus : JavaPlugin {
         }
         classManager.loadClasses()
         warzoneManager.loadWarzones()
-        databaseManager.createTables()
+        setupDatabase()
         getCommand("war")?.setExecutor(CommandHandler(this))
         setupRunnables()
         setupEconomy()
@@ -122,6 +128,7 @@ class WarPlus : JavaPlugin {
         HandlerList.unregisterAll(this)
         server.scheduler.cancelTasks(this)
         warzoneManager.unloadWarzones()
+        databaseManager?.close()
         cancelRunnables()
         loaded.set(false)
     }
@@ -164,5 +171,44 @@ class WarPlus : JavaPlugin {
         }
         logger.info("MagicSpells found, enabling integration")
         server.pluginManager.registerEvents(MagicSpellsListener(this), this)
+    }
+
+    private fun setupDatabase() {
+        this.databaseManager = if (!config.get(WarConfigType.DATABASE_ENABLED)) {
+            logger.info("Not using a database for storage")
+            null
+        } else {
+            try {
+                when (config.get(WarConfigType.DATABASE_DIALECT)) {
+                    DatabaseDialect.MYSQL -> {
+                        logger.info("Enabling MySQL backend")
+                        DatabaseManager(
+                            this,
+                            MySqlConnectionFactory(
+                                config.get(WarConfigType.DATABASE_SERVER),
+                                config.get(WarConfigType.DATABASE_PORT),
+                                config.get(WarConfigType.DATABASE_NAME),
+                                config.get(WarConfigType.DATABASE_USERNAME),
+                                config.get(WarConfigType.DATABASE_PASSWORD)
+                            )
+                        )
+                    }
+                    DatabaseDialect.SQLITE -> {
+                        logger.info("Enabling SQLite backend")
+                        DatabaseManager(
+                            this,
+                            SqliteConnectionFactory(
+                                "$dataFolder/${config.get(WarConfigType.DATABASE_FILENAME)}"
+                            )
+                        )
+                    }
+                }
+            } catch (e: IllegalArgumentException) {
+                logger.warning("Unsupported database dialect. Accepted values are: [mysql, sqlite]")
+                null
+            }
+        }
+        databaseManager?.init()
+        databaseManager?.createTables()
     }
 }

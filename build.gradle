@@ -25,7 +25,11 @@ tasks.build.dependsOn tasks.shadowJar
 shadowJar {
     minimize()
     relocate("com.github.michaelbull.result", "com.github.james9909.warplus.shaded.result")
+    relocate("com.zaxxer.hikari", "com.github.james9909.warplus.shaded.hikari")
+    relocate("com.mysql", "com.github.james9909.warplus.shaded.mysql")
     relocate("kotlin", "com.github.james9909.warplus.shaded.kotlin")
+
+    exclude 'META-INF/**'
 }
 
 idea {
@@ -52,6 +56,8 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     compile "com.michael-bull.kotlin-result:kotlin-result:1.1.0"
     compile "org.xerial:sqlite-jdbc:3.7.2"
+    compile "mysql:mysql-connector-java:5.1.13"
+    compile "com.zaxxer:HikariCP:3.4.5"
     compileOnly ":MagicSpells-4.0-Beta-6"
     compileOnly "com.sk89q.worldedit:worldedit-bukkit:7.0.0-SNAPSHOT"
     compileOnly "org.spigotmc:spigot-api:1.13.2-R0.1-SNAPSHOT"
