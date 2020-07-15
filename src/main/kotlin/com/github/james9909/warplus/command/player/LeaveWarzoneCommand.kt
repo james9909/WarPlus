@@ -1,12 +1,11 @@
-package com.github.james9909.warplus.command.regular
+package com.github.james9909.warplus.command.player
 
 import com.github.james9909.warplus.WARPLUS_BASE_COMMAND
 import com.github.james9909.warplus.WarPlus
-import com.github.james9909.warplus.command.AbstractCommand
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
-class LeaveWarzoneCommand : AbstractCommand() {
+class LeaveWarzoneCommand : PlayerCommand() {
     override val USAGE_STRING = "/$WARPLUS_BASE_COMMAND leave"
     override val DESCRIPTION = "Leave the current warzone"
 

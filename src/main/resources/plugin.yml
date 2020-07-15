@@ -5,6 +5,16 @@ version: 0.1.0
 author: james9909
 softdepend: [MagicSpells, Vault, WorldEdit]
 depend: []
+permissions:
+  warplus.admin:
+    description: WarPlus admin rights.
+    default: op
+  warplus.player:
+    description: WarPlus player rights. Can participate in warzones.
+    default: true
+  warplus.zonemaker:
+    description: WarPlus zonemaker rights. Can create and edit warzones.
+    default: op
 commands:
   wp:
     description: Base command for WarPlus

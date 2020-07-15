@@ -9,4 +9,5 @@ abstract class AbstractCommand {
 
     abstract fun execute(plugin: WarPlus, sender: CommandSender, args: List<String>): Boolean
     abstract fun tab(plugin: WarPlus, sender: CommandSender, args: List<String>): List<String>
+    abstract fun canExecute(sender: CommandSender): Boolean
 }

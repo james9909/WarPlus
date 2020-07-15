@@ -3,12 +3,11 @@ package com.github.james9909.warplus.command.zonemaker
 import com.github.james9909.warplus.WARPLUS_BASE_COMMAND
 import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.Warzone
-import com.github.james9909.warplus.command.AbstractCommand
 import com.github.james9909.warplus.region.Region
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
-class CreateWarzoneCommand : AbstractCommand() {
+class CreateWarzoneCommand : ZonemakerCommand() {
     override val USAGE_STRING = "/$WARPLUS_BASE_COMMAND create <name>"
     override val DESCRIPTION = "Create a new warzone."
 

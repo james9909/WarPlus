@@ -4,9 +4,9 @@ import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.command.admin.LoadCommand
 import com.github.james9909.warplus.command.admin.ReloadCommand
 import com.github.james9909.warplus.command.admin.UnloadCommand
-import com.github.james9909.warplus.command.regular.ClassCommand
-import com.github.james9909.warplus.command.regular.JoinWarzoneCommand
-import com.github.james9909.warplus.command.regular.LeaveWarzoneCommand
+import com.github.james9909.warplus.command.player.ClassCommand
+import com.github.james9909.warplus.command.player.JoinWarzoneCommand
+import com.github.james9909.warplus.command.player.LeaveWarzoneCommand
 import com.github.james9909.warplus.command.zonemaker.AddMonumentCommand
 import com.github.james9909.warplus.command.zonemaker.AddPortalCommand
 import com.github.james9909.warplus.command.zonemaker.AddTeamFlagCommand
@@ -60,13 +60,22 @@ class CommandHandler(val plugin: WarPlus) : CommandExecutor, TabCompleter {
             return mutableListOf()
         }
         if (args.isEmpty()) {
-            return COMMANDS.keys.toMutableList()
+            return COMMANDS
+                .filter { it.value.canExecute(sender) }
+                .map { it.key }
+                .toMutableList()
         }
         if (args.size == 1) {
             // We only have the base subcommand
-            return COMMANDS.keys.filter { it.startsWith(args[0]) }.toMutableList()
+            return COMMANDS
+                .filter { it.key.startsWith(args[0]) && it.value.canExecute(sender) }
+                .map { it.key }
+                .toMutableList()
         }
         val command = COMMANDS[args[0]] ?: return mutableListOf()
+        if (!command.canExecute(sender)) {
+            return mutableListOf()
+        }
         return command.tab(plugin, sender, args.drop(1)).toMutableList()
     }
 
@@ -77,6 +86,10 @@ class CommandHandler(val plugin: WarPlus) : CommandExecutor, TabCompleter {
         val subCommand = args[0]
         val warCommand = COMMANDS[subCommand] ?: return false
         val rest = args.drop(1)
+        if (!warCommand.canExecute(sender)) {
+            plugin.playerManager.sendMessage(sender, "You don't have permission to execute that command")
+            return true
+        }
         if (!warCommand.execute(plugin, sender, rest)) {
             plugin.playerManager.sendMessage(sender, "Usage: ${warCommand.USAGE_STRING}\n${warCommand.DESCRIPTION}")
         }

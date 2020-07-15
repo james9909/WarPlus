@@ -4,12 +4,11 @@ import com.github.james9909.warplus.ArmorSet
 import com.github.james9909.warplus.WARPLUS_BASE_COMMAND
 import com.github.james9909.warplus.WarClass
 import com.github.james9909.warplus.WarPlus
-import com.github.james9909.warplus.command.AbstractCommand
 import org.bukkit.block.Chest
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
-class ClassChestCommand : AbstractCommand() {
+class ClassChestCommand : ZonemakerCommand() {
     override val USAGE_STRING = "/$WARPLUS_BASE_COMMAND classchest <set|remove> <name>"
     override val DESCRIPTION = "Set or remove a classchest"
 
