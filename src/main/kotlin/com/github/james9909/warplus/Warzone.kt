@@ -332,14 +332,18 @@ class Warzone(
         objectives.values.forEach {
             it.handleDeath(player)
         }
-        val lives = playerInfo.team.lives
+        val team = playerInfo.team
+        val lives = team.lives
         if (lives == 0) {
-            handleTeamLoss(playerInfo.team, player)
+            handleTeamLoss(team, player)
         } else {
             if (lives == 1) {
-                broadcast("Team ${playerInfo.team}'s life pool is empty. One more death and they lose the battle!")
+                broadcast("Team $team's life pool is empty. One more death and they lose the battle!")
             }
-            playerInfo.team.lives -= 1
+            team.spawns.forEach {
+                it.updateSign(team)
+            }
+            team.lives -= 1
             respawnPlayer(player)
         }
     }
@@ -654,6 +658,7 @@ class Warzone(
             is Ok -> {
                 teamSpawn.saveVolume()
                 teamSpawn.build()
+                teamSpawn.updateSign(team)
                 team.addTeamSpawn(teamSpawn)
                 saveConfig()
             }

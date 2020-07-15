@@ -53,6 +53,7 @@ class WarTeam(
                 WarScoreboard.getScoreboard(it)?.addPlayer(this, player)
             }
         }
+        spawns.forEach { it.updateSign(this) }
     }
 
     fun removePlayer(player: Player) {
@@ -63,13 +64,16 @@ class WarTeam(
                 WarScoreboard.getScoreboard(it)?.removePlayer(this, player)
             }
         }
+        spawns.forEach { it.updateSign(this) }
     }
+
+    fun maxPlayers(): Int = settings.get(TeamConfigType.MAX_PLAYERS)
 
     fun size(): Int = players.size
 
     fun hasEnoughPlayers(): Boolean = size() >= settings.get(TeamConfigType.MIN_PLAYERS)
 
-    fun isFull(): Boolean = size() >= settings.get(TeamConfigType.MAX_PLAYERS)
+    fun isFull(): Boolean = size() >= maxPlayers()
 
     fun maxScore(): Int = settings.get(TeamConfigType.MAX_SCORE)
 
@@ -90,6 +94,7 @@ class WarTeam(
     fun resetSpawns() {
         spawns.forEach {
             it.build()
+            it.updateSign(this)
         }
     }
 
@@ -129,6 +134,7 @@ class WarTeam(
     @Synchronized
     fun addPoint() {
         score += 1
+        spawns.forEach { it.updateSign(this) }
     }
 
     fun getScoreboardName(): String = "${warzone.name}_${kind.name.toLowerCase()}"
