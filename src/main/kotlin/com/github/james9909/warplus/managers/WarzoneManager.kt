@@ -10,6 +10,7 @@ import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.WarTeam
 import com.github.james9909.warplus.Warzone
 import com.github.james9909.warplus.config.CascadingConfig
+import com.github.james9909.warplus.config.TeamConfigType
 import com.github.james9909.warplus.extensions.LocationFormatException
 import com.github.james9909.warplus.extensions.getLocation
 import com.github.james9909.warplus.extensions.getOrCreateSection
@@ -17,7 +18,6 @@ import com.github.james9909.warplus.extensions.toLocation
 import com.github.james9909.warplus.objectives.createFlagObjective
 import com.github.james9909.warplus.objectives.createMonumentObjective
 import com.github.james9909.warplus.region.Region
-import com.github.james9909.warplus.structures.SpawnStyle
 import com.github.james9909.warplus.structures.TeamSpawnStructure
 import com.github.james9909.warplus.structures.WarzonePortalStructure
 import com.github.michaelbull.result.Err
@@ -117,6 +117,8 @@ class WarzoneManager(val plugin: WarPlus) {
             val spawns: MutableList<TeamSpawnStructure> = mutableListOf()
 
             val teamSection = teamsSection.getConfigurationSection(teamName) ?: continue
+            val overloadedTeamSettings = teamSection.getConfigurationSection("settings") ?: YamlConfiguration()
+            val cascadingTeamSettings = CascadingConfig(overloadedTeamSettings, warzone.teamSettings)
             try {
                 for (spawnLocation in teamSection.getStringList("spawns")) {
                     val spawn =
@@ -124,14 +126,17 @@ class WarzoneManager(val plugin: WarPlus) {
                             plugin,
                             spawnLocation.toLocation(),
                             TeamKind.valueOf(teamName.toUpperCase()),
-                            SpawnStyle.valueOf(
-                                (teamSection.getString("spawnstyle") ?: teamSettings.getString("spawnstyle")
-                                ?: "SMALL").toUpperCase()
-                            )
+                            cascadingTeamSettings.get(TeamConfigType.SPAWN_STYLE)
                         )
                     spawns.add(spawn)
                 }
             } catch (e: LocationFormatException) {
+                return Err(
+                    IllegalWarzoneError(
+                        "Error when parsing spawns:\n$e"
+                    )
+                )
+            } catch (e: IllegalArgumentException) {
                 return Err(
                     IllegalWarzoneError(
                         "Error when parsing spawns:\n$e"
@@ -154,8 +159,6 @@ class WarzoneManager(val plugin: WarPlus) {
                     IllegalTeamKindError(teamName)
                 )
             }
-            // Settings for this specific team
-            val overloadedTeamSettings = teamSection.getConfigurationSection("settings") ?: YamlConfiguration()
             val classes = teamSection.getStringList("classes").filter {
                 plugin.classManager.containsClass(it)
             }
@@ -163,7 +166,7 @@ class WarzoneManager(val plugin: WarPlus) {
                 kind = teamKind,
                 spawns = spawns,
                 warzone = warzone,
-                settings = CascadingConfig(overloadedTeamSettings, warzone.teamSettings),
+                settings = cascadingTeamSettings,
                 classes = classes
             )
             if (plugin.hasPlugin("WorldEdit")) {
