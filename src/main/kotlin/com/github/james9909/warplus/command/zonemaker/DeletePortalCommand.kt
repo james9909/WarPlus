@@ -2,11 +2,10 @@ package com.github.james9909.warplus.command.zonemaker
 
 import com.github.james9909.warplus.WARPLUS_BASE_COMMAND
 import com.github.james9909.warplus.WarPlus
-import com.github.james9909.warplus.command.AbstractCommand
 import org.bukkit.Material
 import org.bukkit.command.CommandSender
 
-class DeletePortalCommand : AbstractCommand() {
+class DeletePortalCommand : ZonemakerCommand() {
     override val USAGE_STRING = "/$WARPLUS_BASE_COMMAND deleteportal <warzone name> <portal name>"
     override val DESCRIPTION = "Delete a warzone portal by its name"
 

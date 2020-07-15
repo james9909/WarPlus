@@ -2,14 +2,13 @@ package com.github.james9909.warplus.command.zonemaker
 
 import com.github.james9909.warplus.WARPLUS_BASE_COMMAND
 import com.github.james9909.warplus.WarPlus
-import com.github.james9909.warplus.command.AbstractCommand
 import com.github.james9909.warplus.extensions.blockLocation
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
-class AddMonumentCommand : AbstractCommand() {
+class AddMonumentCommand : ZonemakerCommand() {
     override val USAGE_STRING = "/$WARPLUS_BASE_COMMAND addmonument <name>"
     override val DESCRIPTION = "Create a monument at the current location"
 

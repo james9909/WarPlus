@@ -1,14 +1,13 @@
-package com.github.james9909.warplus.command.regular
+package com.github.james9909.warplus.command.player
 
 import com.github.james9909.warplus.WARPLUS_BASE_COMMAND
 import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.WarzoneState
-import com.github.james9909.warplus.command.AbstractCommand
 import com.github.james9909.warplus.util.Message
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
-class JoinWarzoneCommand : AbstractCommand() {
+class JoinWarzoneCommand : PlayerCommand() {
     override val USAGE_STRING = "/$WARPLUS_BASE_COMMAND join <name>"
     override val DESCRIPTION = "Join a warzone."
 
