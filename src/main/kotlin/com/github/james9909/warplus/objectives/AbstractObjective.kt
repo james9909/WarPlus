@@ -5,6 +5,7 @@ import com.github.james9909.warplus.Warzone
 import org.bukkit.Location
 import org.bukkit.block.Block
 import org.bukkit.configuration.ConfigurationSection
+import org.bukkit.entity.Entity
 import org.bukkit.entity.Item
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryAction
@@ -16,7 +17,7 @@ abstract class AbstractObjective(plugin: WarPlus, warzone: Warzone) {
         return false
     }
 
-    open fun handleBlockPlace(player: Player, block: Block): Boolean {
+    open fun handleBlockPlace(entity: Entity, block: Block): Boolean {
         return false
     }
 

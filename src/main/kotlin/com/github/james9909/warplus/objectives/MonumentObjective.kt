@@ -10,6 +10,7 @@ import org.bukkit.Location
 import org.bukkit.attribute.Attribute
 import org.bukkit.block.Block
 import org.bukkit.configuration.ConfigurationSection
+import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import kotlin.math.min
 import kotlin.random.Random
@@ -56,13 +57,16 @@ class MonumentObjective(
         return false
     }
 
-    override fun handleBlockPlace(player: Player, block: Block): Boolean {
+    override fun handleBlockPlace(entity: Entity, block: Block): Boolean {
         val monument = monuments.firstOrNull { it.contains(block.location) } ?: return false
         if (block.location != monument.blockLocation) {
             // Can only place into the center block
             return true
         }
-        val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return true
+        if (entity !is Player) {
+            return true
+        }
+        val playerInfo = plugin.playerManager.getPlayerInfo(entity) ?: return true
         if (playerInfo.team.warzone != warzone || block.type != playerInfo.team.kind.material) {
             return true
         }

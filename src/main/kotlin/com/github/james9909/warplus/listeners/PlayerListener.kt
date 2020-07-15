@@ -9,6 +9,7 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryType
+import org.bukkit.event.player.PlayerBucketEmptyEvent
 import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerItemDamageEvent
 import org.bukkit.event.player.PlayerJoinEvent
@@ -165,5 +166,12 @@ class PlayerListener(val plugin: WarPlus) : Listener {
     @EventHandler
     fun onPlayerJoin(event: PlayerJoinEvent) {
         plugin.inventoryManager.restoreInventoryFromFile(event.player)
+    }
+
+    @EventHandler
+    fun onPlayerBucketEmpty(event: PlayerBucketEmptyEvent) {
+        val block = event.blockClicked
+        val warzone = plugin.warzoneManager.getWarzoneByLocation(block.location) ?: return
+        event.isCancelled = warzone.isSpawnBlock(block) || warzone.onBlockPlace(event.player, block)
     }
 }

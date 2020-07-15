@@ -512,9 +512,9 @@ class Warzone(
         return false
     }
 
-    fun onBlockPlace(player: Player, block: Block): Boolean {
+    fun onBlockPlace(entity: Entity, block: Block): Boolean {
         objectives.values.forEach {
-            if (it.handleBlockPlace(player, block)) {
+            if (it.handleBlockPlace(entity, block)) {
                 return true
             }
         }
