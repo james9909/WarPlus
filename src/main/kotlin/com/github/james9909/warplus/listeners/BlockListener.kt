@@ -9,8 +9,10 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockBurnEvent
+import org.bukkit.event.block.BlockFromToEvent
 import org.bukkit.event.block.BlockIgniteEvent
 import org.bukkit.event.block.BlockPlaceEvent
+import org.bukkit.event.block.BlockSpreadEvent
 
 class BlockListener(val plugin: WarPlus) : Listener {
 
@@ -85,5 +87,19 @@ class BlockListener(val plugin: WarPlus) : Listener {
         val block = event.block
         val warzone = plugin.warzoneManager.getWarzoneByLocation(block.location) ?: return
         event.isCancelled = warzone.onBlockBreak(null, block)
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    fun onBlockSpread(event: BlockSpreadEvent) {
+        val block = event.block
+        val warzone = plugin.warzoneManager.getWarzoneByLocation(block.location) ?: return
+        event.isCancelled = warzone.isSpawnBlock(block) || warzone.onBlockBreak(null, block)
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    fun onBlockFromTo(event: BlockFromToEvent) {
+        val to = event.toBlock
+        val warzone = plugin.warzoneManager.getWarzoneByLocation(to.location) ?: return
+        event.isCancelled = warzone.isSpawnBlock(to) || warzone.onBlockBreak(null, to)
     }
 }

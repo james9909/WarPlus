@@ -3,6 +3,7 @@ package com.github.james9909.warplus.listeners
 import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.config.TeamConfigType
 import org.bukkit.entity.Entity
+import org.bukkit.entity.EntityType
 import org.bukkit.entity.FallingBlock
 import org.bukkit.entity.LightningStrike
 import org.bukkit.entity.LivingEntity
@@ -12,6 +13,7 @@ import org.bukkit.entity.TNTPrimed
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
+import org.bukkit.event.entity.EntityChangeBlockEvent
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityExplodeEvent
@@ -312,9 +314,20 @@ class EntityListener(val plugin: WarPlus) : Listener {
     @EventHandler
     fun onEntityRegainHealthEvent(event: EntityRegainHealthEvent) {
         val player = event.entity as? Player ?: return
-        val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
+        plugin.playerManager.getPlayerInfo(player) ?: return
         if (event.regainReason == EntityRegainHealthEvent.RegainReason.REGEN) {
             event.isCancelled = true
         }
+    }
+
+    @EventHandler
+    fun onEntityChangeBlockEvent(event: EntityChangeBlockEvent) {
+        val block = event.block
+        if (event.entityType != EntityType.FALLING_BLOCK) {
+            return
+        }
+        val location = block.location
+        val warzone = plugin.warzoneManager.getWarzoneByLocation(location) ?: return
+        event.isCancelled = warzone.isSpawnBlock(block) || warzone.onBlockPlace(event.entity, block)
     }
 }

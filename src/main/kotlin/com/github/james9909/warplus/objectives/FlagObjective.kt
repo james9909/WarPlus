@@ -11,6 +11,7 @@ import com.github.james9909.warplus.structures.FlagStructure
 import org.bukkit.Location
 import org.bukkit.block.Block
 import org.bukkit.configuration.ConfigurationSection
+import org.bukkit.entity.Entity
 import org.bukkit.entity.Item
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryAction
@@ -77,8 +78,8 @@ class FlagObjective(
         return stealFlag(player, flagStructure)
     }
 
-    override fun handleBlockPlace(player: Player, block: Block): Boolean {
-        if (flagThieves.containsKey(player)) {
+    override fun handleBlockPlace(entity: Entity, block: Block): Boolean {
+        if (entity is Player && flagThieves.containsKey(entity)) {
             return true
         }
         if (flags.any { it.contains(block.location) }) {
