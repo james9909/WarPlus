@@ -338,7 +338,7 @@ class Warzone(
             handleTeamLoss(team, player)
         } else {
             if (lives == 1) {
-                broadcast("Team ${team}'s life pool is empty. One more death and they lose the battle!")
+                broadcast("Team $team's life pool is empty. One more death and they lose the battle!")
             }
             team.spawns.forEach {
                 it.updateSign(team)

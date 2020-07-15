@@ -3,7 +3,6 @@ package com.github.james9909.warplus.structures
 import com.github.james9909.warplus.TeamKind
 import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.WarTeam
-import com.github.james9909.warplus.Warzone
 import com.github.james9909.warplus.extensions.getCardinalDirection
 import com.github.james9909.warplus.extensions.getInterCardinalDirection
 import com.github.james9909.warplus.util.CardinalDirection
