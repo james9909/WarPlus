@@ -29,6 +29,8 @@ import java.io.File
 import java.lang.IllegalArgumentException
 import java.util.concurrent.atomic.AtomicBoolean
 
+val WARPLUS_BASE_COMMAND = "wp"
+
 val DEFAULT_TEAM_CONFIG by lazy {
     val config = YamlConfiguration()
     config[TeamConfigType.DEFAULT_CLASS.path] = TeamConfigType.DEFAULT_CLASS.default
@@ -114,7 +116,7 @@ class WarPlus : JavaPlugin {
         classManager.loadClasses()
         warzoneManager.loadWarzones()
         setupDatabase()
-        getCommand("war")?.setExecutor(CommandHandler(this))
+        getCommand(WARPLUS_BASE_COMMAND)?.setExecutor(CommandHandler(this))
         setupRunnables()
         setupEconomy()
         setupMagicSpells()

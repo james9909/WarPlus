@@ -3,10 +3,10 @@ main: com.github.james9909.warplus.WarPlus
 api-version: 1.13
 version: 0.1.0
 author: james9909
-softdepend: []
+softdepend: [MagicSpells, Vault, WorldEdit]
 depend: []
 commands:
-  war:
+  wp:
     description: Base command for WarPlus
-    usage: The /war command allows you to run several other subcommands. Ex -
-      | /war setup <warzone>
+    usage: The /wp command allows you to run several other subcommands. Ex -
+      | /wp setup <warzone>
