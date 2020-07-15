@@ -1,12 +1,13 @@
 package com.github.james9909.warplus.command.admin
 
+import com.github.james9909.warplus.WARPLUS_BASE_COMMAND
 import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.command.AbstractCommand
 import com.github.james9909.warplus.util.Message
 import org.bukkit.command.CommandSender
 
 class UnloadCommand : AbstractCommand() {
-    override val USAGE_STRING = "/war unload"
+    override val USAGE_STRING = "/$WARPLUS_BASE_COMMAND unload"
     override val DESCRIPTION = "Unload the plugin."
 
     override fun execute(plugin: WarPlus, sender: CommandSender, args: List<String>): Boolean {

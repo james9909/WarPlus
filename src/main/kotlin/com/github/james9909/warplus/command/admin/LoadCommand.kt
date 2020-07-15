@@ -1,12 +1,13 @@
 package com.github.james9909.warplus.command.admin
 
+import com.github.james9909.warplus.WARPLUS_BASE_COMMAND
 import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.command.AbstractCommand
 import com.github.james9909.warplus.util.Message
 import org.bukkit.command.CommandSender
 
 class LoadCommand : AbstractCommand() {
-    override val USAGE_STRING = "/war load"
+    override val USAGE_STRING = "/$WARPLUS_BASE_COMMAND load"
     override val DESCRIPTION = "Load the plugin."
 
     override fun execute(plugin: WarPlus, sender: CommandSender, args: List<String>): Boolean {

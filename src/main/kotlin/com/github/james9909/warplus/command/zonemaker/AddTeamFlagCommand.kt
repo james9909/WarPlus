@@ -1,6 +1,7 @@
 package com.github.james9909.warplus.command.zonemaker
 
 import com.github.james9909.warplus.TeamKind
+import com.github.james9909.warplus.WARPLUS_BASE_COMMAND
 import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.command.AbstractCommand
 import com.github.james9909.warplus.extensions.blockLocation
@@ -10,7 +11,7 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 class AddTeamFlagCommand : AbstractCommand() {
-    override val USAGE_STRING = "/war addteamflag <team>"
+    override val USAGE_STRING = "/$WARPLUS_BASE_COMMAND addteamflag <team>"
     override val DESCRIPTION = "Add a flag for a team"
 
     override fun execute(plugin: WarPlus, sender: CommandSender, args: List<String>): Boolean {
