@@ -112,6 +112,11 @@ class Warzone(
         if (warzoneSettings.get(WarzoneConfigType.REMOVE_ENTITIES_ON_RESET)) {
             removeEntities()
         }
+        if (plugin.hasPlugin("FastAsyncWorldEdit")) {
+            plugin.server.scheduler.runTaskLaterAsynchronously(plugin, { _ ->
+                state = oldState
+            }, 40L)
+        }
         restoreVolume()
         teams.values.forEach { team ->
             team.resetAttributes(resetTeamScores)
@@ -121,7 +126,9 @@ class Warzone(
             }
         }
         resetObjectives()
-        state = oldState
+        if (!plugin.hasPlugin("FastAsyncWorldEdit")) {
+            state = oldState
+        }
     }
 
     @Synchronized
