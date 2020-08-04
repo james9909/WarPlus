@@ -1,7 +1,7 @@
 package com.github.james9909.warplus
 
 import com.github.james9909.warplus.extensions.format
-import com.github.james9909.warplus.extensions.getLocation
+import com.github.james9909.warplus.extensions.getLocationFromString
 import com.github.james9909.warplus.extensions.toItemStack
 import org.bukkit.Location
 import org.bukkit.block.Chest
@@ -120,7 +120,7 @@ data class WarClass(
                     section.getConfigurationSection("leggings")?.toItemStack(),
                     section.getConfigurationSection("boots")?.toItemStack()
                 ),
-                section.getLocation("classchest")
+                section.getLocationFromString("classchest")
             )
         }
     }

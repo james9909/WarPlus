@@ -52,7 +52,8 @@ import kotlin.math.sqrt
 enum class WarzoneState {
     IDLING,
     RUNNING,
-    EDITING
+    EDITING,
+    RESETTING
 }
 
 class Warzone(
@@ -106,6 +107,16 @@ class Warzone(
     }
 
     private fun initialize(resetTeamScores: Boolean) {
+        val oldState = state
+        state = WarzoneState.RESETTING
+        if (warzoneSettings.get(WarzoneConfigType.REMOVE_ENTITIES_ON_RESET)) {
+            removeEntities()
+        }
+        if (plugin.hasPlugin("FastAsyncWorldEdit")) {
+            plugin.server.scheduler.runTaskLaterAsynchronously(plugin, { _ ->
+                state = oldState
+            }, 40L)
+        }
         restoreVolume()
         teams.values.forEach { team ->
             team.resetAttributes(resetTeamScores)
@@ -114,10 +125,10 @@ class Warzone(
                 respawnPlayer(player)
             }
         }
-        if (warzoneSettings.get(WarzoneConfigType.REMOVE_ENTITIES_ON_RESET)) {
-            removeEntities()
-        }
         resetObjectives()
+        if (!plugin.hasPlugin("FastAsyncWorldEdit")) {
+            state = oldState
+        }
     }
 
     @Synchronized

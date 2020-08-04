@@ -28,7 +28,6 @@ class BlockListener(val plugin: WarPlus) : Listener {
             }
             return
         }
-
         if (playerInfo.inSpawn) {
             event.isCancelled = true
             return
@@ -39,7 +38,10 @@ class BlockListener(val plugin: WarPlus) : Listener {
             event.isCancelled = true
             return
         }
-        if (playerZone != targetZone || playerZone.isSpawnBlock(block)) {
+        if (playerZone != targetZone ||
+            targetZone.state != WarzoneState.RUNNING ||
+            playerZone.isSpawnBlock(block)
+        ) {
             // In-game players cannot break blocks outside of their warzone or spawn blocks
             event.isCancelled = true
             return
@@ -68,6 +70,7 @@ class BlockListener(val plugin: WarPlus) : Listener {
         if (targetZone == null ||
                 targetZone != playerInfo.team.warzone ||
                 targetZone.isSpawnBlock(block) ||
+                targetZone.state != WarzoneState.RUNNING ||
                 !playerInfo.team.settings.get(TeamConfigType.PLACE_BLOCKS)) {
             event.isCancelled = true
             return

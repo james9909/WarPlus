@@ -12,7 +12,7 @@ import com.github.james9909.warplus.Warzone
 import com.github.james9909.warplus.config.CascadingConfig
 import com.github.james9909.warplus.config.TeamConfigType
 import com.github.james9909.warplus.extensions.LocationFormatException
-import com.github.james9909.warplus.extensions.getLocation
+import com.github.james9909.warplus.extensions.getLocationFromString
 import com.github.james9909.warplus.extensions.getOrCreateSection
 import com.github.james9909.warplus.extensions.toLocation
 import com.github.james9909.warplus.objectives.createFlagObjective
@@ -66,12 +66,12 @@ class WarzoneManager(val plugin: WarPlus) {
         val p1: Location
         val p2: Location
         try {
-            p1 = infoSection.getLocation("p1") ?: return Err(
+            p1 = infoSection.getLocationFromString("p1") ?: return Err(
                 IllegalWarzoneError(
                     "No p1 defined"
                 )
             )
-            p2 = infoSection.getLocation("p2") ?: return Err(
+            p2 = infoSection.getLocationFromString("p2") ?: return Err(
                 IllegalWarzoneError(
                     "No p2 defined"
                 )
@@ -201,7 +201,7 @@ class WarzoneManager(val plugin: WarPlus) {
         // Load portals
         for (portalName in portalsSection.getKeys(false)) {
             val portalSection = portalsSection.getConfigurationSection(portalName) ?: continue
-            val origin = portalSection.getLocation("origin")
+            val origin = portalSection.getLocationFromString("origin")
             if (origin == null) {
                 plugin.logger.warning("Invalid location for portal $portalName")
                 continue

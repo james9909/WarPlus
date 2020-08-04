@@ -29,7 +29,7 @@ class WarzonePortalStructure(plugin: WarPlus, origin: Location, val name: String
     }
 
     override fun postBuild() {
-        signBlock.type = Material.WALL_SIGN
+        signBlock.type = Material.OAK_WALL_SIGN
         val signData = signBlock.blockData as Directional
         signData.facing = orientation.back.toBlockFace()
         signBlock.blockData = signData
