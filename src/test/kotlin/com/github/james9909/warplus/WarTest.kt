@@ -1,7 +1,6 @@
 package com.github.james9909.warplus
 
 import be.seeseemelk.mockbukkit.MockBukkit
-import junit.framework.TestCase.assertNotNull
 import org.bukkit.event.server.PluginEnableEvent
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Test
@@ -25,7 +24,7 @@ class WarTest {
     @Test
     fun `plugin loads correctly`() {
         server.pluginManager.assertEventFired(PluginEnableEvent::class.java) { event: PluginEnableEvent -> event.plugin == plugin }
-        assertNotNull(server.pluginManager.getPlugin("WarPlus"))
+        requireNotNull(server.pluginManager.getPlugin("WarPlus"))
         assert(plugin.isEnabled)
     }
 

@@ -108,11 +108,11 @@ class WarTeam(
 
     fun saveConfig(teamSection: ConfigurationSection) {
         teamSection.set("settings", settings.config)
-        val spawnsStringList = mutableListOf<String>()
+        val spawnList = mutableListOf<String>()
         for (spawn in spawns) {
-            spawnsStringList.add(spawn.origin.format())
+            spawnList.add(spawn.origin.format())
         }
-        teamSection.set("spawns", spawnsStringList)
+        teamSection.set("spawns", spawnList)
         if (classes.isNotEmpty()) {
             teamSection.set("classes", classes)
         }

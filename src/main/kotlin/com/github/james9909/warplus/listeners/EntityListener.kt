@@ -1,6 +1,7 @@
 package com.github.james9909.warplus.listeners
 
 import com.github.james9909.warplus.WarPlus
+import com.github.james9909.warplus.WarzoneState
 import com.github.james9909.warplus.config.TeamConfigType
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
@@ -163,10 +164,13 @@ class EntityListener(val plugin: WarPlus) : Listener {
         event.blockList().removeIf { block ->
             plugin.warzoneManager.getWarzones().any { warzone ->
                 warzone.contains(block.location) &&
-                warzone.isSpawnBlock(block) ||
-                warzone.objectives.values.any { objective ->
-                    objective.handleBlockBreak(null, block)
-                }
+                (
+                    warzone.state != WarzoneState.RUNNING ||
+                    warzone.isSpawnBlock(block) ||
+                    warzone.objectives.values.any { objective ->
+                        objective.handleBlockBreak(null, block)
+                    }
+                )
             }
         }
 

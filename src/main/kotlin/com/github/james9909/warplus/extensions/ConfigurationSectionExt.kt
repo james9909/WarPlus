@@ -26,7 +26,7 @@ fun ConfigurationSection.getOrCreateSection(path: String): ConfigurationSection 
     return getConfigurationSection(path) ?: createSection(path)
 }
 
-fun ConfigurationSection.getLocation(path: String): Location? {
+fun ConfigurationSection.getLocationFromString(path: String): Location? {
     if (!isString(path)) {
         return null
     }

@@ -242,7 +242,7 @@ class TeamSpawnStructure(plugin: WarPlus, origin: Location, val kind: TeamKind, 
 
     override fun postBuild() {
         signBlock?.apply {
-            type = Material.SIGN
+            type = Material.OAK_SIGN
             val signData = blockData as org.bukkit.block.data.type.Sign
             signData.rotation = interCardinalDirection.toBlockFace().oppositeFace
             blockData = signData
