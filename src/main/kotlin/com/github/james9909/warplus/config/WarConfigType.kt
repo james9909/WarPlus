@@ -15,5 +15,6 @@ class WarConfigType {
         val DATABASE_PASSWORD = stringKey("global.database.password", "password")
         val DATABASE_FILENAME = stringKey("global.database.filename", "warplus.db")
         val DATABASE_DIALECT = enumKey("global.database.dialect", DatabaseDialect.SQLITE)
+        val RESTORE_PLAYER_LOCATION = booleanKey("global.restore-player-location", true)
     }
 }
