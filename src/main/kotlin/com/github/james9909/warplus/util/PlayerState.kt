@@ -51,7 +51,9 @@ data class PlayerState(
         if (potionEffects != null) {
             player.setPotionEffects(potionEffects)
         }
-        if (location != null) {
+        if (location == null) {
+            player.teleport(player.world.spawnLocation)
+        } else {
             player.teleport(location)
         }
     }
@@ -100,7 +102,7 @@ data class PlayerState(
     }
 
     companion object {
-        fun fromPlayer(player: Player): PlayerState {
+        fun fromPlayer(player: Player, saveLocation: Boolean = true): PlayerState {
             val maxHealth = player.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.baseValue ?: DEFAULT_MAX_HEALTH
             return PlayerState(
                 player.saturation,
@@ -109,7 +111,7 @@ data class PlayerState(
                 maxHealth,
                 player.remainingAir,
                 player.foodLevel,
-                player.location.clone(),
+                if (saveLocation) player.location.clone() else null,
                 player.gameMode,
                 player.exp,
                 player.level,

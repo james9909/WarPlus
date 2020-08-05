@@ -2,10 +2,12 @@ package com.github.james9909.warplus
 
 import com.github.james9909.warplus.config.CascadingConfig
 import com.github.james9909.warplus.config.TeamConfigType
+import com.github.james9909.warplus.config.WarConfigType
 import com.github.james9909.warplus.config.WarzoneConfigType
 import com.github.james9909.warplus.extensions.blockLocation
 import com.github.james9909.warplus.extensions.clearPotionEffects
 import com.github.james9909.warplus.extensions.format
+import com.github.james9909.warplus.extensions.get
 import com.github.james9909.warplus.objectives.AbstractObjective
 import com.github.james9909.warplus.objectives.FlagObjective
 import com.github.james9909.warplus.objectives.MonumentObjective
@@ -182,7 +184,11 @@ class Warzone(
     private fun addPlayer(player: Player, team: WarTeam): Boolean {
         assert(!team.isFull())
         team.addPlayer(player)
-        plugin.playerManager.savePlayerState(player, team)
+        plugin.playerManager.savePlayerState(
+            player,
+            team,
+            plugin.config.get(WarConfigType.RESTORE_PLAYER_LOCATION)
+        )
         portals.forEach { it.value.updateBlocks() }
 
         // Equip default class
