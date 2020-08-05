@@ -140,6 +140,7 @@ class PlayerListener(val plugin: WarPlus) : Listener {
         val player = event.player
         val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
         if (!playerInfo.inSpawn) {
+            plugin.playerManager.sendMessage(player, "Can't change class after exiting the spawn.")
             return
         }
 
