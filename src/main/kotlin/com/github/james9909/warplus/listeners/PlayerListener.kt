@@ -117,6 +117,8 @@ class PlayerListener(val plugin: WarPlus) : Listener {
 
     @EventHandler
     fun onInventoryClickEvent(event: InventoryClickEvent) {
+        // TuSKe is dumb about its event handling...
+        if (event.isCancelled) return
         val player = event.whoClicked as? Player ?: return
         val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
         val teamMaterial = playerInfo.team.kind.material
