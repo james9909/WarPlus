@@ -140,7 +140,12 @@ class PlayerListener(val plugin: WarPlus) : Listener {
         val player = event.player
         val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
         if (!playerInfo.inSpawn) {
-            plugin.playerManager.sendMessage(player, "Can't change class after exiting the spawn.")
+            if (playerInfo.team.spawns.any { spawn ->
+                spawn.contains(player.location)
+            }) {
+                // Player attempting to sneak ONLY while in their team's spawn
+                plugin.playerManager.sendMessage(player, "Can't change class after exiting the spawn.")
+            }
             return
         }
 
