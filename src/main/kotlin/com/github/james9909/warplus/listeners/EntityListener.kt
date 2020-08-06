@@ -108,9 +108,9 @@ class EntityListener(val plugin: WarPlus) : Listener {
         // Player is supposed to die, but cancel the event and respawn them
         event.isCancelled = true
         if (damager == defender) {
-            defenderInfo.team.warzone.handleSuicide(defender)
+            defenderInfo.team.warzone.handleSuicide(defender, event.cause)
         } else {
-            defenderInfo.team.warzone.handleKill(damager, defender, damager, true)
+            defenderInfo.team.warzone.handleKill(damager, defender, damager, event.cause, true)
         }
     }
 
@@ -138,7 +138,7 @@ class EntityListener(val plugin: WarPlus) : Listener {
             return
         }
         event.isCancelled = true
-        defenderInfo.team.warzone.handleMobDeath(defender, damager)
+        defenderInfo.team.warzone.handleMobDeath(defender, damager, event.cause)
     }
 
     private fun handleMobDamage(event: EntityDamageByEntityEvent, defender: LivingEntity, damager: Entity?) {

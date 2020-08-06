@@ -4,6 +4,7 @@ import com.github.james9909.warplus.config.CascadingConfig
 import com.github.james9909.warplus.config.TeamConfigType
 import com.github.james9909.warplus.config.WarConfigType
 import com.github.james9909.warplus.config.WarzoneConfigType
+import com.github.james9909.warplus.event.WarzonePlayerDeathEvent
 import com.github.james9909.warplus.event.WarzoneJoinEvent
 import com.github.james9909.warplus.extensions.blockLocation
 import com.github.james9909.warplus.extensions.clearPotionEffects
@@ -348,8 +349,11 @@ class Warzone(
     }
 
     @Synchronized
-    private fun handleDeath(player: Player) {
+    private fun handleDeath(player: Player, entity: Entity?, cause: DamageCause) {
         val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
+        val deathEvent = WarzonePlayerDeathEvent(player, this, entity, cause)
+        plugin.server.pluginManager.callEvent(deathEvent)
+
         objectives.values.forEach {
             it.handleDeath(player)
         }
@@ -421,15 +425,15 @@ class Warzone(
         initialize(resetTeamScores = true)
     }
 
-    fun handleSuicide(player: Player) {
+    fun handleSuicide(player: Player, cause: DamageCause) {
         val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
         if (warzoneSettings.get(WarzoneConfigType.DEATH_MESSAGES)) {
             broadcast("${playerInfo.team.kind.chatColor}${player.name}${ChatColor.RESET} committed suicide")
         }
-        handleDeath(player)
+        handleDeath(player, player, cause)
     }
 
-    fun handleKill(attacker: Player, defender: Player, damager: Entity, direct: Boolean) {
+    fun handleKill(attacker: Player, defender: Player, damager: Entity, cause: DamageCause, direct: Boolean) {
         val attackerInfo = plugin.playerManager.getPlayerInfo(attacker) ?: return
         val defenderInfo = plugin.playerManager.getPlayerInfo(defender) ?: return
 
@@ -454,14 +458,14 @@ class Warzone(
             broadcast(message)
         }
 
-        handleDeath(defender)
+        handleDeath(defender, attacker, cause)
     }
 
     fun handleNaturalDeath(player: Player, cause: DamageCause) {
         val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
         when (val damager = playerInfo.lastDamager.damager) {
             is Player -> {
-                handleKill(damager, player, damager, false)
+                handleKill(damager, player, damager, cause, false)
                 return
             }
             null -> {}
@@ -481,14 +485,14 @@ class Warzone(
             }
         }
         broadcast(message)
-        handleDeath(player)
+        handleDeath(player, null, cause)
     }
 
-    fun handleMobDeath(player: Player, entity: LivingEntity) {
+    fun handleMobDeath(player: Player, entity: LivingEntity, cause: DamageCause) {
         val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
         val playerString = "${playerInfo.team.kind.chatColor}${player.name}${ChatColor.RESET}"
         broadcast("$playerString was slain by ${entity.name}")
-        handleDeath(player)
+        handleDeath(player, entity, cause)
     }
 
     fun onBlockBreak(player: Player?, block: Block): Boolean {
