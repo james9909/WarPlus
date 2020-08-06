@@ -4,6 +4,7 @@ import com.github.james9909.warplus.config.CascadingConfig
 import com.github.james9909.warplus.config.TeamConfigType
 import com.github.james9909.warplus.config.WarConfigType
 import com.github.james9909.warplus.config.WarzoneConfigType
+import com.github.james9909.warplus.event.WarzoneJoinEvent
 import com.github.james9909.warplus.extensions.blockLocation
 import com.github.james9909.warplus.extensions.clearPotionEffects
 import com.github.james9909.warplus.extensions.format
@@ -182,6 +183,9 @@ class Warzone(
 
     @Synchronized
     private fun addPlayer(player: Player, team: WarTeam): Boolean {
+        val joinEvent = WarzoneJoinEvent(player, this)
+        plugin.server.pluginManager.callEvent(joinEvent)
+
         assert(!team.isFull())
         team.addPlayer(player)
         plugin.playerManager.savePlayerState(
