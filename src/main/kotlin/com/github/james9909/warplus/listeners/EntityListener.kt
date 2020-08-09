@@ -3,6 +3,7 @@ package com.github.james9909.warplus.listeners
 import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.WarzoneState
 import com.github.james9909.warplus.config.TeamConfigType
+import com.github.james9909.warplus.config.WarzoneConfigType
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.FallingBlock
@@ -167,6 +168,7 @@ class EntityListener(val plugin: WarPlus) : Listener {
                 (
                     warzone.state != WarzoneState.RUNNING ||
                     warzone.isSpawnBlock(block) ||
+                    warzone.warzoneSettings.get(WarzoneConfigType.CAN_BREAK_BLOCKS) ||
                     warzone.objectives.values.any { objective ->
                         objective.handleBlockBreak(null, block)
                     }
