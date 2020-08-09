@@ -14,7 +14,7 @@ class WarzonePlayerDeathEvent(
     val warzone: Warzone,
     val entity: Entity?,
     val cause: DamageCause
-): Event() {
+) : Event() {
     override fun getHandlers(): HandlerList {
         return HANDLERS
     }

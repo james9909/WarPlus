@@ -7,8 +7,7 @@ import org.bukkit.event.HandlerList
 
 private val HANDLERS = HandlerList()
 
-class WarzoneJoinEvent(val player: Player, val warzone: Warzone) : Event() {
-
+class WarzoneLeaveEvent(val player: Player, val warzone: Warzone) : Event() {
     override fun getHandlers(): HandlerList {
         return HANDLERS
     }

@@ -6,6 +6,7 @@ import com.github.james9909.warplus.config.WarConfigType
 import com.github.james9909.warplus.config.WarzoneConfigType
 import com.github.james9909.warplus.event.WarzonePlayerDeathEvent
 import com.github.james9909.warplus.event.WarzoneJoinEvent
+import com.github.james9909.warplus.event.WarzoneLeaveEvent
 import com.github.james9909.warplus.extensions.blockLocation
 import com.github.james9909.warplus.extensions.clearPotionEffects
 import com.github.james9909.warplus.extensions.format
@@ -145,6 +146,9 @@ class Warzone(
     }
 
     private fun removePlayer(player: Player) {
+        val leaveEvent = WarzoneLeaveEvent(player, this)
+        plugin.server.pluginManager.callEvent(leaveEvent)
+
         objectives.values.forEach {
             it.handleLeave(player)
         }
