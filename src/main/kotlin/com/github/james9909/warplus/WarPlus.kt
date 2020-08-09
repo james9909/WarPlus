@@ -48,6 +48,7 @@ val DEFAULT_TEAM_CONFIG by lazy {
 val DEFAULT_WARZONE_CONFIG by lazy {
     val config = YamlConfiguration()
     config[WarzoneConfigType.BLOCK_HEADS.path] = WarzoneConfigType.BLOCK_HEADS.default
+    config[WarzoneConfigType.CAN_BREAK_BLOCKS.path] = WarzoneConfigType.CAN_BREAK_BLOCKS.default
     config[WarzoneConfigType.CLASS_CMD.path] = WarzoneConfigType.CLASS_CMD.default
     config[WarzoneConfigType.DEATH_MESSAGES.path] = WarzoneConfigType.DEATH_MESSAGES.default
     config[WarzoneConfigType.ENABLED.path] = WarzoneConfigType.ENABLED.default
