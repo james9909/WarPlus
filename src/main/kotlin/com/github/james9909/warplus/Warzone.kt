@@ -4,9 +4,11 @@ import com.github.james9909.warplus.config.CascadingConfig
 import com.github.james9909.warplus.config.TeamConfigType
 import com.github.james9909.warplus.config.WarConfigType
 import com.github.james9909.warplus.config.WarzoneConfigType
+import com.github.james9909.warplus.event.WarzoneEndEvent
 import com.github.james9909.warplus.event.WarzonePlayerDeathEvent
 import com.github.james9909.warplus.event.WarzoneJoinEvent
 import com.github.james9909.warplus.event.WarzoneLeaveEvent
+import com.github.james9909.warplus.event.WarzoneStartEvent
 import com.github.james9909.warplus.extensions.blockLocation
 import com.github.james9909.warplus.extensions.clearPotionEffects
 import com.github.james9909.warplus.extensions.format
@@ -105,6 +107,8 @@ class Warzone(
     }
 
     private fun start() {
+        val startEvent = WarzoneStartEvent(this)
+        plugin.server.pluginManager.callEvent(startEvent)
         plugin.logger.info("Starting warzone $name")
         state = WarzoneState.RUNNING
 
@@ -402,6 +406,9 @@ class Warzone(
     }
 
     fun handleWin(winningTeams: List<WarTeam>) {
+        val endEvent = WarzoneEndEvent(this)
+        plugin.server.pluginManager.callEvent(endEvent)
+
         broadcast("Score cap reached. Game is over! Winning teams: ${winningTeams.joinToString()}")
         state = WarzoneState.IDLING
         val numPlayers = numPlayers()
