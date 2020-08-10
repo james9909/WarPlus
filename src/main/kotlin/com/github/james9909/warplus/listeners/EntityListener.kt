@@ -168,7 +168,7 @@ class EntityListener(val plugin: WarPlus) : Listener {
                 (
                     warzone.state != WarzoneState.RUNNING ||
                     warzone.isSpawnBlock(block) ||
-                    warzone.warzoneSettings.get(WarzoneConfigType.CAN_BREAK_BLOCKS) ||
+                    !warzone.warzoneSettings.get(WarzoneConfigType.CAN_BREAK_BLOCKS) ||
                     warzone.objectives.values.any { objective ->
                         objective.handleBlockBreak(null, block)
                     }
