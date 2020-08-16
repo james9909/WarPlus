@@ -27,9 +27,7 @@ class WarScoreboard(val player: Player, private val zone: Warzone) {
 
         // Add all players to this scoreboard
         zone.teams.forEach { (_, team) ->
-            val hash = team.getScoreboardName().hashCode()
-            val teamName = "wp_$hash"
-            val scoreboardTeam = scoreboard.registerNewTeam(teamName)
+            val scoreboardTeam = scoreboard.registerNewTeam(team.getScoreboardName())
             scoreboardTeam.color = team.kind.chatColor
             scoreboardTeam.setCanSeeFriendlyInvisibles(true)
             scoreboardTeam.setAllowFriendlyFire(true) // Enable tnt friendly fire
@@ -45,7 +43,8 @@ class WarScoreboard(val player: Player, private val zone: Warzone) {
     }
 
     fun addPlayer(team: WarTeam, player: Player) {
-        val scoreboardTeam = scoreboard.getTeam(team.getScoreboardName()) ?: scoreboard.registerNewTeam(team.getScoreboardName())
+        val teamName = team.getScoreboardName()
+        val scoreboardTeam = scoreboard.getTeam(teamName) ?: scoreboard.registerNewTeam(teamName)
         scoreboardTeam.addEntry(player.name)
     }
 

@@ -137,7 +137,10 @@ class WarTeam(
         spawns.forEach { it.updateSign(this) }
     }
 
-    fun getScoreboardName(): String = "${warzone.name}_${kind.name.toLowerCase()}"
+    fun getScoreboardName(): String {
+        val fullName = "${warzone.name}_${kind.name.toLowerCase()}"
+        return "wp_${fullName.hashCode()}"
+    }
 
     override fun toString(): String {
         return kind.format()
