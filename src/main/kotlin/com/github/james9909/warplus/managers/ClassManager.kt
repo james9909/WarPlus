@@ -62,6 +62,14 @@ class ClassManager(private val plugin: WarPlus) {
         config.save(file)
     }
 
+    fun resolveClasses(): List<String> {
+        val defaultClasses = plugin.config.getStringList("classes")
+        if (defaultClasses.isNotEmpty()) {
+            return defaultClasses
+        }
+        return getClassNames()
+    }
+
     companion object {
         private fun defaultClasses(): List<WarClass> {
             return listOf()

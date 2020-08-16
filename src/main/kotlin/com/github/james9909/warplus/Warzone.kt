@@ -795,7 +795,7 @@ class Warzone(
         if (classes.isNotEmpty()) {
             return classes
         }
-        return plugin.classManager.getClassNames()
+        return plugin.classManager.resolveClasses()
     }
 
     fun equipClass(player: Player, warClass: WarClass, updatePlayerInfo: Boolean) {
