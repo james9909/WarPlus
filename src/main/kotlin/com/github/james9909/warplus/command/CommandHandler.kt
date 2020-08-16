@@ -17,6 +17,7 @@ import com.github.james9909.warplus.command.zonemaker.DeleteMonumentCommand
 import com.github.james9909.warplus.command.zonemaker.DeletePortalCommand
 import com.github.james9909.warplus.command.zonemaker.DeleteTeamFlagCommand
 import com.github.james9909.warplus.command.zonemaker.DeleteTeamSpawnCommand
+import com.github.james9909.warplus.command.zonemaker.DeleteWarzoneCommand
 import com.github.james9909.warplus.command.zonemaker.SetupWarzoneCommand
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
@@ -45,6 +46,7 @@ class CommandHandler(val plugin: WarPlus) : CommandExecutor, TabCompleter {
         COMMANDS["reload"] = ReloadCommand()
         COMMANDS["addportal"] = AddPortalCommand()
         COMMANDS["deleteportal"] = DeletePortalCommand()
+        COMMANDS["deletezone"] = DeleteWarzoneCommand()
     }
 
     override fun onTabComplete(

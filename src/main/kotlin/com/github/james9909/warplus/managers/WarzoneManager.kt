@@ -245,4 +245,9 @@ class WarzoneManager(val plugin: WarPlus) {
         }
         this.warzones.clear()
     }
+
+    fun deleteWarzone(warzone: Warzone): Boolean {
+        this.warzones.remove(warzone.name.toLowerCase())
+        return warzone.delete()
+    }
 }

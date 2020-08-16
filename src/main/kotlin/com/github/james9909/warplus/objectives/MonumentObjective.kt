@@ -107,4 +107,8 @@ class MonumentObjective(
             it.owner = null
         }
     }
+
+    override fun delete() {
+        monuments.forEach { it.deleteVolume() }
+    }
 }
