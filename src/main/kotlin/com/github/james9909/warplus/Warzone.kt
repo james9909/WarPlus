@@ -75,6 +75,7 @@ class Warzone(
 ) {
     var state = WarzoneState.IDLING
     val teams = ConcurrentHashMap<TeamKind, WarTeam>()
+    private val configPath = "${plugin.dataFolder.absolutePath}/warzone-$name.yml"
     private val volumeFolder = "${plugin.dataFolder.absolutePath}/volumes/warzones"
     private val volumePath = "$volumeFolder/$name.schem"
     private val portalsByLocation: HashMap<String, WarzonePortalStructure> = hashMapOf()
@@ -319,6 +320,16 @@ class Warzone(
             team.reset()
         }
         resetObjectives()
+    }
+
+    fun delete(): Boolean {
+        var success = true
+        objectives.values.forEach {
+            it.delete()
+        }
+        success = success && File(configPath).delete()
+        success = success && File(volumePath).delete()
+        return success
     }
 
     fun saveVolume(): Result<Unit, WarError> {

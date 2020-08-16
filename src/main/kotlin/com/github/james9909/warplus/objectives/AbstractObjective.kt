@@ -46,4 +46,6 @@ abstract class AbstractObjective(plugin: WarPlus, warzone: Warzone) {
     abstract fun saveConfig(config: ConfigurationSection)
 
     abstract fun reset()
+
+    abstract fun delete()
 }

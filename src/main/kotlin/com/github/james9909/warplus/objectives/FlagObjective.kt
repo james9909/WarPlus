@@ -178,4 +178,8 @@ class FlagObjective(
         }
         flagThieves.clear()
     }
+
+    override fun delete() {
+        flags.forEach { it.deleteVolume() }
+    }
 }

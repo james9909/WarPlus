@@ -26,6 +26,7 @@ import com.github.michaelbull.result.Result
 import org.bukkit.Location
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.YamlConfiguration
+import java.io.File
 
 class WarzoneManager(val plugin: WarPlus) {
     private val warzones = mutableMapOf<String, Warzone>()
@@ -244,5 +245,10 @@ class WarzoneManager(val plugin: WarPlus) {
             warzone.value.unload()
         }
         this.warzones.clear()
+    }
+
+    fun deleteWarzone(warzone: Warzone): Boolean {
+        this.warzones.remove(warzone.name.toLowerCase())
+        return warzone.delete()
     }
 }
