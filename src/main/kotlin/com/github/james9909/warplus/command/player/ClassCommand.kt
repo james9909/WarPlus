@@ -27,6 +27,12 @@ class ClassCommand : PlayerCommand() {
             return true
         }
         val className = args[0]
+        val availableClasses = playerInfo.team.resolveClasses().map { it.toLowerCase() }
+        if (className.toLowerCase() !in availableClasses) {
+            plugin.playerManager.sendMessage(sender, "Class $className is not enabled in this warzone")
+            return true
+        }
+
         val warClass = plugin.classManager.getClass(className)
         if (warClass == null) {
             plugin.playerManager.sendMessage(sender, "Class $className does not exist")
