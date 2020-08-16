@@ -69,6 +69,7 @@ class WarPlus : JavaPlugin {
     val inventoryManager = InventoryManager(this)
     private var databaseManager: DatabaseManager? = null // late initialization
     private var usr = UpdateScoreboardRunnable(this)
+    private val allowedCommands = mutableSetOf<String>()
     var loaded = AtomicBoolean()
         private set
     var economy: Economy? = null
@@ -114,6 +115,12 @@ class WarPlus : JavaPlugin {
         } catch (e: YAMLException) {
             logger.warning("Failed to load config: $e")
         }
+        allowedCommands.clear()
+        allowedCommands.add("/${WARPLUS_BASE_COMMAND}")
+        config.get(WarConfigType.ALLOWED_WARZONE_COMMANDS).forEach {
+            allowedCommands.add(it.trim().toLowerCase())
+        }
+
         classManager.loadClasses()
         warzoneManager.loadWarzones()
         setupDatabase()
@@ -213,5 +220,13 @@ class WarPlus : JavaPlugin {
         }
         databaseManager?.init()
         databaseManager?.createTables()
+    }
+
+    fun canExecuteCommand(command: String): Boolean {
+        val args = command.toLowerCase().split(" ")
+        if (args.isNotEmpty() && allowedCommands.contains(args[0])) {
+            return true
+        }
+        return allowedCommands.contains(args.joinToString(separator = " "))
     }
 }

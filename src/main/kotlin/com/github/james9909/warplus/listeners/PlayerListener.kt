@@ -10,6 +10,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.event.player.PlayerBucketEmptyEvent
+import org.bukkit.event.player.PlayerCommandPreprocessEvent
 import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerItemDamageEvent
 import org.bukkit.event.player.PlayerJoinEvent
@@ -181,5 +182,21 @@ class PlayerListener(val plugin: WarPlus) : Listener {
         val block = event.blockClicked
         val warzone = plugin.warzoneManager.getWarzoneByLocation(block.location) ?: return
         event.isCancelled = warzone.isSpawnBlock(block) || warzone.onBlockPlace(event.player, block)
+    }
+
+    @EventHandler
+    fun onPlayerCommandPreprocess(event: PlayerCommandPreprocessEvent) {
+        if (event.isCancelled) return
+        val player = event.player
+        plugin.playerManager.getPlayerInfo(player) ?: return
+
+        // Admins can execute any command
+        if (player.hasPermission("warplus.admin")) return
+        if (plugin.canExecuteCommand(event.message)) {
+            return
+        }
+
+        event.isCancelled = true
+        plugin.playerManager.sendMessage(player, "You can't execute that command in a warzone!")
     }
 }

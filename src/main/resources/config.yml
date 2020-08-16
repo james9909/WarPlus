@@ -9,6 +9,8 @@ global:
     username: root
     password: root
   restore-player-location: true
+  allowed-commands:
+    - /help
 warzone:
   default:
     config:
