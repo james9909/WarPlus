@@ -26,7 +26,6 @@ import com.github.michaelbull.result.Result
 import org.bukkit.Location
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.YamlConfiguration
-import java.io.File
 
 class WarzoneManager(val plugin: WarPlus) {
     private val warzones = mutableMapOf<String, Warzone>()
