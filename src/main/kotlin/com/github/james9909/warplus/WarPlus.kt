@@ -116,7 +116,7 @@ class WarPlus : JavaPlugin {
             logger.warning("Failed to load config: $e")
         }
         allowedCommands.clear()
-        allowedCommands.add("/${WARPLUS_BASE_COMMAND}")
+        allowedCommands.add("/$WARPLUS_BASE_COMMAND")
         config.get(WarConfigType.ALLOWED_WARZONE_COMMANDS).forEach {
             allowedCommands.add(it.trim().toLowerCase())
         }
