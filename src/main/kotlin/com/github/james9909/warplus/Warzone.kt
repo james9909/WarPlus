@@ -469,7 +469,7 @@ class Warzone(
             } else {
                 val weapon = attacker.inventory.itemInMainHand
                 val weaponName = if (weapon.hasItemMeta() && weapon.itemMeta!!.hasDisplayName()) {
-                    weapon.itemMeta!!.displayName
+                    "${weapon.itemMeta!!.displayName}${ChatColor.RESET}"
                 } else if (weapon.type == Material.AIR) {
                     "hand"
                 } else {
