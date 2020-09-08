@@ -51,6 +51,8 @@ import org.bukkit.event.inventory.InventoryAction
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
 import java.io.File
+import java.math.RoundingMode
+import java.text.DecimalFormat
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.ceil
 import kotlin.math.max
@@ -729,11 +731,18 @@ class Warzone(
         }
     }
 
+    private fun roundToDecimal(number: Double): Double {
+        val df = DecimalFormat("#.##")
+        df.roundingMode = RoundingMode.CEILING
+        return df.format(number).toDouble()
+    }
+
     private fun getEconReward(base: Double, numPlayers: Int, maxPlayers: Int): Double {
         if (numPlayers < 2) {
             return 0.0
         }
-        return max(0.0, base + (base * (numPlayers - 2) / (sqrt(maxPlayers.toDouble()) * 2)))
+        val result = base + (base * (numPlayers - 2) / (sqrt(maxPlayers.toDouble()) * 2))
+        return max(0.0, roundToDecimal(result))
     }
 
     private fun removeEntities() {

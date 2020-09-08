@@ -162,7 +162,7 @@ class WarPlus : JavaPlugin {
     }
 
     private fun setupEconomy() {
-        if (server.pluginManager.getPlugin("Vault") == null) {
+        if (!hasPlugin("Vault")) {
             logger.info("Vault not found, economy rewards disabled")
             return
         }
