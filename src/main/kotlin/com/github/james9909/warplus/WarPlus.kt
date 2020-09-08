@@ -176,7 +176,7 @@ class WarPlus : JavaPlugin {
     }
 
     private fun setupMagicSpells() {
-        if (server.pluginManager.getPlugin("MagicSpells") == null) {
+        if (!hasPlugin("MagicSpells")) {
             return
         }
         logger.info("MagicSpells found, enabling integration")

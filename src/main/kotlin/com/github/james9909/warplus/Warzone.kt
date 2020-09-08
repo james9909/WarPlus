@@ -32,6 +32,8 @@ import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.unwrap
 import com.google.common.collect.ImmutableList
+import com.nisovin.magicspells.MagicSpells
+import com.nisovin.magicspells.mana.ManaChangeReason
 import com.sk89q.worldedit.bukkit.BukkitAdapter
 import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.regions.CuboidRegion
@@ -244,6 +246,10 @@ class Warzone(
                 healthAttr.removeModifier(modifier)
             }
             healthAttr.baseValue
+        }
+        if (plugin.hasPlugin("MagicSpells")) {
+            val maxMana = MagicSpells.getManaHandler().getMaxMana(player)
+            MagicSpells.getManaHandler().setMana(player, maxMana, ManaChangeReason.POTION)
         }
         player.inventory.clear()
         PlayerState(
