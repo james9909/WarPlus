@@ -19,7 +19,7 @@ class ClassCommand : PlayerCommand() {
         }
         val playerInfo = plugin.playerManager.getPlayerInfo(sender)
         if (playerInfo == null) {
-            plugin.playerManager.sendMessage(sender, "You are not in a warzone")
+            plugin.playerManager.sendMessage(sender, "You are not playing in a warzone")
             return true
         }
         if (!playerInfo.inSpawn) {

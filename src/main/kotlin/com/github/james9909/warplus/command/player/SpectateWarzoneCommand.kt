@@ -7,9 +7,9 @@ import com.github.james9909.warplus.util.Message
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
-class JoinWarzoneCommand : PlayerCommand() {
-    override val USAGE_STRING = "/$WARPLUS_BASE_COMMAND join <name>"
-    override val DESCRIPTION = "Join a warzone."
+class SpectateWarzoneCommand : PlayerCommand() {
+    override val USAGE_STRING = "/$WARPLUS_BASE_COMMAND spectate <warzone name>"
+    override val DESCRIPTION = "Spectate a warzone"
 
     override fun execute(plugin: WarPlus, sender: CommandSender, args: List<String>): Boolean {
         if (args.isEmpty()) {
@@ -19,10 +19,9 @@ class JoinWarzoneCommand : PlayerCommand() {
             plugin.playerManager.sendMessage(sender, "Only in-game players may do that")
             return true
         }
-
         val playerInfo = plugin.playerManager.getParticipantInfo(sender)
         if (playerInfo != null) {
-            plugin.playerManager.sendMessage(sender, "You are already in a warzone")
+            plugin.playerManager.sendMessage(sender, "You already participating in a warzone")
             return true
         }
 
@@ -40,7 +39,8 @@ class JoinWarzoneCommand : PlayerCommand() {
             return true
         }
 
-        warzone.addPlayer(sender)
+        warzone.addSpectator(sender)
+        plugin.playerManager.sendMessage(sender, "You are now a spectator!")
         return true
     }
 

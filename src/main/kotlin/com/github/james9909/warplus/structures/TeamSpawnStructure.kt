@@ -11,6 +11,8 @@ import com.github.james9909.warplus.util.Orientation
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
+import org.bukkit.entity.Player
+import org.bukkit.util.Vector
 
 enum class SpawnStyle {
     INVISIBLE,
@@ -261,5 +263,17 @@ class TeamSpawnStructure(plugin: WarPlus, origin: Location, val kind: TeamKind, 
             }
             sign.update(true)
         }
+    }
+
+    fun teleport(player: Player) {
+        val spawnLocation = origin.clone()
+
+        // Offset because the origin is in the ground
+        spawnLocation.add(0.0, 1.0, 0.0)
+        // We want players to be looking straight ahead
+        spawnLocation.pitch = 0F
+
+        player.velocity = Vector()
+        player.teleport(spawnLocation)
     }
 }
