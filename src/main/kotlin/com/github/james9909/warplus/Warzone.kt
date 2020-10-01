@@ -436,7 +436,7 @@ class Warzone(
         state = WarzoneState.IDLING
         val numPlayers = numPlayers()
         val maxPlayers = maxPlayers()
-        teams.values.forEach {  team ->
+        teams.values.forEach { team ->
             val won = team in winningTeams
             val econReward = getEconReward(team.settings.get(TeamConfigType.ECON_REWARD), numPlayers, maxPlayers)
             val teamPlayers = team.players.toList()
