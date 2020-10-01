@@ -3,6 +3,7 @@ package com.github.james9909.warplus.listeners
 import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.WarzoneState
 import com.github.james9909.warplus.config.WarzoneConfigType
+import com.github.james9909.warplus.managers.WarParticipant
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -25,10 +26,16 @@ class PlayerListener(val plugin: WarPlus) : Listener {
     @EventHandler
     fun onPlayerQuit(event: PlayerQuitEvent) {
         val player = event.player
-        val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
-
-        val warzone = playerInfo.team.warzone
-        warzone.removePlayer(player, playerInfo.team)
+        val playerInfo = plugin.playerManager.getParticipantInfo(player) ?: return
+        when (playerInfo) {
+            is WarParticipant.Player -> {
+                val warzone = playerInfo.team.warzone
+                warzone.removePlayer(player, playerInfo.team)
+            }
+            is WarParticipant.Spectator -> {
+                playerInfo.warzone.removeSpectator(player)
+            }
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -70,38 +77,46 @@ class PlayerListener(val plugin: WarPlus) : Listener {
             return
         }
 
-        val playerInfo = plugin.playerManager.getPlayerInfo(player)
-        if (playerInfo == null) {
-            // Handle player movement outside of warzones
-            plugin.warzoneManager.getWarzones().forEach { warzone ->
-                if (!warzone.isEnabled() || warzone.state == WarzoneState.EDITING) {
-                    return@forEach
+        val playerInfo = plugin.playerManager.getParticipantInfo(player)
+        when (playerInfo) {
+            is WarParticipant.Player -> {
+                val team = playerInfo.team
+                val inSpawn = team.spawns.any {
+                    it.contains(to)
                 }
-                warzone.getPortalByLocation(to) ?: return@forEach
-                warzone.addPlayer(player)
-            }
-            return
-        }
-
-        val team = playerInfo.team
-        val inSpawn = team.spawns.any {
-            it.contains(to)
-        }
-        if (playerInfo.inSpawn) {
-            if (!inSpawn) {
-                // Player has exited the spawn
-                val warzone = team.warzone
-                if (warzone.state != WarzoneState.RUNNING) {
-                    // Players cannot leave if the warzone has not started yet
-                    plugin.playerManager.sendMessage(player, "You cannot leave until the warzone has started")
-                    event.isCancelled = true
+                if (playerInfo.inSpawn) {
+                    if (!inSpawn) {
+                        // Player has exited the spawn
+                        val warzone = team.warzone
+                        if (warzone.state != WarzoneState.RUNNING) {
+                            // Players cannot leave if the warzone has not started yet
+                            plugin.playerManager.sendMessage(player, "You cannot leave until the warzone has started")
+                            event.isCancelled = true
+                            return
+                        }
+                        playerInfo.inSpawn = false
+                    }
                     return
                 }
-                playerInfo.inSpawn = false
+                team.warzone.onPlayerMove(player, from, to)
             }
-            return
+            is WarParticipant.Spectator -> {
+                if (!playerInfo.warzone.contains(to)) {
+                    plugin.playerManager.sendMessage(player, "Please don't leave the warzone!")
+                    event.isCancelled = true
+                }
+            }
+            null -> {
+                // Handle player movement outside of warzones
+                plugin.warzoneManager.getWarzones().forEach { warzone ->
+                    if (!warzone.isEnabled() || warzone.state == WarzoneState.EDITING) {
+                        return@forEach
+                    }
+                    warzone.getPortalByLocation(to) ?: return@forEach
+                    warzone.addPlayer(player)
+                }
+            }
         }
-        team.warzone.onPlayerMove(player, from, to)
     }
 
     @EventHandler

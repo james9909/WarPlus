@@ -4,6 +4,7 @@ import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.WarzoneState
 import com.github.james9909.warplus.config.TeamConfigType
 import com.github.james9909.warplus.config.WarzoneConfigType
+import com.github.james9909.warplus.managers.WarParticipant
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.FallingBlock
@@ -314,9 +315,16 @@ class EntityListener(val plugin: WarPlus) : Listener {
     @EventHandler
     fun onEntityPickupItem(event: EntityPickupItemEvent) {
         val player = event.entity as? Player ?: return
-        val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
-        val warzone = playerInfo.team.warzone
-        event.isCancelled = warzone.onPlayerPickupItem(player, event.item)
+        val playerInfo = plugin.playerManager.getParticipantInfo(player) ?: return
+        when (playerInfo) {
+            is WarParticipant.Player -> {
+                val warzone = playerInfo.team.warzone
+                event.isCancelled = warzone.onPlayerPickupItem(player, event.item)
+            }
+            is WarParticipant.Spectator -> {
+                event.isCancelled = true
+            }
+        }
     }
 
     @EventHandler

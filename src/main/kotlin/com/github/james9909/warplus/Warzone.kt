@@ -5,9 +5,9 @@ import com.github.james9909.warplus.config.TeamConfigType
 import com.github.james9909.warplus.config.WarConfigType
 import com.github.james9909.warplus.config.WarzoneConfigType
 import com.github.james9909.warplus.event.WarzoneEndEvent
-import com.github.james9909.warplus.event.WarzonePlayerDeathEvent
 import com.github.james9909.warplus.event.WarzoneJoinEvent
 import com.github.james9909.warplus.event.WarzoneLeaveEvent
+import com.github.james9909.warplus.event.WarzonePlayerDeathEvent
 import com.github.james9909.warplus.event.WarzoneStartEvent
 import com.github.james9909.warplus.extensions.blockLocation
 import com.github.james9909.warplus.extensions.clearPotionEffects
@@ -39,6 +39,7 @@ import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.regions.CuboidRegion
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
+import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.attribute.Attribute
@@ -51,7 +52,6 @@ import org.bukkit.entity.Player
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause
 import org.bukkit.event.inventory.InventoryAction
 import org.bukkit.inventory.ItemStack
-import org.bukkit.util.Vector
 import java.io.File
 import java.math.RoundingMode
 import java.text.DecimalFormat
@@ -59,6 +59,7 @@ import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.sqrt
+import kotlin.random.Random
 
 enum class WarzoneState {
     IDLING,
@@ -79,6 +80,7 @@ class Warzone(
 ) {
     var state = WarzoneState.IDLING
     val teams = ConcurrentHashMap<TeamKind, WarTeam>()
+    private val spectators = HashSet<Player>()
     private val configPath = "${plugin.dataFolder.absolutePath}/warzone-$name.yml"
     private val volumeFolder = "${plugin.dataFolder.absolutePath}/volumes/warzones"
     private val volumePath = "$volumeFolder/$name.schem"
@@ -273,15 +275,8 @@ class Warzone(
 
         // Pick a random spawn
         val spawn = playerInfo.team.spawns.random()
-        val spawnLocation = spawn.origin.clone()
+        spawn.teleport(player)
 
-        // Offset because the origin is in the ground
-        spawnLocation.add(0.0, 1.0, 0.0)
-        // We want players to be looking straight ahead
-        spawnLocation.pitch = 0F
-
-        player.velocity = Vector()
-        player.teleport(spawnLocation)
         playerInfo.inSpawn = true
     }
 
@@ -452,6 +447,9 @@ class Warzone(
                 }
             }
         }
+        spectators.forEach {
+            plugin.playerManager.getSpectatorInfo(it)?.state?.restore(it)
+        }
         initialize(resetTeamScores = true)
     }
 
@@ -498,7 +496,8 @@ class Warzone(
                 handleKill(damager, player, damager, cause, false)
                 return
             }
-            null -> {}
+            null -> {
+            }
         }
         val playerString = "${playerInfo.team.kind.chatColor}${player.name}${ChatColor.RESET}"
         val message = when (cause) {
@@ -846,5 +845,35 @@ class Warzone(
 
     fun getPortals(): List<WarzonePortalStructure> {
         return portals.values.toList()
+    }
+
+    fun addSpectator(player: Player) {
+        plugin.playerManager.saveSpectatorState(
+            player,
+            this,
+            plugin.config.get(WarConfigType.RESTORE_PLAYER_LOCATION)
+        )
+        spectators.add(player)
+        val permissions = plugin.playerManager.getPermissions(player)
+        permissions.setPermission("magicspells.notarget", true)
+
+        val team = teams.entries.elementAt(Random.nextInt(teams.size)).value
+
+        // Pick a random spawn
+        val spawn = team.spawns.random()
+        spawn.teleport(player)
+
+        player.gameMode = GameMode.SPECTATOR
+    }
+
+    fun removeSpectator(player: Player) {
+        val spectator = plugin.playerManager.getSpectatorInfo(player) ?: return
+        spectators.remove(player)
+        plugin.playerManager.removePlayer(player)
+
+        val permissions = plugin.playerManager.getPermissions(player)
+        permissions.unsetPermission("magicspells.notarget")
+
+        spectator.state.restore(player)
     }
 }

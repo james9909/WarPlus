@@ -7,6 +7,7 @@ import com.github.james9909.warplus.command.admin.UnloadCommand
 import com.github.james9909.warplus.command.player.ClassCommand
 import com.github.james9909.warplus.command.player.JoinWarzoneCommand
 import com.github.james9909.warplus.command.player.LeaveWarzoneCommand
+import com.github.james9909.warplus.command.player.SpectateWarzoneCommand
 import com.github.james9909.warplus.command.zonemaker.AddMonumentCommand
 import com.github.james9909.warplus.command.zonemaker.AddPortalCommand
 import com.github.james9909.warplus.command.zonemaker.AddTeamFlagCommand
@@ -47,6 +48,7 @@ class CommandHandler(val plugin: WarPlus) : CommandExecutor, TabCompleter {
         COMMANDS["addportal"] = AddPortalCommand()
         COMMANDS["deleteportal"] = DeletePortalCommand()
         COMMANDS["deletezone"] = DeleteWarzoneCommand()
+        COMMANDS["spectate"] = SpectateWarzoneCommand()
     }
 
     override fun onTabComplete(
