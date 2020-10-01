@@ -4,7 +4,6 @@ import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.WarzoneState
 import com.github.james9909.warplus.config.TeamConfigType
 import com.github.james9909.warplus.config.WarzoneConfigType
-import com.github.james9909.warplus.managers.WarParticipant
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.FallingBlock
