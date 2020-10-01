@@ -18,7 +18,7 @@ class WarTest {
 
     @AfterAll
     internal fun afterAll() {
-        MockBukkit.unload()
+        MockBukkit.unmock()
     }
 
     @Test
