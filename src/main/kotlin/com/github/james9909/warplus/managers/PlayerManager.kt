@@ -73,7 +73,6 @@ class PlayerManager(val plugin: WarPlus) {
     fun saveSpectatorState(player: Player, warzone: Warzone, saveLocation: Boolean): WarParticipant.Spectator {
         val playerInfo = WarParticipant.Spectator(PlayerState.fromPlayer(player, saveLocation), warzone)
         players[player] = playerInfo
-        plugin.inventoryManager.saveInventory(player)
         return playerInfo
     }
 
