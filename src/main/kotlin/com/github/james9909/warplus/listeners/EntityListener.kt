@@ -315,16 +315,9 @@ class EntityListener(val plugin: WarPlus) : Listener {
     @EventHandler
     fun onEntityPickupItem(event: EntityPickupItemEvent) {
         val player = event.entity as? Player ?: return
-        val playerInfo = plugin.playerManager.getParticipantInfo(player) ?: return
-        when (playerInfo) {
-            is WarParticipant.Player -> {
-                val warzone = playerInfo.team.warzone
-                event.isCancelled = warzone.onPlayerPickupItem(player, event.item)
-            }
-            is WarParticipant.Spectator -> {
-                event.isCancelled = true
-            }
-        }
+        val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
+        val warzone = playerInfo.team.warzone
+        event.isCancelled = warzone.onPlayerPickupItem(player, event.item)
     }
 
     @EventHandler
