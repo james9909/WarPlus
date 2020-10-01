@@ -6,7 +6,12 @@ import org.bukkit.Location
 import kotlin.math.roundToInt
 
 val axis = arrayOf(CardinalDirection.SOUTH, CardinalDirection.WEST, CardinalDirection.NORTH, CardinalDirection.EAST)
-val radial = arrayOf(InterCardinalDirection.SOUTH_WEST, InterCardinalDirection.NORTH_WEST, InterCardinalDirection.NORTH_EAST, InterCardinalDirection.SOUTH_EAST)
+val radial = arrayOf(
+    InterCardinalDirection.SOUTH_WEST,
+    InterCardinalDirection.NORTH_WEST,
+    InterCardinalDirection.NORTH_EAST,
+    InterCardinalDirection.SOUTH_EAST
+)
 
 fun Location.format(direction: Boolean = true): String {
     // Format: world:x,y,z[,[yaw],[pitch]]

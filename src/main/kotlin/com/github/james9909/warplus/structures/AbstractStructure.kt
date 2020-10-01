@@ -92,11 +92,11 @@ abstract class AbstractStructure(val plugin: WarPlus, val origin: Location) {
     fun build() {
         val structure = getStructure()
         val (topLeft, _) = corners
-        for ((yOffset, layer) in structure.withIndex()) {
+        structure.forEachIndexed { yOffset, layer ->
             val blockY = topLeft.block.getRelative(BlockFace.UP, yOffset)
-            for ((zOffset, row) in layer.withIndex()) {
+            layer.forEachIndexed { zOffset, row ->
                 val blockYZ = blockY.getRelative(orientation.back.toBlockFace(), zOffset)
-                for ((xOffset, material) in row.withIndex()) {
+                row.forEachIndexed { xOffset, material ->
                     val blockXYZ = blockYZ.getRelative(orientation.right.toBlockFace(), xOffset)
                     blockXYZ.type = material
                 }

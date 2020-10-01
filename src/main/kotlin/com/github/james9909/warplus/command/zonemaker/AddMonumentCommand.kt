@@ -9,8 +9,8 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 class AddMonumentCommand : ZonemakerCommand() {
-    override val USAGE_STRING = "/$WARPLUS_BASE_COMMAND addmonument <name>"
-    override val DESCRIPTION = "Create a monument at the current location"
+    override val usageString = "/$WARPLUS_BASE_COMMAND addmonument <name>"
+    override val description = "Create a monument at the current location"
 
     override fun execute(plugin: WarPlus, sender: CommandSender, args: List<String>): Boolean {
         if (args.isEmpty()) {

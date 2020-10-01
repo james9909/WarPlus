@@ -27,28 +27,28 @@ import org.bukkit.command.TabCompleter
 import org.bukkit.entity.Player
 
 class CommandHandler(val plugin: WarPlus) : CommandExecutor, TabCompleter {
-    private val COMMANDS: MutableMap<String, AbstractCommand> = mutableMapOf()
+    private val commands: MutableMap<String, WarCommand> = mutableMapOf()
 
     init {
-        COMMANDS["setup"] = SetupWarzoneCommand()
-        COMMANDS["create"] = CreateWarzoneCommand()
-        COMMANDS["join"] = JoinWarzoneCommand()
-        COMMANDS["leave"] = LeaveWarzoneCommand()
-        COMMANDS["load"] = LoadCommand()
-        COMMANDS["unload"] = UnloadCommand()
-        COMMANDS["addteamflag"] = AddTeamFlagCommand()
-        COMMANDS["deleteteamflag"] = DeleteTeamFlagCommand()
-        COMMANDS["addteamspawn"] = AddTeamSpawnCommand()
-        COMMANDS["deleteteamspawn"] = DeleteTeamSpawnCommand()
-        COMMANDS["classchest"] = ClassChestCommand()
-        COMMANDS["class"] = ClassCommand()
-        COMMANDS["addmonument"] = AddMonumentCommand()
-        COMMANDS["deletemonument"] = DeleteMonumentCommand()
-        COMMANDS["reload"] = ReloadCommand()
-        COMMANDS["addportal"] = AddPortalCommand()
-        COMMANDS["deleteportal"] = DeletePortalCommand()
-        COMMANDS["deletezone"] = DeleteWarzoneCommand()
-        COMMANDS["spectate"] = SpectateWarzoneCommand()
+        commands["setup"] = SetupWarzoneCommand()
+        commands["create"] = CreateWarzoneCommand()
+        commands["join"] = JoinWarzoneCommand()
+        commands["leave"] = LeaveWarzoneCommand()
+        commands["load"] = LoadCommand()
+        commands["unload"] = UnloadCommand()
+        commands["addteamflag"] = AddTeamFlagCommand()
+        commands["deleteteamflag"] = DeleteTeamFlagCommand()
+        commands["addteamspawn"] = AddTeamSpawnCommand()
+        commands["deleteteamspawn"] = DeleteTeamSpawnCommand()
+        commands["classchest"] = ClassChestCommand()
+        commands["class"] = ClassCommand()
+        commands["addmonument"] = AddMonumentCommand()
+        commands["deletemonument"] = DeleteMonumentCommand()
+        commands["reload"] = ReloadCommand()
+        commands["addportal"] = AddPortalCommand()
+        commands["deleteportal"] = DeletePortalCommand()
+        commands["deletezone"] = DeleteWarzoneCommand()
+        commands["spectate"] = SpectateWarzoneCommand()
     }
 
     override fun onTabComplete(
@@ -57,30 +57,28 @@ class CommandHandler(val plugin: WarPlus) : CommandExecutor, TabCompleter {
         alias: String,
         args: Array<out String>
     ): MutableList<String> {
-        if (sender !is Player) {
-            return mutableListOf()
-        }
-        if (sender.isConversing) {
+        if (sender !is Player || sender.isConversing) {
             return mutableListOf()
         }
         if (args.isEmpty()) {
-            return COMMANDS
+            return commands
                 .filter { it.value.canExecute(sender) }
                 .map { it.key }
                 .toMutableList()
         }
         if (args.size == 1) {
             // We only have the base subcommand
-            return COMMANDS
+            return commands
                 .filter { it.key.startsWith(args[0]) && it.value.canExecute(sender) }
                 .map { it.key }
                 .toMutableList()
         }
-        val command = COMMANDS[args[0]] ?: return mutableListOf()
-        if (!command.canExecute(sender)) {
-            return mutableListOf()
+        val command = commands[args[0]] ?: return mutableListOf()
+        return if (!command.canExecute(sender)) {
+            mutableListOf()
+        } else {
+            command.tab(plugin, sender, args.drop(1)).toMutableList()
         }
-        return command.tab(plugin, sender, args.drop(1)).toMutableList()
     }
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
@@ -88,14 +86,14 @@ class CommandHandler(val plugin: WarPlus) : CommandExecutor, TabCompleter {
             return false
         }
         val subCommand = args[0]
-        val warCommand = COMMANDS[subCommand] ?: return false
+        val warCommand = commands[subCommand] ?: return false
         val rest = args.drop(1)
         if (!warCommand.canExecute(sender)) {
             plugin.playerManager.sendMessage(sender, "You don't have permission to execute that command")
             return true
         }
         if (!warCommand.execute(plugin, sender, rest)) {
-            plugin.playerManager.sendMessage(sender, "Usage: ${warCommand.USAGE_STRING}\n${warCommand.DESCRIPTION}")
+            plugin.playerManager.sendMessage(sender, "Usage: ${warCommand.usageString}\n${warCommand.description}")
         }
         return true
     }

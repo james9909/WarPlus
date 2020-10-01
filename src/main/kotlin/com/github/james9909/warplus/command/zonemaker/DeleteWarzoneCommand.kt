@@ -7,8 +7,8 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 class DeleteWarzoneCommand : ZonemakerCommand() {
-    override val USAGE_STRING = "/$WARPLUS_BASE_COMMAND deletezone <warzone name>"
-    override val DESCRIPTION = "Fully delete a warzone"
+    override val usageString = "/$WARPLUS_BASE_COMMAND deletezone <warzone name>"
+    override val description = "Fully delete a warzone"
 
     override fun execute(plugin: WarPlus, sender: CommandSender, args: List<String>): Boolean {
         if (args.isEmpty()) {

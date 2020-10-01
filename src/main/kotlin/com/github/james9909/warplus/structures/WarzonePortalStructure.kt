@@ -7,7 +7,12 @@ import org.bukkit.Material
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Directional
 
-class WarzonePortalStructure(plugin: WarPlus, origin: Location, val name: String, val warzone: Warzone) : AbstractStructure(plugin, origin) {
+class WarzonePortalStructure(
+    plugin: WarPlus,
+    origin: Location,
+    val name: String,
+    val warzone: Warzone
+) : AbstractStructure(plugin, origin) {
     override val prefix = "zone/portals"
     // Origin starts at the player's legs, not beneath it
     override val corners by lazy {

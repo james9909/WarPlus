@@ -8,6 +8,7 @@ import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.unwrap
 import java.sql.Connection
+import java.sql.SQLException
 
 class DatabaseManager(
     private val plugin: WarPlus,
@@ -23,7 +24,7 @@ class DatabaseManager(
                 val conn = connResult.unwrap()
                 try {
                     func(conn)
-                } catch (e: Exception) {
+                } catch (e: SQLException) {
                     conn.close()
                     plugin.logger.info("Failed to execute SQL: $e")
                     return Err(WarSqlError("Failed to execute SQL: $e"))

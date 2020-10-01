@@ -6,8 +6,8 @@ import com.github.james9909.warplus.util.Message
 import org.bukkit.command.CommandSender
 
 class LoadCommand : AdminCommand() {
-    override val USAGE_STRING = "/$WARPLUS_BASE_COMMAND load"
-    override val DESCRIPTION = "Load the plugin."
+    override val usageString = "/$WARPLUS_BASE_COMMAND load"
+    override val description = "Load the plugin."
 
     override fun execute(plugin: WarPlus, sender: CommandSender, args: List<String>): Boolean {
         if (plugin.loaded.get()) {

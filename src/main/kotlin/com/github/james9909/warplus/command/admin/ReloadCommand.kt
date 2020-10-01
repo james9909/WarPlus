@@ -6,8 +6,8 @@ import com.github.james9909.warplus.util.Message
 import org.bukkit.command.CommandSender
 
 class ReloadCommand : AdminCommand() {
-    override val USAGE_STRING = "/$WARPLUS_BASE_COMMAND reload"
-    override val DESCRIPTION = "Unload and reload the plugin"
+    override val usageString = "/$WARPLUS_BASE_COMMAND reload"
+    override val description = "Unload and reload the plugin"
 
     override fun execute(plugin: WarPlus, sender: CommandSender, args: List<String>): Boolean {
         if (!plugin.loaded.get()) {

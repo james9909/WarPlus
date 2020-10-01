@@ -71,10 +71,9 @@ data class WarClass(
 
     private fun giveToPlayer(player: Player, offhand: ItemStack?, items: Map<Int, ItemStack>, armor: ArmorSet) {
         player.inventory.apply {
-            for ((index, item) in items) {
+            items.forEach { index, item ->
                 setItem(index, item)
             }
-
             if (offhand != null) {
                 setItemInOffHand(offhand)
             }

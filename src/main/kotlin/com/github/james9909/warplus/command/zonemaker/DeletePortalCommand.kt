@@ -6,8 +6,8 @@ import org.bukkit.Material
 import org.bukkit.command.CommandSender
 
 class DeletePortalCommand : ZonemakerCommand() {
-    override val USAGE_STRING = "/$WARPLUS_BASE_COMMAND deleteportal <warzone name> <portal name>"
-    override val DESCRIPTION = "Delete a warzone portal by its name"
+    override val usageString = "/$WARPLUS_BASE_COMMAND deleteportal <warzone name> <portal name>"
+    override val description = "Delete a warzone portal by its name"
 
     override fun execute(plugin: WarPlus, sender: CommandSender, args: List<String>): Boolean {
         if (args.size < 2) {

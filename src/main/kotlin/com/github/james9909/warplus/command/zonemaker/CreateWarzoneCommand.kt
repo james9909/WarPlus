@@ -8,8 +8,8 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 class CreateWarzoneCommand : ZonemakerCommand() {
-    override val USAGE_STRING = "/$WARPLUS_BASE_COMMAND create <name>"
-    override val DESCRIPTION = "Create a new warzone."
+    override val usageString = "/$WARPLUS_BASE_COMMAND create <name>"
+    override val description = "Create a new warzone."
 
     override fun execute(plugin: WarPlus, sender: CommandSender, args: List<String>): Boolean {
         if (args.isEmpty()) {

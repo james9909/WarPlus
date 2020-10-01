@@ -3,6 +3,7 @@ package com.github.james9909.warplus.config
 import com.github.james9909.warplus.structures.SpawnStyle
 
 class TeamConfigType {
+    private constructor()
     companion object {
         val DEFAULT_CLASS = stringKey("default-class", "")
         val ECON_REWARD = doubleKey("econ-reward", 5.0)

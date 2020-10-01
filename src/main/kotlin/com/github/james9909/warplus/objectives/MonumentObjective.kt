@@ -85,7 +85,10 @@ class MonumentObjective(
             WarzoneConfigType.MAX_HEALTH
         )
         val currHealth = player.health
-        if (currHealth < maxHealth && Random.Default.nextDouble() < warzone.warzoneSettings.get(WarzoneConfigType.MONUMENT_HEAL_CHANCE)) {
+        if (
+            currHealth < maxHealth &&
+            Random.Default.nextDouble() < warzone.warzoneSettings.get(WarzoneConfigType.MONUMENT_HEAL_CHANCE)
+        ) {
             val newHealth = min(maxHealth, currHealth + warzone.warzoneSettings.get(WarzoneConfigType.MONUMENT_HEAL))
             player.health = newHealth
             plugin.playerManager.sendMessage(player, "Your team's monument buffs you!")

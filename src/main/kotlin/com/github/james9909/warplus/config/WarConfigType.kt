@@ -6,6 +6,7 @@ enum class DatabaseDialect {
 }
 
 class WarConfigType {
+    private constructor()
     companion object {
         val DATABASE_ENABLED = booleanKey("global.database.enabled", false)
         val DATABASE_SERVER = stringKey("global.database.server", "localhost")

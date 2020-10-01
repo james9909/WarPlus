@@ -9,8 +9,8 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 class ClassChestCommand : ZonemakerCommand() {
-    override val USAGE_STRING = "/$WARPLUS_BASE_COMMAND classchest <set|remove> <name>"
-    override val DESCRIPTION = "Set or remove a classchest"
+    override val usageString = "/$WARPLUS_BASE_COMMAND classchest <set|remove> <name>"
+    override val description = "Set or remove a classchest"
 
     override fun execute(plugin: WarPlus, sender: CommandSender, args: List<String>): Boolean {
         if (args.size != 2) {

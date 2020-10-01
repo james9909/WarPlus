@@ -8,8 +8,8 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 class AddPortalCommand : ZonemakerCommand() {
-    override val USAGE_STRING = "/$WARPLUS_BASE_COMMAND addportal <warzone name> <portal name>"
-    override val DESCRIPTION = "Create a warzone portal at the current location"
+    override val usageString = "/$WARPLUS_BASE_COMMAND addportal <warzone name> <portal name>"
+    override val description = "Create a warzone portal at the current location"
 
     override fun execute(plugin: WarPlus, sender: CommandSender, args: List<String>): Boolean {
         if (args.size < 2) {
