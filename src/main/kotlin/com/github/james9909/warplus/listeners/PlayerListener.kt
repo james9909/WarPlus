@@ -82,11 +82,11 @@ class PlayerListener(val plugin: WarPlus) : Listener {
         when (playerInfo) {
             is WarParticipant.Player -> handlePlayerMove(event, player, playerInfo, from, to)
             is WarParticipant.Spectator -> handleSpectatorMove(event, player, playerInfo, to)
-            null -> handleNonPlayerMove(event, player, to)
+            null -> handleOutsidePlayerMove(event, player, to)
         }
     }
 
-    fun handlePlayerMove(
+    private fun handlePlayerMove(
         event: PlayerMoveEvent,
         player: Player,
         playerInfo: WarParticipant.Player,
@@ -114,7 +114,7 @@ class PlayerListener(val plugin: WarPlus) : Listener {
         team.warzone.onPlayerMove(player, from, to)
     }
 
-    fun handleSpectatorMove(
+    private fun handleSpectatorMove(
         event: PlayerMoveEvent,
         player: Player,
         playerInfo: WarParticipant.Spectator,
@@ -126,7 +126,7 @@ class PlayerListener(val plugin: WarPlus) : Listener {
         }
     }
 
-    fun handleNonPlayerMove(event: PlayerMoveEvent, player: Player, to: Location) {
+    private fun handleOutsidePlayerMove(event: PlayerMoveEvent, player: Player, to: Location) {
         plugin.warzoneManager.getWarzones().forEach { warzone ->
             if (!warzone.isEnabled() || warzone.state == WarzoneState.EDITING) {
                 return@forEach

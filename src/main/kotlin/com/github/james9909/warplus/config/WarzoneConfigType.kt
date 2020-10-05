@@ -1,7 +1,6 @@
 package com.github.james9909.warplus.config
 
-class WarzoneConfigType {
-    private constructor()
+class WarzoneConfigType private constructor() {
     companion object {
         val BLOCK_HEADS = booleanKey("block-heads", true)
         val CAN_BREAK_BLOCKS = booleanKey("can-break-blocks", true)

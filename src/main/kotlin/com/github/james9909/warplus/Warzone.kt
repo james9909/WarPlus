@@ -405,12 +405,12 @@ class Warzone(
         }
     }
 
-    fun teamLossMessage(team: WarTeam, player: Player): String {
+    private fun teamLossMessage(team: WarTeam, player: Player): String {
         return "The battle is over. " +
             "Team $team lost: ${player.name} died and there were no lives left in their life pool."
     }
 
-    fun handleTeamLoss(team: WarTeam, player: Player) {
+    private fun handleTeamLoss(team: WarTeam, player: Player) {
         val winningTeams = mutableListOf<WarTeam>()
         teams.values.filter {
             it != team
@@ -613,7 +613,7 @@ class Warzone(
         return objective.getFlagAtLocation(location)
     }
 
-    fun validateStructureRegion(objectiveRegion: Region): Result<Unit, WarError> {
+    private fun validateStructureRegion(objectiveRegion: Region): Result<Unit, WarError> {
         if (!region.contains(objectiveRegion)) {
             return Err(WarStructureError("Structures must be fully contained within the warzone"))
         }
