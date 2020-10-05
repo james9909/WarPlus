@@ -20,11 +20,13 @@ import com.github.james9909.warplus.command.zonemaker.DeleteTeamFlagCommand
 import com.github.james9909.warplus.command.zonemaker.DeleteTeamSpawnCommand
 import com.github.james9909.warplus.command.zonemaker.DeleteWarzoneCommand
 import com.github.james9909.warplus.command.zonemaker.SetupWarzoneCommand
+import org.bukkit.ChatColor
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.command.TabCompleter
 import org.bukkit.entity.Player
+import java.util.UUID
 
 class CommandHandler(val plugin: WarPlus) : CommandExecutor, TabCompleter {
     private val commands: MutableMap<String, WarCommand> = mutableMapOf()
@@ -92,8 +94,15 @@ class CommandHandler(val plugin: WarPlus) : CommandExecutor, TabCompleter {
             plugin.playerManager.sendMessage(sender, "You don't have permission to execute that command")
             return true
         }
-        if (!warCommand.execute(plugin, sender, rest)) {
-            plugin.playerManager.sendMessage(sender, "Usage: ${warCommand.usageString}\n${warCommand.description}")
+        try {
+            if (!warCommand.execute(plugin, sender, rest)) {
+                plugin.playerManager.sendMessage(sender, "Usage: ${warCommand.usageString}\n${warCommand.description}")
+            }
+        } catch (e: Exception) {
+            val uuid = UUID.randomUUID()
+            println("exception generated while executing command: $uuid")
+            e.printStackTrace()
+            plugin.playerManager.sendMessage(sender, "${ChatColor.RED}An internal plugin error occurred. Please submit a report on #bug-reports with the id $uuid${ChatColor.RESET}")
         }
         return true
     }
