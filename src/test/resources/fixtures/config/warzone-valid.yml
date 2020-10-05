@@ -4,7 +4,8 @@ info:
   p2: flat:100.0,100.0,100.0
 classes:
 - class1
-- class2
+- ranger
+- tank
 settings:
   enabled: true
   min-teams: 1
@@ -20,14 +21,15 @@ teams:
     spawns:
     - flat:50.0,50.0,50.0,0.0,0.0
     classes:
-    - class3
-    - class4
+    - ranger
   red:
     settings:
       lives: 5
       spawn-style: large
     spawns:
     - flat:25.0,25.0,25.0,0.0,0.0
+    classes:
+    - tank
 objectives:
   flags:
     locations:

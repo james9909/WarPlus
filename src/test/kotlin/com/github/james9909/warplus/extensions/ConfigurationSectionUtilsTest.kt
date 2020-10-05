@@ -86,7 +86,6 @@ class ConfigurationSectionUtilsTest {
     }
 
     @Test
-    @Disabled("not ready yet")
     fun `handles enchants correctly`() {
         val configFile = File("src/test/resources/fixtures/config/predefined_items/enchant-test.yml")
         val config = YamlConfiguration.loadConfiguration(configFile)
@@ -98,7 +97,6 @@ class ConfigurationSectionUtilsTest {
     }
 
     @Test
-    @Disabled("not ready yet")
     fun `handles color correctly`() {
         val configFile = File("src/test/resources/fixtures/config/predefined_items/sorLegs.yml")
         val config = YamlConfiguration.loadConfiguration(configFile)

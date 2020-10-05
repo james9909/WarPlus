@@ -63,7 +63,7 @@ dependencies {
     compileOnly "org.spigotmc:spigot-api:1.15.2-R0.1-SNAPSHOT"
     compileOnly "com.github.MilkBowl:VaultAPI:1.7"
     testCompile "org.junit.jupiter:junit-jupiter:5.4.2"
-    testCompile "com.github.seeseemelk:MockBukkit-v1.15:0.3.0"
+    testCompile "com.github.seeseemelk:MockBukkit-v1.16:0.5.0"
 }
 
 compileKotlin {
