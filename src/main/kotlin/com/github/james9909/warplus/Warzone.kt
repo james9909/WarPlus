@@ -171,7 +171,11 @@ class Warzone(
         plugin.inventoryManager.restoreInventory(player)
 
         portals.forEach { it.value.updateBlocks() }
-        if (numPlayers() == 0 && state == WarzoneState.RUNNING && warzoneSettings.get(WarzoneConfigType.RESET_ON_EMPTY)) {
+        if (
+            numPlayers() == 0 &&
+            state == WarzoneState.RUNNING &&
+            warzoneSettings.get(WarzoneConfigType.RESET_ON_EMPTY)
+        ) {
             // Only reinitialize the zone if everyone left in the middle of the game
             plugin.logger.info("Last player left warzone $name. Reinitializing the warzone...")
             initialize(resetTeamScores = true)
@@ -188,7 +192,7 @@ class Warzone(
 
         // Find candidate team to join
         val candidates = teams.values.sortedBy { it.size() }
-        for (team in candidates) {
+        candidates.forEach { team ->
             if (!team.isFull()) {
                 return addPlayer(player, team)
             }
@@ -244,7 +248,7 @@ class Warzone(
         val maxHealth = if (healthAttr == null) {
             warzoneSettings.get(WarzoneConfigType.MAX_HEALTH)
         } else {
-            for (modifier in healthAttr.modifiers) {
+            healthAttr.modifiers.forEach { modifier ->
                 healthAttr.removeModifier(modifier)
             }
             healthAttr.baseValue
@@ -316,8 +320,8 @@ class Warzone(
 
     fun unload() {
         restoreVolume()
-        for ((_, team) in teams) {
-            for (player in ImmutableList.copyOf(team.players)) {
+        teams.values.forEach { team ->
+            ImmutableList.copyOf(team.players).forEach { player ->
                 removePlayer(player, team)
             }
             team.reset()
@@ -401,6 +405,11 @@ class Warzone(
         }
     }
 
+    fun teamLossMessage(team: WarTeam, player: Player): String {
+        return "The battle is over. " +
+            "Team $team lost: ${player.name} died and there were no lives left in their life pool."
+    }
+
     fun handleTeamLoss(team: WarTeam, player: Player) {
         val winningTeams = mutableListOf<WarTeam>()
         teams.values.filter {
@@ -411,7 +420,7 @@ class Warzone(
                 winningTeams.add(it)
             }
         }
-        broadcast("The battle is over. Team $team lost: ${player.name} died and there were no lives left in their life pool.")
+        broadcast(teamLossMessage(team, player))
         if (winningTeams.isEmpty()) {
             initialize(resetTeamScores = false)
         } else {
@@ -427,22 +436,23 @@ class Warzone(
         state = WarzoneState.IDLING
         val numPlayers = numPlayers()
         val maxPlayers = maxPlayers()
-        for ((_, team) in teams) {
+        teams.values.forEach { team ->
             val won = team in winningTeams
             val econReward = getEconReward(team.settings.get(TeamConfigType.ECON_REWARD), numPlayers, maxPlayers)
             val teamPlayers = team.players.toList()
-            for (player in teamPlayers) {
+            teamPlayers.forEach { player ->
                 removePlayer(player, team, showLeaveMessage = false)
             }
-            if (won) {
-                plugin.economy?.apply {
-                    teamPlayers.forEach {
-                        val response = depositPlayer(it, econReward)
-                        if (!response.transactionSuccess()) {
-                            plugin.logger.warning("Failed to reward ${it.name}: ${response.errorMessage}")
-                        } else {
-                            plugin.playerManager.sendMessage(it, "You earned \$${response.amount}")
-                        }
+            if (!won) {
+                return@forEach
+            }
+            plugin.economy?.apply {
+                teamPlayers.forEach {
+                    val response = depositPlayer(it, econReward)
+                    if (response.transactionSuccess()) {
+                        plugin.playerManager.sendMessage(it, "You earned \$${response.amount}")
+                    } else {
+                        plugin.logger.warning("Failed to reward ${it.name}: ${response.errorMessage}")
                     }
                 }
             }
@@ -502,7 +512,10 @@ class Warzone(
         val playerString = "${playerInfo.team.kind.chatColor}${player.name}${ChatColor.RESET}"
         val message = when (cause) {
             DamageCause.BLOCK_EXPLOSION -> "$playerString exploded"
-            DamageCause.FIRE, DamageCause.FIRE_TICK, DamageCause.LAVA, DamageCause.LIGHTNING -> "$playerString burned to a crisp"
+            DamageCause.FIRE,
+            DamageCause.FIRE_TICK,
+            DamageCause.LAVA,
+            DamageCause.LIGHTNING -> "$playerString burned to a crisp"
             DamageCause.DROWNING -> "$playerString drowned"
             DamageCause.FALL -> "$playerString fell to an untimely death"
             DamageCause.SUFFOCATION -> "$playerString suffocated"
@@ -585,8 +598,8 @@ class Warzone(
     }
 
     fun isSpawnBlock(block: Block): Boolean {
-        for ((_, team) in teams) {
-            for (spawn in team.spawns) {
+        teams.values.forEach { team ->
+            team.spawns.forEach { spawn ->
                 if (spawn.contains(block.location)) {
                     return true
                 }

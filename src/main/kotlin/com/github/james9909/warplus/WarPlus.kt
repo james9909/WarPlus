@@ -29,7 +29,9 @@ import java.io.File
 import java.lang.IllegalArgumentException
 import java.util.concurrent.atomic.AtomicBoolean
 
-val WARPLUS_BASE_COMMAND = "wp"
+const val WARPLUS_BASE_COMMAND = "wp"
+
+const val UPDATE_SCOREBOARD_TICKS = 10L
 
 val DEFAULT_TEAM_CONFIG by lazy {
     val config = YamlConfiguration()
@@ -146,7 +148,7 @@ class WarPlus : JavaPlugin {
     fun hasPlugin(plugin: String): Boolean = server.pluginManager.isPluginEnabled(plugin)
 
     private fun setupRunnables() {
-        usr.runTaskTimerAsynchronously(this, 0, 10)
+        usr.runTaskTimerAsynchronously(this, 0, UPDATE_SCOREBOARD_TICKS)
     }
 
     private fun cancelRunnables() {

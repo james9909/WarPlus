@@ -4,6 +4,7 @@ import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.WarzoneState
 import com.github.james9909.warplus.config.WarzoneConfigType
 import com.github.james9909.warplus.managers.WarParticipant
+import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -79,43 +80,59 @@ class PlayerListener(val plugin: WarPlus) : Listener {
 
         val playerInfo = plugin.playerManager.getParticipantInfo(player)
         when (playerInfo) {
-            is WarParticipant.Player -> {
-                val team = playerInfo.team
-                val inSpawn = team.spawns.any {
-                    it.contains(to)
-                }
-                if (playerInfo.inSpawn) {
-                    if (!inSpawn) {
-                        // Player has exited the spawn
-                        val warzone = team.warzone
-                        if (warzone.state != WarzoneState.RUNNING) {
-                            // Players cannot leave if the warzone has not started yet
-                            plugin.playerManager.sendMessage(player, "You cannot leave until the warzone has started")
-                            event.isCancelled = true
-                            return
-                        }
-                        playerInfo.inSpawn = false
-                    }
+            is WarParticipant.Player -> handlePlayerMove(event, player, playerInfo, from, to)
+            is WarParticipant.Spectator -> handleSpectatorMove(event, player, playerInfo, to)
+            null -> handleNonPlayerMove(event, player, to)
+        }
+    }
+
+    fun handlePlayerMove(
+        event: PlayerMoveEvent,
+        player: Player,
+        playerInfo: WarParticipant.Player,
+        from: Location,
+        to: Location
+    ) {
+        val team = playerInfo.team
+        val inSpawn = team.spawns.any {
+            it.contains(to)
+        }
+        if (playerInfo.inSpawn) {
+            if (!inSpawn) {
+                // Player has exited the spawn
+                val warzone = team.warzone
+                if (warzone.state != WarzoneState.RUNNING) {
+                    // Players cannot leave if the warzone has not started yet
+                    plugin.playerManager.sendMessage(player, "You cannot leave until the warzone has started")
+                    event.isCancelled = true
                     return
                 }
-                team.warzone.onPlayerMove(player, from, to)
+                playerInfo.inSpawn = false
             }
-            is WarParticipant.Spectator -> {
-                if (!playerInfo.warzone.contains(to)) {
-                    plugin.playerManager.sendMessage(player, "Please don't leave the warzone!")
-                    event.isCancelled = true
-                }
+            return
+        }
+        team.warzone.onPlayerMove(player, from, to)
+    }
+
+    fun handleSpectatorMove(
+        event: PlayerMoveEvent,
+        player: Player,
+        playerInfo: WarParticipant.Spectator,
+        to: Location
+    ) {
+        if (!playerInfo.warzone.contains(to)) {
+            plugin.playerManager.sendMessage(player, "Please don't leave the warzone!")
+            event.isCancelled = true
+        }
+    }
+
+    fun handleNonPlayerMove(event: PlayerMoveEvent, player: Player, to: Location) {
+        plugin.warzoneManager.getWarzones().forEach { warzone ->
+            if (!warzone.isEnabled() || warzone.state == WarzoneState.EDITING) {
+                return@forEach
             }
-            null -> {
-                // Handle player movement outside of warzones
-                plugin.warzoneManager.getWarzones().forEach { warzone ->
-                    if (!warzone.isEnabled() || warzone.state == WarzoneState.EDITING) {
-                        return@forEach
-                    }
-                    warzone.getPortalByLocation(to) ?: return@forEach
-                    warzone.addPlayer(player)
-                }
-            }
+            warzone.getPortalByLocation(to) ?: return@forEach
+            warzone.addPlayer(player)
         }
     }
 

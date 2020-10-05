@@ -9,8 +9,8 @@ import org.bukkit.conversations.Conversation
 import org.bukkit.entity.Player
 
 class SetupWarzoneCommand : ZonemakerCommand() {
-    override val USAGE_STRING = "/$WARPLUS_BASE_COMMAND setup <name>"
-    override val DESCRIPTION = "Setup an existing warzone created with /war create."
+    override val usageString = "/$WARPLUS_BASE_COMMAND setup <name>"
+    override val description = "Setup an existing warzone created with /war create."
 
     override fun execute(plugin: WarPlus, sender: CommandSender, args: List<String>): Boolean {
         if (args.isEmpty()) {

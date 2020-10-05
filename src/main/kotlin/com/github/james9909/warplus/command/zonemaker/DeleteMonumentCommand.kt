@@ -6,8 +6,9 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 class DeleteMonumentCommand : ZonemakerCommand() {
-    override val USAGE_STRING = "/$WARPLUS_BASE_COMMAND deletemonument [name]"
-    override val DESCRIPTION = "Delete a monument by its name. If no name is provided, delete the monument at your current location."
+    override val usageString = "/$WARPLUS_BASE_COMMAND deletemonument [name]"
+    override val description = "Delete a monument by its name. " +
+        "If no name is provided, delete the monument at your current location."
 
     override fun execute(plugin: WarPlus, sender: CommandSender, args: List<String>): Boolean {
         if (sender !is Player) {

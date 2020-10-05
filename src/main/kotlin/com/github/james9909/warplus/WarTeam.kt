@@ -109,7 +109,7 @@ class WarTeam(
     fun saveConfig(teamSection: ConfigurationSection) {
         teamSection.set("settings", settings.config)
         val spawnList = mutableListOf<String>()
-        for (spawn in spawns) {
+        spawns.forEach { spawn ->
             spawnList.add(spawn.origin.format())
         }
         teamSection.set("spawns", spawnList)

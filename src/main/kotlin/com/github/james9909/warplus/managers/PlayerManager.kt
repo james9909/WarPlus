@@ -64,7 +64,13 @@ class PlayerManager(val plugin: WarPlus) {
     }
 
     fun savePlayerState(player: Player, team: WarTeam, saveLocation: Boolean): WarParticipant.Player {
-        val playerInfo = WarParticipant.Player(team, PlayerState.fromPlayer(player, saveLocation), true, null, LastDamager(null))
+        val playerInfo = WarParticipant.Player(
+            team,
+            PlayerState.fromPlayer(player, saveLocation),
+            inSpawn = true,
+            warClass = null,
+            lastDamager = LastDamager(null)
+        )
         players[player] = playerInfo
         plugin.inventoryManager.saveInventory(player)
         return playerInfo

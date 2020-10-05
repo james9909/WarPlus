@@ -8,7 +8,7 @@ import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.SQLException
 
-class SqliteConnectionFactory(private val fileName: String) : ConnectionFactory() {
+class SqliteConnectionFactory(private val fileName: String) : ConnectionFactory {
     override fun getConnection(): Result<Connection, WarSqlError> {
         return try {
             Class.forName("org.sqlite.JDBC")
@@ -18,6 +18,6 @@ class SqliteConnectionFactory(private val fileName: String) : ConnectionFactory(
         }
     }
 
-    override fun init() {}
-    override fun close() {}
+    override fun init() { /* no-op */ }
+    override fun close() { /* no-op */ }
 }

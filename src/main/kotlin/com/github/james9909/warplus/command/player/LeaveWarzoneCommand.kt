@@ -7,8 +7,8 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 class LeaveWarzoneCommand : PlayerCommand() {
-    override val USAGE_STRING = "/$WARPLUS_BASE_COMMAND leave"
-    override val DESCRIPTION = "Leave the current warzone"
+    override val usageString = "/$WARPLUS_BASE_COMMAND leave"
+    override val description = "Leave the current warzone"
 
     override fun execute(plugin: WarPlus, sender: CommandSender, args: List<String>): Boolean {
         if (sender !is Player) {

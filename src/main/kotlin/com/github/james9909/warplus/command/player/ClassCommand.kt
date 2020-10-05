@@ -6,8 +6,8 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 class ClassCommand : PlayerCommand() {
-    override val USAGE_STRING = "/$WARPLUS_BASE_COMMAND class <name>"
-    override val DESCRIPTION = "Select and equip a class"
+    override val usageString = "/$WARPLUS_BASE_COMMAND class <name>"
+    override val description = "Select and equip a class"
 
     override fun execute(plugin: WarPlus, sender: CommandSender, args: List<String>): Boolean {
         if (args.isEmpty()) {

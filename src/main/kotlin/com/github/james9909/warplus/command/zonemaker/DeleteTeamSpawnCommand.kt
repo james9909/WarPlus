@@ -6,8 +6,8 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 class DeleteTeamSpawnCommand : ZonemakerCommand() {
-    override val USAGE_STRING = "/$WARPLUS_BASE_COMMAND deleteteamspawn"
-    override val DESCRIPTION = "Delete the spawn at your current location"
+    override val usageString = "/$WARPLUS_BASE_COMMAND deleteteamspawn"
+    override val description = "Delete the spawn at your current location"
 
     override fun execute(plugin: WarPlus, sender: CommandSender, args: List<String>): Boolean {
         if (sender !is Player) {

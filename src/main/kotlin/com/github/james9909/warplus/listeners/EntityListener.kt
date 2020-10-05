@@ -56,7 +56,12 @@ class EntityListener(val plugin: WarPlus) : Listener {
         }
     }
 
-    private fun handlePlayerDamage(event: EntityDamageByEntityEvent, defender: Player, damager: Entity?, canFriendlyFire: Boolean) {
+    private fun handlePlayerDamage(
+        event: EntityDamageByEntityEvent,
+        defender: Player,
+        damager: Entity?,
+        canFriendlyFire: Boolean
+    ) {
         when (damager) {
             is Player -> handlePlayerDamageByPlayer(event, defender, damager, canFriendlyFire)
             is LivingEntity -> handlePlayerDamageByMonster(event, defender, damager)
@@ -68,7 +73,12 @@ class EntityListener(val plugin: WarPlus) : Listener {
         }
     }
 
-    private fun handlePlayerDamageByPlayer(event: EntityDamageByEntityEvent, defender: Player, damager: Player, canFriendlyFire: Boolean) {
+    private fun handlePlayerDamageByPlayer(
+        event: EntityDamageByEntityEvent,
+        defender: Player,
+        damager: Player,
+        canFriendlyFire: Boolean
+    ) {
         val damagerInfo = plugin.playerManager.getPlayerInfo(damager)
         val defenderInfo = plugin.playerManager.getPlayerInfo(defender)
 
@@ -303,7 +313,7 @@ class EntityListener(val plugin: WarPlus) : Listener {
                     continue
                 }
                 val sameTeam = warPlayer.team == warShooter.team
-                if (sameTeam && !beneficial || (!sameTeam && beneficial)) {
+                if (sameTeam xor beneficial) {
                     // Don't affect teammates with hurtful potions and don't affect enemies with beneficial ones
                     event.setIntensity(entity, 0.0)
                 }

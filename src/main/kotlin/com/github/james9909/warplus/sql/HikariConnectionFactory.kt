@@ -15,7 +15,7 @@ abstract class HikariConnectionFactory(
     private val databaseName: String,
     private val username: String,
     private val password: String
-) : ConnectionFactory() {
+) : ConnectionFactory {
 
     private lateinit var hikari: HikariDataSource
 
