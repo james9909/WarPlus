@@ -100,7 +100,7 @@ class CommandHandler(val plugin: WarPlus) : CommandExecutor, TabCompleter {
             }
         } catch (e: Exception) {
             val uuid = UUID.randomUUID()
-            println("exception generated while executing command: $uuid")
+            plugin.logger.severe("Exception generated while executing command: $uuid")
             e.printStackTrace()
             plugin.playerManager.sendMessage(sender, "${ChatColor.RED}An internal plugin error occurred. Please submit a report on #bug-reports with the id $uuid${ChatColor.RESET}")
         }
