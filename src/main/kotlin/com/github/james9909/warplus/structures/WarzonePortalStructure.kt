@@ -34,32 +34,41 @@ class WarzonePortalStructure(
     }
 
     override fun postBuild() {
-        signBlock.type = Material.OAK_WALL_SIGN
-        val signData = signBlock.blockData as Directional
-        signData.facing = orientation.back.toBlockFace()
-        signBlock.blockData = signData
+        setSignBlock()
         updateBlocks()
     }
 
     fun updateBlocks() {
-        val block = signBlock.state
-        val sign = block as org.bukkit.block.Sign
-        sign.setLine(0, "Warzone")
-        sign.setLine(1, warzone.name)
-        sign.setLine(2, "${warzone.numPlayers()}/${warzone.maxPlayers()}")
-        sign.setLine(3, "${warzone.teams.size} teams")
-        block.update(true)
-        if (warzone.numPlayers() > 0) {
-            origin.block
-                .getRelative(orientation.left.toBlockFace())
-                .getRelative(BlockFace.UP, 2)
-                .type = Material.REDSTONE_BLOCK
-            origin.block
-                .getRelative(orientation.right.toBlockFace())
-                .getRelative(BlockFace.UP, 2)
-                .type = Material.REDSTONE_BLOCK
-        } else {
-            restoreVolume()
-        }
+        setSignBlock()
+        try {
+            val block = signBlock.state
+            val sign = block as org.bukkit.block.Sign
+            sign.setLine(0, "Warzone")
+            sign.setLine(1, warzone.name)
+            sign.setLine(2, "${warzone.numPlayers()}/${warzone.maxPlayers()}")
+            sign.setLine(3, "${warzone.teams.size} teams")
+            block.update(true)
+            if (warzone.numPlayers() > 0) {
+                origin.block
+                    .getRelative(orientation.left.toBlockFace())
+                    .getRelative(BlockFace.UP, 2)
+                    .type = Material.REDSTONE_BLOCK
+                origin.block
+                    .getRelative(orientation.right.toBlockFace())
+                    .getRelative(BlockFace.UP, 2)
+                    .type = Material.REDSTONE_BLOCK
+            } else {
+                restoreVolume()
+            }
+        } catch (ignored: ClassCastException) { /* no-op */ }
+    }
+
+    private fun setSignBlock() {
+        try {
+            signBlock.type = Material.OAK_WALL_SIGN
+            val signData = signBlock.blockData as Directional
+            signData.facing = orientation.back.toBlockFace()
+            signBlock.blockData = signData
+        } catch (ignored: ClassCastException) { /* no-op */ }
     }
 }

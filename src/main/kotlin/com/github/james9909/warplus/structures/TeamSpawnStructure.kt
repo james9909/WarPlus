@@ -13,6 +13,7 @@ import org.bukkit.Material
 import org.bukkit.block.BlockFace
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
+import java.lang.ClassCastException
 
 enum class SpawnStyle {
     INVISIBLE,
@@ -243,25 +244,34 @@ class TeamSpawnStructure(plugin: WarPlus, origin: Location, val kind: TeamKind, 
     }
 
     override fun postBuild() {
-        signBlock?.apply {
-            type = Material.OAK_SIGN
-            val signData = blockData as org.bukkit.block.data.type.Sign
-            signData.rotation = interCardinalDirection.toBlockFace().oppositeFace
-            blockData = signData
-        }
+        setSignBlock()
     }
 
     fun updateSign(team: WarTeam) {
+        setSignBlock()
         signBlock?.apply {
-            val sign = state as org.bukkit.block.Sign
-            sign.setLine(0, "Team ${kind.name.toLowerCase()}")
-            sign.setLine(1, "${team.size()}/${team.maxPlayers()} players")
-            sign.setLine(2, "${team.score}/${team.maxScore()} points")
-            when (val lives = team.lives) {
-                1 -> sign.setLine(3, "1 life left")
-                else -> sign.setLine(3, "$lives lives left")
-            }
-            sign.update(true)
+            try {
+                val sign = state as org.bukkit.block.Sign
+                sign.setLine(0, "Team ${kind.name.toLowerCase()}")
+                sign.setLine(1, "${team.size()}/${team.maxPlayers()} players")
+                sign.setLine(2, "${team.score}/${team.maxScore()} points")
+                when (val lives = team.lives) {
+                    1 -> sign.setLine(3, "1 life left")
+                    else -> sign.setLine(3, "$lives lives left")
+                }
+                sign.update(true)
+            } catch (ignored: ClassCastException) { /* no-op */ }
+        }
+    }
+
+    private fun setSignBlock() {
+        signBlock?.apply {
+            try {
+                type = Material.OAK_SIGN
+                val signData = blockData as org.bukkit.block.data.type.Sign
+                signData.rotation = interCardinalDirection.toBlockFace().oppositeFace
+                blockData = signData
+            } catch (ignored: ClassCastException) { /* no-op */ }
         }
     }
 

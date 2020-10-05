@@ -391,10 +391,10 @@ class Warzone(
             if (lives == 1) {
                 broadcast("Team $team's life pool is empty. One more death and they lose the battle!")
             }
+            team.lives -= 1
             team.spawns.forEach {
                 it.updateSign(team)
             }
-            team.lives -= 1
             respawnPlayer(player)
         }
     }
