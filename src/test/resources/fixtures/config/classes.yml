@@ -2,12 +2,22 @@ classes:
   class1:
     items: {}
     classchest: flat:70.0,4.0,-82.0,0.0,0.0
-  class2:
-    items: {}
-    classchest: flat:70.0,4.0,-82.0,0.0,0.0
-  class3:
-    items: {}
-    classchest: flat:70.0,4.0,-82.0,0.0,0.0
-  class4:
-    items: {}
-    classchest: flat:70.0,4.0,-82.0,0.0,0.0
+  ranger:
+    items:
+      0:
+        type: bow
+      1:
+        type: arrow
+        amount: 64
+    chestplate:
+      type: chainmail_chestplate
+  tank:
+    items:
+      0:
+        type: wooden_sword
+    chestplate:
+      type: diamond_chestplate
+    leggings:
+      type: diamond_leggings
+    boots:
+      type: diamond_boots

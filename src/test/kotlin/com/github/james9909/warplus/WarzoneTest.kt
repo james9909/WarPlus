@@ -48,6 +48,7 @@ class WarzoneTest {
         warzone.saveConfig()
         val actualConfigFile = File("${plugin.dataFolder}/warzone-valid.yml")
         assert(actualConfigFile.exists())
+        println(actualConfigFile.readText())
         assert(actualConfigFile.readText().trim() == configFile.readText().trim())
     }
 }
