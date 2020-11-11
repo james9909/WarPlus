@@ -216,8 +216,8 @@ class Warzone(
         portals.forEach { it.value.updateBlocks() }
 
         // Equip default class
-        val defaultClass = team.settings.get(TeamConfigType.DEFAULT_CLASS)
-        val possibleClasses = team.resolveClasses()
+        val defaultClass = team.settings.get(TeamConfigType.DEFAULT_CLASS).toLowerCase()
+        val possibleClasses = team.resolveClasses().map { it.toLowerCase() }
         val className = if (defaultClass in possibleClasses) {
             // Equip specified with the default-class setting
             defaultClass

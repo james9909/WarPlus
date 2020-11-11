@@ -192,12 +192,12 @@ class PlayerListener(val plugin: WarPlus) : Listener {
             return
         }
 
-        val classes = playerInfo.team.resolveClasses()
+        val classes = playerInfo.team.resolveClasses().map { it.toLowerCase() }
         if (classes.isEmpty()) {
             return
         }
         val currentClass = playerInfo.warClass ?: return
-        val idx = classes.indexOf(currentClass.name)
+        val idx = classes.indexOf(currentClass.name.toLowerCase())
         val nextClassName = if (idx + 1 < classes.size) classes[idx + 1] else classes[0]
         val nextClass = plugin.classManager.getClass(nextClassName) ?: return
         playerInfo.team.warzone.equipClass(player, nextClass, true)
