@@ -1,6 +1,6 @@
 name: WarPlus
 main: com.github.james9909.warplus.WarPlus
-api-version: 1.13
+api-version: 1.16
 version: 0.1.0
 author: james9909
 softdepend: [MagicSpells, Vault, WorldEdit]
