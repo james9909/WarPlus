@@ -129,7 +129,6 @@ class WarPlus : JavaPlugin {
         getCommand(WARPLUS_BASE_COMMAND)?.setExecutor(CommandHandler(this))
         setupRunnables()
         setupEconomy()
-        setupMagicSpells()
         loaded.set(true)
     }
 
@@ -161,6 +160,9 @@ class WarPlus : JavaPlugin {
         pluginManager.registerEvents(BlockListener(this), this)
         pluginManager.registerEvents(EntityListener(this), this)
         pluginManager.registerEvents(PlayerListener(this), this)
+        if (server.name != "ServerMock") {
+            pluginManager.registerEvents(MagicSpellsListener(this), this)
+        }
     }
 
     private fun setupEconomy() {
@@ -175,14 +177,6 @@ class WarPlus : JavaPlugin {
         } else {
             logger.info("Vault found, but no economy plugin was detected. Economy rewards will be disabled")
         }
-    }
-
-    private fun setupMagicSpells() {
-        if (!hasPlugin("MagicSpells")) {
-            return
-        }
-        logger.info("MagicSpells found, enabling integration")
-        server.pluginManager.registerEvents(MagicSpellsListener(this), this)
     }
 
     private fun setupDatabase() {

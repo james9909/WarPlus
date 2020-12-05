@@ -65,7 +65,7 @@ class EntityListener(val plugin: WarPlus) : Listener {
         when (damager) {
             is Player -> handlePlayerDamageByPlayer(event, defender, damager, canFriendlyFire)
             is LivingEntity -> handlePlayerDamageByMonster(event, defender, damager)
-            is FallingBlock, is LightningStrike, is Firework, null -> handleNaturalPlayerDamage(event, defender)
+            is FallingBlock, is LightningStrike, is Firework, is TNTPrimed, null -> handleNaturalPlayerDamage(event, defender)
             else -> {
                 plugin.logger.severe("Failed to explicitly handle damage event:\nevent: $event\ndamager: $damager")
                 handleNaturalPlayerDamage(event, defender)
