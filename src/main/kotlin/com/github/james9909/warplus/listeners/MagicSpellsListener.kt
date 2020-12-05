@@ -66,11 +66,7 @@ class MagicSpellsListener(val plugin: WarPlus) : Listener {
             return
         }
 
-        if (targetInfo.inSpawn) {
-            event.isCancelled = true
-            return
-        }
-        if (casterInfo.inSpawn) {
+        if (targetInfo.inSpawn || casterInfo.inSpawn) {
             event.isCancelled = true
             return
         }
@@ -79,13 +75,11 @@ class MagicSpellsListener(val plugin: WarPlus) : Listener {
             // Only allow beneficial spells to target teammates
             if (!spell.isBeneficial) {
                 event.isCancelled = true
-                return
             }
         } else {
             // Only allow harmful spells to target enemies
             if (spell.isBeneficial) {
                 event.isCancelled = true
-                return
             }
         }
     }
