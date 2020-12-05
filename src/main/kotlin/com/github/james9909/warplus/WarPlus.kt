@@ -160,7 +160,9 @@ class WarPlus : JavaPlugin {
         pluginManager.registerEvents(BlockListener(this), this)
         pluginManager.registerEvents(EntityListener(this), this)
         pluginManager.registerEvents(PlayerListener(this), this)
-        pluginManager.registerEvents(MagicSpellsListener(this), this)
+        if (server.name != "ServerMock") {
+            pluginManager.registerEvents(MagicSpellsListener(this), this)
+        }
     }
 
     private fun setupEconomy() {
