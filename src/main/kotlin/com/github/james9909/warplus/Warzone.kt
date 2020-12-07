@@ -457,9 +457,7 @@ class Warzone(
                 }
             }
         }
-        spectators.forEach {
-            plugin.playerManager.getSpectatorInfo(it)?.state?.restore(it)
-        }
+        spectators.forEach { removeSpectator(it) }
         initialize(resetTeamScores = true)
     }
 
