@@ -13,7 +13,7 @@ import com.github.james9909.warplus.extensions.blockLocation
 import com.github.james9909.warplus.extensions.clearPotionEffects
 import com.github.james9909.warplus.extensions.format
 import com.github.james9909.warplus.extensions.get
-import com.github.james9909.warplus.objectives.AbstractObjective
+import com.github.james9909.warplus.objectives.Objective
 import com.github.james9909.warplus.objectives.FlagObjective
 import com.github.james9909.warplus.objectives.MonumentObjective
 import com.github.james9909.warplus.region.Region
@@ -73,7 +73,7 @@ class Warzone(
     val region: Region,
     val teamSettings: CascadingConfig = CascadingConfig(),
     val warzoneSettings: CascadingConfig = CascadingConfig(),
-    val objectives: HashMap<String, AbstractObjective> = hashMapOf(),
+    val objectives: HashMap<String, Objective> = hashMapOf(),
     val classes: List<String> = emptyList(),
     private val portals: HashMap<String, WarzonePortalStructure> = hashMapOf()
 ) {

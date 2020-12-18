@@ -31,7 +31,7 @@ class MonumentObjective(
     private val plugin: WarPlus,
     private val warzone: Warzone,
     val monuments: MutableList<MonumentStructure>
-) : AbstractObjective(plugin, warzone) {
+) : Objective(plugin, warzone) {
     override val name = "monuments"
 
     fun getMonumentAtLocation(location: Location): MonumentStructure? = monuments.firstOrNull { it.contains(location) }

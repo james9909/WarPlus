@@ -10,7 +10,7 @@ import org.bukkit.entity.Item
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryAction
 
-abstract class AbstractObjective(plugin: WarPlus, warzone: Warzone) {
+abstract class Objective(plugin: WarPlus, warzone: Warzone) {
     abstract val name: String
 
     open fun handleBlockBreak(player: Player?, block: Block): Boolean {
