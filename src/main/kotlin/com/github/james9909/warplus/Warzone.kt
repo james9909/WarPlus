@@ -55,7 +55,6 @@ import org.bukkit.inventory.ItemStack
 import java.io.File
 import java.math.RoundingMode
 import java.text.DecimalFormat
-import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.sqrt
@@ -79,7 +78,7 @@ class Warzone(
     private val portals: HashMap<String, WarzonePortalStructure> = hashMapOf()
 ) {
     var state = WarzoneState.IDLING
-    val teams = ConcurrentHashMap<TeamKind, WarTeam>()
+    val teams = HashMap<TeamKind, WarTeam>()
     private val spectators = HashSet<Player>()
     private val configPath = "${plugin.dataFolder.absolutePath}/warzone-$name.yml"
     private val volumeFolder = "${plugin.dataFolder.absolutePath}/volumes/warzones"
@@ -129,7 +128,7 @@ class Warzone(
             removeEntities()
         }
         if (plugin.hasPlugin("FastAsyncWorldEdit")) {
-            plugin.server.scheduler.runTaskLaterAsynchronously(plugin, { _ ->
+            plugin.server.scheduler.runTaskLater(plugin, { _ ->
                 state = oldState
             }, 40L)
         }
@@ -147,7 +146,6 @@ class Warzone(
         }
     }
 
-    @Synchronized
     fun removePlayer(player: Player, team: WarTeam, showLeaveMessage: Boolean = true) {
         team.removePlayer(player)
         removePlayer(player)
@@ -183,7 +181,6 @@ class Warzone(
         }
     }
 
-    @Synchronized
     fun addPlayer(player: Player): Boolean {
         if (numPlayers() >= maxPlayers()) {
             plugin.playerManager.sendMessage(player, Message.TOO_MANY_PLAYERS)
@@ -201,7 +198,6 @@ class Warzone(
         return false
     }
 
-    @Synchronized
     private fun addPlayer(player: Player, team: WarTeam): Boolean {
         val joinEvent = WarzoneJoinEvent(player, this)
         plugin.server.pluginManager.callEvent(joinEvent)
@@ -374,7 +370,6 @@ class Warzone(
         return Ok(Unit)
     }
 
-    @Synchronized
     private fun handleDeath(player: Player, entity: Entity?, cause: DamageCause) {
         val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
         val deathEvent = WarzonePlayerDeathEvent(player, this, entity, cause)

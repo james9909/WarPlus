@@ -147,7 +147,7 @@ class WarPlus : JavaPlugin {
     fun hasPlugin(plugin: String): Boolean = server.pluginManager.isPluginEnabled(plugin)
 
     private fun setupRunnables() {
-        usr.runTaskTimerAsynchronously(this, 0, UPDATE_SCOREBOARD_TICKS)
+        usr.runTaskTimer(this, 0, UPDATE_SCOREBOARD_TICKS)
     }
 
     private fun cancelRunnables() {

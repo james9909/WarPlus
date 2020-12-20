@@ -6,11 +6,10 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import java.io.File
 import java.lang.ClassCastException
-import java.util.concurrent.ConcurrentHashMap
 
 class InventoryManager(val plugin: WarPlus) {
     private val baseDirectory = File(plugin.dataFolder, "inventories")
-    private val players = ConcurrentHashMap<Player, Array<ItemStack?>>()
+    private val players = HashMap<Player, Array<ItemStack?>>()
 
     fun saveInventory(player: Player) {
         val inventoryContents = player.inventory.contents
