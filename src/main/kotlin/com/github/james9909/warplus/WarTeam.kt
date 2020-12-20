@@ -131,7 +131,6 @@ class WarTeam(
         return warzone.resolveClasses()
     }
 
-    @Synchronized
     fun addPoint() {
         score += 1
         spawns.forEach { it.updateSign(this) }

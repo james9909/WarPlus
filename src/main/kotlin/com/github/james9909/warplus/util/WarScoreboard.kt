@@ -8,10 +8,8 @@ import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 import org.bukkit.scoreboard.DisplaySlot
 import java.util.UUID
-import java.util.concurrent.ConcurrentHashMap
 
-val PLAYER_SCOREBOARDS: MutableMap<UUID, WarScoreboard> = ConcurrentHashMap()
-private val updating: MutableMap<UUID, Boolean> = ConcurrentHashMap()
+val PLAYER_SCOREBOARDS: MutableMap<UUID, WarScoreboard> = HashMap()
 
 class WarScoreboard(val player: Player, private val zone: Warzone) {
     val scoreboard = Bukkit.getScoreboardManager()!!.getNewScoreboard()
@@ -62,10 +60,6 @@ class WarScoreboard(val player: Player, private val zone: Warzone) {
     }
 
     fun update() {
-        if (updating.getOrDefault(player.uniqueId, false)) {
-            return
-        }
-        updating[player.uniqueId] = true
         this.lines = 20
 
         addText("")
@@ -84,8 +78,6 @@ class WarScoreboard(val player: Player, private val zone: Warzone) {
         if (flash) {
             lastFlash = now
         }
-
-        updating[player.uniqueId] = false
     }
 
     private fun addText(text: String) {
@@ -142,7 +134,6 @@ class WarScoreboard(val player: Player, private val zone: Warzone) {
 
         fun removeScoreboard(player: Player) {
             PLAYER_SCOREBOARDS.remove(player.uniqueId)
-            updating.remove(player.uniqueId)
             player.scoreboard = Bukkit.getScoreboardManager()!!.getNewScoreboard()
         }
 

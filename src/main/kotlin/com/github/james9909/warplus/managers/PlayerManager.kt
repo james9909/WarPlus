@@ -12,7 +12,6 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.permissions.PermissionAttachment
 import java.util.UUID
-import java.util.concurrent.ConcurrentHashMap
 
 sealed class WarParticipant {
     data class Player(
@@ -27,8 +26,8 @@ sealed class WarParticipant {
 }
 
 class PlayerManager(val plugin: WarPlus) {
-    private val players = ConcurrentHashMap<Player, WarParticipant>()
-    private val permissions = ConcurrentHashMap<UUID, PermissionAttachment>()
+    private val players = HashMap<Player, WarParticipant>()
+    private val permissions = HashMap<UUID, PermissionAttachment>()
     private val chatPrefix: String
 
     init {
