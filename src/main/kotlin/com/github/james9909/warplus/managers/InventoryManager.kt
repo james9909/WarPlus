@@ -11,10 +11,12 @@ class InventoryManager(val plugin: WarPlus) {
     private val baseDirectory = File(plugin.dataFolder, "inventories")
     private val players = HashMap<Player, Array<ItemStack?>>()
 
+    private fun getPlayerFile(player: Player): File = File(baseDirectory, "${player.name}.yml")
+
     fun saveInventory(player: Player) {
         val inventoryContents = player.inventory.contents
         players[player] = inventoryContents
-        val playerFile = File(baseDirectory, "${player.name}.yml")
+        val playerFile = getPlayerFile(player)
         val config = YamlConfiguration()
         config.set("inventory", inventoryContents)
         config.save(playerFile)
@@ -29,10 +31,16 @@ class InventoryManager(val plugin: WarPlus) {
         }
         player.inventory.contents = items
         players.remove(player)
+
+        // Delete file on disk to avoid accidental restorations
+        val playerFile = getPlayerFile(player)
+        if (playerFile.exists()) {
+            playerFile.delete()
+        }
     }
 
     fun restoreInventoryFromFile(player: Player) {
-        val playerFile = File(baseDirectory, "${player.name}.yml")
+        val playerFile = getPlayerFile(player)
         if (!playerFile.exists()) {
             return
         }
