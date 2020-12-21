@@ -43,6 +43,10 @@ abstract class Objective(plugin: WarPlus, warzone: Warzone) {
 
     open fun handleLeave(player: Player) {}
 
+    open fun start() {}
+
+    open fun stop() {}
+
     abstract fun saveConfig(config: ConfigurationSection)
 
     abstract fun reset()

@@ -32,7 +32,8 @@ private enum class TOOL(val display: String) {
     CORNERS("Corners"),
     SPAWN("Spawns"),
     FLAG("Flags"),
-    MONUMENT("Monuments")
+    MONUMENT("Monuments"),
+    CAPTURE_POINT("Capture Points")
 }
 
 class SetupWarzonePrompt(val plugin: WarPlus, val player: Player, val warzone: Warzone) : Prompt,
@@ -164,6 +165,7 @@ class SetupWarzonePrompt(val plugin: WarPlus, val player: Player, val warzone: W
                 TOOL.SPAWN.display -> handleSpawn(event)
                 TOOL.FLAG.display -> handleFlag(event)
                 TOOL.MONUMENT.display -> handleMonument(event)
+                TOOL.CAPTURE_POINT.display -> handleCapturePoint(event)
             }
         }
         player.sendRawMessage(getPromptText(conversation.context))
@@ -307,12 +309,40 @@ class SetupWarzonePrompt(val plugin: WarPlus, val player: Player, val warzone: W
         }
     }
 
+    private fun handleCapturePoint(event: PlayerInteractEvent) {
+        val location = player.location
+        when (event.action) {
+            Action.LEFT_CLICK_AIR, Action.LEFT_CLICK_BLOCK -> {
+                val origin = location.subtract(0.0, 1.0, 0.0).blockLocation()
+                text = when (val result = warzone.addCapturePointObjective(origin, "Capture Point")) {
+                    is Ok -> "Capture point created! Change its name in the config."
+                    is Err -> result.error.toString()
+                }
+            }
+            Action.RIGHT_CLICK_AIR, Action.RIGHT_CLICK_BLOCK -> {
+                val cp = warzone.getCapturePointAtLocation(location)
+                if (cp == null) {
+                    text = "There is no capture point here"
+                    return
+                }
+                cp.restoreVolume()
+                warzone.removeCapturePoint(cp)
+                warzone.saveConfig()
+                text = "Capture point removed!"
+            }
+            else -> {
+                // Do nothing
+            }
+        }
+    }
+
     companion object {
         private val TOOLS = arrayOf(
             createTool(Material.WOODEN_AXE, TOOL.CORNERS, "Set corner 1", "Set corner 2"),
             createTool(Material.WOODEN_SWORD, TOOL.SPAWN, "Add spawn", "Remove spawn"),
             createTool(Material.WOODEN_HOE, TOOL.FLAG, "Create flag", "Remove flag"),
-            createTool(Material.WOODEN_PICKAXE, TOOL.MONUMENT, "Create monument", "Remove monument")
+            createTool(Material.WOODEN_PICKAXE, TOOL.MONUMENT, "Create monument", "Remove monument"),
+            createTool(Material.WOODEN_SHOVEL, TOOL.CAPTURE_POINT, "Create capture point", "Remove capture point")
         )
 
         private fun createTool(material: Material, name: TOOL, left: String, right: String): ItemStack {
