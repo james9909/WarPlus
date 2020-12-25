@@ -58,6 +58,7 @@ import org.bukkit.inventory.ItemStack
 import java.io.File
 import java.math.RoundingMode
 import java.text.DecimalFormat
+import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.sqrt
@@ -953,14 +954,15 @@ class Warzone(
     private fun balanceTeams() {
         val teams = teams.values.toList()
         for ((t1, t2) in teams.pairs()) {
-            if (t1.players.size - t2.players.size >= 2) {
-                val eject = t1.players.random()
-                moveToTeam(eject, t1, t2)
-                break
-            } else if (t2.players.size - t1.players.size >= 2) {
-                val eject = t2.players.random()
-                moveToTeam(eject, t2, t1)
-                break
+            if (abs(t1.players.size - t2.players.size) >= 2) {
+                val (oldTeam, newTeam) = if (t1.players.size > t2.players.size) {
+                    Pair(t1, t2)
+                } else {
+                    Pair(t2, t1)
+                }
+                val eject = oldTeam.players.random()
+                moveToTeam(eject, oldTeam, newTeam)
+                return
             }
         }
     }
