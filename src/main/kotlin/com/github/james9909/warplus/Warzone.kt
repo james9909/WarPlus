@@ -13,6 +13,7 @@ import com.github.james9909.warplus.extensions.blockLocation
 import com.github.james9909.warplus.extensions.clearPotionEffects
 import com.github.james9909.warplus.extensions.format
 import com.github.james9909.warplus.extensions.get
+import com.github.james9909.warplus.extensions.pairs
 import com.github.james9909.warplus.objectives.CapturePointObjective
 import com.github.james9909.warplus.objectives.Objective
 import com.github.james9909.warplus.objectives.FlagObjective
@@ -170,6 +171,9 @@ class Warzone(
         plugin.playerManager.removePlayer(player)
         playerState?.state?.restore(player)
         plugin.inventoryManager.restoreInventory(player)
+
+        // Maintain a maximum team size delta of 1
+        balanceTeams()
 
         portals.forEach { it.value.updateBlocks() }
         if (
@@ -944,5 +948,34 @@ class Warzone(
     fun getCapturePointByName(name: String): CapturePointStructure? {
         val objective = objectives["capture_points"] as? CapturePointObjective ?: return null
         return objective.capturePoints.firstOrNull { it.name.equals(name, true) }
+    }
+
+    private fun balanceTeams() {
+        val teams = teams.values.toList()
+        for ((t1, t2) in teams.pairs()) {
+            if (t1.players.size - t2.players.size >= 2) {
+                val eject = t1.players.random()
+                moveToTeam(eject, t1, t2)
+                break
+            } else if (t2.players.size - t1.players.size >= 2) {
+                val eject = t2.players.random()
+                moveToTeam(eject, t2, t1)
+                break
+            }
+        }
+    }
+
+    // Move a player to another team without doing all the work of removing them from the warzone
+    // and then adding them back
+    private fun moveToTeam(player: Player, oldTeam: WarTeam, newTeam: WarTeam) {
+        oldTeam.removePlayer(player)
+        objectives.values.forEach {
+            it.handleLeave(player)
+        }
+        newTeam.addPlayer(player)
+        val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
+        plugin.playerManager.setPlayerInfo(player, playerInfo.copy(team = newTeam))
+        respawnPlayer(player)
+        broadcast("[Auto Balance] - ${player.name} was moved to $newTeam")
     }
 }

@@ -57,6 +57,10 @@ class PlayerManager(val plugin: WarPlus) {
         else -> null
     }
 
+    fun setPlayerInfo(player: Player, info: WarParticipant.Player) {
+        players[player] = info
+    }
+
     fun getSpectatorInfo(player: Player): WarParticipant.Spectator? = when (val p = players[player]) {
         is WarParticipant.Spectator -> p
         else -> null
