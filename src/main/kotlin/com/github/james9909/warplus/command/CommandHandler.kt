@@ -8,12 +8,14 @@ import com.github.james9909.warplus.command.player.ClassCommand
 import com.github.james9909.warplus.command.player.JoinWarzoneCommand
 import com.github.james9909.warplus.command.player.LeaveWarzoneCommand
 import com.github.james9909.warplus.command.player.SpectateWarzoneCommand
+import com.github.james9909.warplus.command.zonemaker.AddCapturePointCommand
 import com.github.james9909.warplus.command.zonemaker.AddMonumentCommand
 import com.github.james9909.warplus.command.zonemaker.AddPortalCommand
 import com.github.james9909.warplus.command.zonemaker.AddTeamFlagCommand
 import com.github.james9909.warplus.command.zonemaker.AddTeamSpawnCommand
 import com.github.james9909.warplus.command.zonemaker.ClassChestCommand
 import com.github.james9909.warplus.command.zonemaker.CreateWarzoneCommand
+import com.github.james9909.warplus.command.zonemaker.DeleteCapturePointCommand
 import com.github.james9909.warplus.command.zonemaker.DeleteMonumentCommand
 import com.github.james9909.warplus.command.zonemaker.DeletePortalCommand
 import com.github.james9909.warplus.command.zonemaker.DeleteTeamFlagCommand
@@ -51,6 +53,8 @@ class CommandHandler(val plugin: WarPlus) : CommandExecutor, TabCompleter {
         commands["deleteportal"] = DeletePortalCommand()
         commands["deletezone"] = DeleteWarzoneCommand()
         commands["spectate"] = SpectateWarzoneCommand()
+        commands["addcapturepoint"] = AddCapturePointCommand()
+        commands["deletecapturepoint"] = DeleteCapturePointCommand()
     }
 
     override fun onTabComplete(

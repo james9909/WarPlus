@@ -13,10 +13,12 @@ import com.github.james9909.warplus.extensions.blockLocation
 import com.github.james9909.warplus.extensions.clearPotionEffects
 import com.github.james9909.warplus.extensions.format
 import com.github.james9909.warplus.extensions.get
-import com.github.james9909.warplus.objectives.AbstractObjective
+import com.github.james9909.warplus.objectives.CapturePointObjective
+import com.github.james9909.warplus.objectives.Objective
 import com.github.james9909.warplus.objectives.FlagObjective
 import com.github.james9909.warplus.objectives.MonumentObjective
 import com.github.james9909.warplus.region.Region
+import com.github.james9909.warplus.structures.CapturePointStructure
 import com.github.james9909.warplus.structures.FlagStructure
 import com.github.james9909.warplus.structures.MonumentStructure
 import com.github.james9909.warplus.structures.TeamSpawnStructure
@@ -73,7 +75,7 @@ class Warzone(
     val region: Region,
     val teamSettings: CascadingConfig = CascadingConfig(),
     val warzoneSettings: CascadingConfig = CascadingConfig(),
-    val objectives: HashMap<String, AbstractObjective> = hashMapOf(),
+    val objectives: HashMap<String, Objective> = hashMapOf(),
     val classes: List<String> = emptyList(),
     private val portals: HashMap<String, WarzonePortalStructure> = hashMapOf()
 ) {
@@ -118,7 +120,8 @@ class Warzone(
         plugin.logger.info("Starting warzone $name")
         state = WarzoneState.RUNNING
 
-        initialize(resetTeamScores = true)
+        initialize(resetTeamScores = false)
+        startObjectives()
     }
 
     private fun initialize(resetTeamScores: Boolean) {
@@ -177,6 +180,7 @@ class Warzone(
             // Only reinitialize the zone if everyone left in the middle of the game
             plugin.logger.info("Last player left warzone $name. Reinitializing the warzone...")
             initialize(resetTeamScores = true)
+            stopObjectives()
             state = WarzoneState.IDLING
         }
     }
@@ -454,6 +458,7 @@ class Warzone(
         }
         spectators.forEach { removeSpectator(it) }
         initialize(resetTeamScores = true)
+        stopObjectives()
     }
 
     fun handleSuicide(player: Player, cause: DamageCause) {
@@ -627,6 +632,11 @@ class Warzone(
                 return Err(WarStructureError("A structure cannot overlap with a monument"))
             }
         }
+        (objectives["capture_points"] as? CapturePointObjective)?.capturePoints?.forEach { cp ->
+            if (objectiveRegion.intersects(cp.region)) {
+                return Err(WarStructureError("A structure cannot overlap with a capture point monument"))
+            }
+        }
         return Ok(Unit)
     }
 
@@ -739,6 +749,18 @@ class Warzone(
     private fun resetObjectives() {
         objectives.values.forEach {
             it.reset()
+        }
+    }
+
+    private fun startObjectives() {
+        objectives.values.forEach {
+            it.start()
+        }
+    }
+
+    private fun stopObjectives() {
+        objectives.values.forEach {
+            it.stop()
         }
     }
 
@@ -881,5 +903,46 @@ class Warzone(
         permissions.unsetPermission("magicspells.notarget")
 
         spectator.state.restore(player)
+    }
+
+    fun addCapturePointObjective(location: Location, name: String): Result<Unit, WarError> {
+        val cp =
+            CapturePointStructure(plugin, location, name)
+        val result = validateStructureRegion(cp.region)
+        when (result) {
+            is Ok -> {
+                cp.saveVolume()
+                cp.build()
+                addCapturePoint(cp)
+                saveConfig()
+            }
+            is Err -> {
+            } // Do nothing, just return
+        }
+        return result
+    }
+
+    private fun addCapturePoint(cp: CapturePointStructure) {
+        val objective = objectives["capture_points"] as? CapturePointObjective ?: run {
+            val temp = CapturePointObjective(plugin, this, mutableListOf())
+            objectives[temp.name] = temp
+            temp
+        }
+        objective.addCapturePoint(cp)
+    }
+
+    fun removeCapturePoint(cp: CapturePointStructure): Boolean {
+        val objective = objectives["capture_points"] as? CapturePointObjective ?: return false
+        return objective.removeCapturePoint(cp)
+    }
+
+    fun getCapturePointAtLocation(location: Location): CapturePointStructure? {
+        val objective = objectives["capture_points"] as? CapturePointObjective ?: return null
+        return objective.getCapturePointAtLocation(location)
+    }
+
+    fun getCapturePointByName(name: String): CapturePointStructure? {
+        val objective = objectives["capture_points"] as? CapturePointObjective ?: return null
+        return objective.capturePoints.firstOrNull { it.name.equals(name, true) }
     }
 }

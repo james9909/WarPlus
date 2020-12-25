@@ -14,5 +14,6 @@ class WarzoneConfigType private constructor() {
         val MONUMENT_HEAL_CHANCE = doubleKey("monument-heal-chance", 0.2)
         val REMOVE_ENTITIES_ON_RESET = booleanKey("remove-entities-on-reset", true)
         val RESET_ON_EMPTY = booleanKey("reset-on-empty", true)
+        val CAPTURE_POINT_TIME = integerKey("capture-point-time", 20)
     }
 }

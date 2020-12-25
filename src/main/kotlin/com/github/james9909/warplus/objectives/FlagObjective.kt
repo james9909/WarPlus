@@ -47,7 +47,7 @@ class FlagObjective(
     private val plugin: WarPlus,
     private val warzone: Warzone,
     val flags: MutableList<FlagStructure>
-) : AbstractObjective(plugin, warzone) {
+) : Objective(plugin, warzone) {
     override val name: String = "flags"
 
     private val flagThieves = HashMap<Player, FlagStructure>()

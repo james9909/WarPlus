@@ -15,6 +15,7 @@ import com.github.james9909.warplus.extensions.LocationFormatException
 import com.github.james9909.warplus.extensions.getLocationFromString
 import com.github.james9909.warplus.extensions.getOrCreateSection
 import com.github.james9909.warplus.extensions.toLocation
+import com.github.james9909.warplus.objectives.createCapturePointObjective
 import com.github.james9909.warplus.objectives.createFlagObjective
 import com.github.james9909.warplus.objectives.createMonumentObjective
 import com.github.james9909.warplus.region.Region
@@ -185,6 +186,9 @@ class WarzoneManager(val plugin: WarPlus) {
                 }
                 "monuments" -> {
                     createMonumentObjective(plugin, warzone, objectiveSection)
+                }
+                "capture_points" -> {
+                    createCapturePointObjective(plugin, warzone, objectiveSection)
                 }
                 else -> null
             }
