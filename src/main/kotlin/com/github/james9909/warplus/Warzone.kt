@@ -960,6 +960,10 @@ class Warzone(
                 } else {
                     Pair(t2, t1)
                 }
+                if (newTeam.isFull()) {
+                    // Adhere to team size limits
+                    continue
+                }
                 val eject = oldTeam.players.random()
                 moveToTeam(eject, oldTeam, newTeam)
                 return
