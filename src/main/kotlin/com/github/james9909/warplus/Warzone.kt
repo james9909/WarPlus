@@ -940,4 +940,9 @@ class Warzone(
         val objective = objectives["capture_points"] as? CapturePointObjective ?: return null
         return objective.getCapturePointAtLocation(location)
     }
+
+    fun getCapturePointByName(name: String): CapturePointStructure? {
+        val objective = objectives["capture_points"] as? CapturePointObjective ?: return null
+        return objective.capturePoints.firstOrNull { it.name.equals(name, true) }
+    }
 }
