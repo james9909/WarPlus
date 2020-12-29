@@ -79,6 +79,7 @@ class Warzone(
     val warzoneSettings: CascadingConfig = CascadingConfig(),
     val objectives: HashMap<String, Objective> = hashMapOf(),
     val classes: List<String> = emptyList(),
+    val reward: WarReward = WarReward.default(),
     private val portals: HashMap<String, WarzonePortalStructure> = hashMapOf()
 ) {
     var state = WarzoneState.IDLING
@@ -320,6 +321,10 @@ class Warzone(
             val portalSection = portalsSection.createSection(it.name)
             portalSection.set("origin", it.origin.format())
         }
+
+        val rewardSection = config.createSection("rewards")
+        reward.saveConfig(rewardSection)
+
         config.save(file)
     }
 
@@ -446,18 +451,19 @@ class Warzone(
             val teamPlayers = team.players.toList()
             teamPlayers.forEach { player ->
                 removePlayer(player, team, showLeaveMessage = false)
-            }
-            if (!won) {
-                return@forEach
-            }
-            plugin.economy?.apply {
-                teamPlayers.forEach {
-                    val response = depositPlayer(it, econReward)
-                    if (response.transactionSuccess()) {
-                        plugin.playerManager.sendMessage(it, "You earned \$${response.amount}")
-                    } else {
-                        plugin.logger.warning("Failed to reward ${it.name}: ${response.errorMessage}")
+
+                if (won) {
+                    reward.giveWinReward(player)
+                    plugin.economy?.apply {
+                        val response = depositPlayer(player, econReward)
+                        if (response.transactionSuccess()) {
+                            plugin.playerManager.sendMessage(player, "You earned \$${response.amount}")
+                        } else {
+                            plugin.logger.warning("Failed to reward ${player.name}: ${response.errorMessage}")
+                        }
                     }
+                } else {
+                    reward.giveLossReward(player)
                 }
             }
         }

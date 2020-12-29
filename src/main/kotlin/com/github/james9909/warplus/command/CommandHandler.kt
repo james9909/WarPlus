@@ -21,6 +21,7 @@ import com.github.james9909.warplus.command.zonemaker.DeletePortalCommand
 import com.github.james9909.warplus.command.zonemaker.DeleteTeamFlagCommand
 import com.github.james9909.warplus.command.zonemaker.DeleteTeamSpawnCommand
 import com.github.james9909.warplus.command.zonemaker.DeleteWarzoneCommand
+import com.github.james9909.warplus.command.zonemaker.RewardsCommand
 import com.github.james9909.warplus.command.zonemaker.SetupWarzoneCommand
 import org.bukkit.ChatColor
 import org.bukkit.command.Command
@@ -55,6 +56,7 @@ class CommandHandler(val plugin: WarPlus) : CommandExecutor, TabCompleter {
         commands["spectate"] = SpectateWarzoneCommand()
         commands["addcapturepoint"] = AddCapturePointCommand()
         commands["deletecapturepoint"] = DeleteCapturePointCommand()
+        commands["rewards"] = RewardsCommand()
     }
 
     override fun onTabComplete(

@@ -4,6 +4,7 @@ import com.github.james9909.warplus.DEFAULT_TEAM_CONFIG
 import com.github.james9909.warplus.DEFAULT_WARZONE_CONFIG
 import com.github.james9909.warplus.IllegalTeamKindError
 import com.github.james9909.warplus.IllegalWarzoneError
+import com.github.james9909.warplus.WarReward
 import com.github.james9909.warplus.TeamKind
 import com.github.james9909.warplus.WarError
 import com.github.james9909.warplus.WarPlus
@@ -59,6 +60,7 @@ class WarzoneManager(val plugin: WarPlus) {
         val teamsSection = config.getOrCreateSection("teams")
         val objectivesSection = config.getOrCreateSection("objectives")
         val portalsSection = config.getOrCreateSection("portals")
+        val rewardsSection = config.getOrCreateSection("rewards")
 
         // Get region information
         val worldName = infoSection.getString("world") ?: plugin.server.worlds[0].name
@@ -86,6 +88,8 @@ class WarzoneManager(val plugin: WarPlus) {
         }
 
         val region = Region(world, p1, p2)
+        val reward = WarReward.fromConfig(rewardsSection)
+
         val teamDefaultConfig = plugin.config.getConfigurationSection("team.default.config") ?: YamlConfiguration()
         val warzoneDefaultConfig =
             plugin.config.getConfigurationSection("warzone.default.config") ?: YamlConfiguration()
@@ -107,7 +111,8 @@ class WarzoneManager(val plugin: WarPlus) {
                     )
                 )
             ),
-            classes = config.getStringList("classes")
+            classes = config.getStringList("classes"),
+            reward = reward
         )
         warzone.restoreVolume()
 
