@@ -10,6 +10,7 @@ import com.github.james9909.warplus.objectives.MonumentObjective
 import com.github.james9909.warplus.structures.SpawnStyle
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.unwrap
+import org.bukkit.Material
 import org.bukkit.configuration.file.YamlConfiguration
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Test
@@ -96,6 +97,17 @@ class WarzoneManagerTest {
             assert(origin.y == 11.0)
             assert(origin.z == 12.0)
         }
+
+        val reward = warzone.reward
+        assert(reward.winReward.size == 1)
+        assert(reward.winReward[0].first.type == Material.DIAMOND)
+        assert(reward.winReward[0].first.amount == 5)
+        assert(reward.winReward[0].second != null)
+
+        assert(reward.lossReward.size == 1)
+        assert(reward.lossReward[0].first.type == Material.DIAMOND)
+        assert(reward.lossReward[0].first.amount == 2)
+        assert(reward.lossReward[0].second != null)
     }
 
     @Test

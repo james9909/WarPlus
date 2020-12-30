@@ -44,3 +44,12 @@ objectives:
 portals:
   Portal1:
     origin: flat:0.0,0.0,0.0,0.0,0.0
+rewards:
+  win:
+    '0':
+      type: diamond
+      amount: 5
+  loss:
+    '0':
+      type: diamond
+      amount: 2
