@@ -1,7 +1,9 @@
 package com.github.james9909.warplus
 
 import be.seeseemelk.mockbukkit.MockBukkit
+import org.bukkit.Material
 import org.bukkit.event.server.PluginEnableEvent
+import org.bukkit.inventory.ItemStack
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -34,5 +36,18 @@ class WarTest {
         val testConfigFile = File("src/main/resources/config.yml")
         assert(actualConfigFile.exists())
         assert(actualConfigFile.readText().trim() == testConfigFile.readText().trim())
+    }
+
+    @Test
+    fun `plugin can overwrite item names`() {
+        val tnt = ItemStack(Material.TNT)
+        assert(tnt.itemMeta!!.displayName == null) // displayName in MockBukkit can be null
+        plugin.setItemName(tnt)
+        assert(tnt.itemMeta!!.displayName == "§4Explosives")
+
+        val cobble = ItemStack(Material.COBBLESTONE)
+        assert(cobble.itemMeta!!.displayName == null)
+        plugin.setItemName(cobble)
+        assert(cobble.itemMeta!!.displayName == null)
     }
 }
