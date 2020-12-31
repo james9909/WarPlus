@@ -17,6 +17,7 @@ import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerItemDamageEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerMoveEvent
+import org.bukkit.event.player.PlayerPickupArrowEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.event.player.PlayerToggleSneakEvent
@@ -230,5 +231,14 @@ class PlayerListener(val plugin: WarPlus) : Listener {
 
         event.isCancelled = true
         plugin.playerManager.sendMessage(player, "You can't execute that command in a warzone!")
+    }
+
+    @EventHandler
+    fun onPlayerPickupArrowEvent(event: PlayerPickupArrowEvent) {
+        // Allow picked up arrows to be renamed by the plugin
+        val player = event.player
+        plugin.playerManager.getPlayerInfo(player) ?: return
+
+        plugin.setItemName(event.item.itemStack)
     }
 }

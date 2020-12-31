@@ -111,12 +111,11 @@ fun ConfigurationSection.toItemStack(): ItemStack? {
         // See: https://www.spigotmc.org/wiki/itemstack-serialization/
         return getItemStack("data")
     }
-    if (!contains("type")) {
+    val typeStr = getString("type") ?: run {
         println("No type specified for $name")
         return null
     }
-    val type = materialMap[getString("type")]
-    if (type == null) {
+    val type = materialMap[typeStr.toLowerCase()] ?: run {
         println("Invalid type '${getString("type")}")
         return null
     }

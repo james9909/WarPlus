@@ -5,7 +5,9 @@ import com.github.james9909.warplus.config.DatabaseDialect
 import com.github.james9909.warplus.config.TeamConfigType
 import com.github.james9909.warplus.config.WarConfigType
 import com.github.james9909.warplus.config.WarzoneConfigType
+import com.github.james9909.warplus.extensions.color
 import com.github.james9909.warplus.extensions.get
+import com.github.james9909.warplus.extensions.materialMap
 import com.github.james9909.warplus.listeners.BlockListener
 import com.github.james9909.warplus.listeners.EntityListener
 import com.github.james9909.warplus.listeners.MagicSpellsListener
@@ -19,8 +21,10 @@ import com.github.james9909.warplus.runnable.UpdateScoreboardRunnable
 import com.github.james9909.warplus.sql.MySqlConnectionFactory
 import com.github.james9909.warplus.sql.SqliteConnectionFactory
 import net.milkbowl.vault.economy.Economy
+import org.bukkit.Material
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.event.HandlerList
+import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.PluginDescriptionFile
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.plugin.java.JavaPluginLoader
@@ -77,6 +81,7 @@ class WarPlus : JavaPlugin {
         private set
     var economy: Economy? = null
         private set
+    val itemNames = mutableMapOf<Material, String>()
 
     constructor() : super()
 
@@ -130,6 +135,7 @@ class WarPlus : JavaPlugin {
         getCommand(WARPLUS_BASE_COMMAND)?.setExecutor(CommandHandler(this))
         setupRunnables()
         setupEconomy()
+        parseItemNames()
         loaded.set(true)
     }
 
@@ -142,6 +148,7 @@ class WarPlus : JavaPlugin {
         warzoneManager.unloadWarzones()
         databaseManager?.close()
         cancelRunnables()
+        itemNames.clear()
         loaded.set(false)
     }
 
@@ -225,5 +232,33 @@ class WarPlus : JavaPlugin {
             return true
         }
         return allowedCommands.contains(args.joinToString(separator = " "))
+    }
+
+    fun parseItemNames() {
+        val itemNameFile = File(dataFolder, "item-names.yml")
+        if (!itemNameFile.exists()) {
+            saveResource("item-names.yml", true)
+        }
+        val itemNameConfig = YamlConfiguration.loadConfiguration(itemNameFile)
+        itemNameConfig.getKeys(false).forEach { materialName ->
+            val material = materialMap[materialName.toLowerCase()]
+            if (material != null) {
+                itemNames[material] = itemNameConfig.getString(materialName)!!.color()
+            } else {
+                println("Invalid item name: $materialName")
+            }
+        }
+    }
+
+    /**
+     * Overwrite the item stack's display name according to the user's config
+     */
+    fun setItemName(item: ItemStack) {
+        val name = itemNames[item.type]
+        if (name != null) {
+            val meta = item.itemMeta
+            meta?.setDisplayName(name)
+            item.itemMeta = meta
+        }
     }
 }
