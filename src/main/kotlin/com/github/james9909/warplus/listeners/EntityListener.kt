@@ -328,7 +328,7 @@ class EntityListener(val plugin: WarPlus) : Listener {
         val warzone = playerInfo.team.warzone
 
         // Overwrite item name
-        plugin.setItemName(event.item.itemStack)
+        plugin.itemNameManager.applyItem(event.item.itemStack)
 
         event.isCancelled = warzone.onPlayerPickupItem(player, event.item)
     }

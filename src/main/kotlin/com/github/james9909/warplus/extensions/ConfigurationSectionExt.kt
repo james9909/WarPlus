@@ -3,9 +3,10 @@
 package com.github.james9909.warplus.extensions
 
 import com.github.james9909.warplus.config.ConfigKey
+import com.github.james9909.warplus.managers.materialMap
+import com.nisovin.magicspells.util.magicitems.MagicItems
 import org.bukkit.Color
 import org.bukkit.Location
-import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.enchantments.Enchantment
@@ -13,14 +14,6 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.EnchantmentStorageMeta
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.inventory.meta.LeatherArmorMeta
-
-val materialMap by lazy {
-    val materialMap = mutableMapOf<String, Material>()
-    for (material in Material.values()) {
-        materialMap[material.name.toLowerCase()] = material
-    }
-    materialMap
-}
 
 fun ConfigurationSection.getOrCreateSection(path: String): ConfigurationSection {
     return getConfigurationSection(path) ?: createSection(path)
@@ -115,12 +108,19 @@ fun ConfigurationSection.toItemStack(): ItemStack? {
         println("No type specified for $name")
         return null
     }
-    val type = materialMap[typeStr.toLowerCase()] ?: run {
+    val item: ItemStack = materialMap[typeStr.toLowerCase()]?.run {
+        ItemStack(this, getInt("amount", 1))
+    } ?: run {
+        if (typeStr.startsWith("ms:")) {
+            MagicItems.getMagicItemFromString(typeStr.substring(3))?.itemStack
+        } else {
+            null
+        }
+    } ?: run {
         println("Invalid type '${getString("type")}")
         return null
     }
 
-    val item = ItemStack(type, getInt("amount", 1))
     val meta = item.itemMeta ?: return null
     val name = getString("name")
     if (name != null) {
