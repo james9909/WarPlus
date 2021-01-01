@@ -13,6 +13,7 @@ import org.bukkit.event.block.BlockFromToEvent
 import org.bukkit.event.block.BlockIgniteEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.block.BlockSpreadEvent
+import org.bukkit.inventory.ItemStack
 
 class BlockListener(val plugin: WarPlus) : Listener {
 
@@ -47,6 +48,13 @@ class BlockListener(val plugin: WarPlus) : Listener {
             return
         }
         event.isCancelled = playerZone.onBlockBreak(player, block)
+        if (!event.isCancelled) {
+            val toDrop = ItemStack(event.block.type)
+            if (plugin.itemNameManager.applyItem(toDrop)) {
+                block.world.dropItemNaturally(block.location, toDrop)
+                event.isDropItems = false
+            }
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

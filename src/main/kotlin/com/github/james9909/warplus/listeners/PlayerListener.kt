@@ -239,6 +239,6 @@ class PlayerListener(val plugin: WarPlus) : Listener {
         val player = event.player
         plugin.playerManager.getPlayerInfo(player) ?: return
 
-        plugin.setItemName(event.item.itemStack)
+        plugin.itemNameManager.applyItem(event.item.itemStack)
     }
 }
