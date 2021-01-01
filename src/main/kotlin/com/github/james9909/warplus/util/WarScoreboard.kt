@@ -6,6 +6,7 @@ import com.google.common.base.Splitter
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
+import org.bukkit.scoreboard.Criterias
 import org.bukkit.scoreboard.DisplaySlot
 import java.util.UUID
 
@@ -20,6 +21,10 @@ class WarScoreboard(val player: Player, private val zone: Warzone) {
     init {
         scoreboard.clearSlot(DisplaySlot.SIDEBAR)
         objective.displaySlot = DisplaySlot.SIDEBAR
+
+        // Show player health under their name
+        val healthObjective = scoreboard.registerNewObjective("${zone.name}_showhealth", Criterias.HEALTH, "${ChatColor.RED}❤${ChatColor.RESET}")
+        healthObjective.displaySlot = DisplaySlot.BELOW_NAME
 
         setTitle("&8>> &6&l${zone.name} &8<<")
 
