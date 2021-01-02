@@ -6,6 +6,7 @@ import com.google.common.base.Splitter
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
+import org.bukkit.scoreboard.Criterias
 import org.bukkit.scoreboard.DisplaySlot
 import java.util.UUID
 
@@ -13,13 +14,17 @@ val PLAYER_SCOREBOARDS: MutableMap<UUID, WarScoreboard> = HashMap()
 
 class WarScoreboard(val player: Player, private val zone: Warzone) {
     val scoreboard = Bukkit.getScoreboardManager()!!.getNewScoreboard()
-    private val objective = scoreboard.registerNewObjective(zone.name, "dummy", "dummy")
+    private val objective = scoreboard.registerNewObjective("warzone", "dummy", "dummy")
     private var lines = 20
     private var lastFlash = 0L
 
     init {
         scoreboard.clearSlot(DisplaySlot.SIDEBAR)
         objective.displaySlot = DisplaySlot.SIDEBAR
+
+        // Show player health under their name
+        val healthObjective = scoreboard.registerNewObjective("showhealth", Criterias.HEALTH, "${ChatColor.RED}❤${ChatColor.RESET}")
+        healthObjective.displaySlot = DisplaySlot.BELOW_NAME
 
         setTitle("&8>> &6&l${zone.name} &8<<")
 
