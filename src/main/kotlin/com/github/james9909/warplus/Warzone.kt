@@ -152,11 +152,15 @@ class Warzone(
         }
     }
 
-    fun removePlayer(player: Player, team: WarTeam, showLeaveMessage: Boolean = true) {
+    fun removePlayer(player: Player, team: WarTeam, showLeaveMessage: Boolean = true, autoBalance: Boolean = true) {
         team.removePlayer(player)
         removePlayer(player)
         if (showLeaveMessage) {
             broadcast("${player.name} left the zone")
+        }
+        if (autoBalance) {
+            // Maintain a maximum team size delta of 1
+            balanceTeams()
         }
     }
 
@@ -173,9 +177,6 @@ class Warzone(
         plugin.playerManager.removePlayer(player)
         playerState?.state?.restore(player)
         plugin.inventoryManager.restoreInventory(player)
-
-        // Maintain a maximum team size delta of 1
-        balanceTeams()
 
         portals.forEach { it.value.updateBlocks() }
         if (
@@ -332,7 +333,7 @@ class Warzone(
         restoreVolume()
         teams.values.forEach { team ->
             ImmutableList.copyOf(team.players).forEach { player ->
-                removePlayer(player, team)
+                removePlayer(player, team, autoBalance = false)
             }
             team.reset()
         }
@@ -450,7 +451,7 @@ class Warzone(
             val econReward = getEconReward(team.settings.get(TeamConfigType.ECON_REWARD), numPlayers, maxPlayers)
             val teamPlayers = team.players.toList()
             teamPlayers.forEach { player ->
-                removePlayer(player, team, showLeaveMessage = false)
+                removePlayer(player, team, showLeaveMessage = false, autoBalance = false)
 
                 if (won) {
                     reward.giveWinReward(player)
