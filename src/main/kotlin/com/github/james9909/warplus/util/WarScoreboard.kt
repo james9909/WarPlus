@@ -139,7 +139,7 @@ class WarScoreboard(val player: Player, private val zone: Warzone) {
 
         fun removeScoreboard(player: Player) {
             PLAYER_SCOREBOARDS.remove(player.uniqueId)
-            player.scoreboard = Bukkit.getScoreboardManager()!!.getNewScoreboard()
+            player.scoreboard = Bukkit.getScoreboardManager()!!.mainScoreboard
         }
 
         fun getScoreboard(player: Player): WarScoreboard? = PLAYER_SCOREBOARDS[player.uniqueId]
