@@ -43,7 +43,7 @@ class PlayerListener(val plugin: WarPlus) : Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onPlayerTeleport(event: PlayerTeleportEvent) {
         val player = event.player
-        val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
+        val playerInfo = plugin.playerManager.getParticipantInfo(player) ?: return
 
         if (event.cause == PlayerTeleportEvent.TeleportCause.ENDER_PEARL) {
             event.isCancelled = true
@@ -54,10 +54,17 @@ class PlayerListener(val plugin: WarPlus) : Listener {
             return
         }
 
-        val to = event.to ?: return
-        if (!playerInfo.team.warzone.contains(to)) {
-            // Prevent teleporting outside of warzones
-            event.isCancelled = true
+        when (playerInfo) {
+            is WarParticipant.Player -> {
+                val to = event.to ?: return
+                if (!playerInfo.team.warzone.contains(to)) {
+                    // Prevent teleporting outside of warzones
+                    event.isCancelled = true
+                }
+            }
+            is WarParticipant.Spectator -> {
+                // Do nothing
+            }
         }
     }
 
