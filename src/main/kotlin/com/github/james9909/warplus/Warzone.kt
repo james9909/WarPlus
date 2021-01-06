@@ -15,9 +15,9 @@ import com.github.james9909.warplus.extensions.format
 import com.github.james9909.warplus.extensions.get
 import com.github.james9909.warplus.extensions.pairs
 import com.github.james9909.warplus.objectives.CapturePointObjective
-import com.github.james9909.warplus.objectives.Objective
 import com.github.james9909.warplus.objectives.FlagObjective
 import com.github.james9909.warplus.objectives.MonumentObjective
+import com.github.james9909.warplus.objectives.Objective
 import com.github.james9909.warplus.region.Region
 import com.github.james9909.warplus.structures.CapturePointStructure
 import com.github.james9909.warplus.structures.FlagStructure
@@ -134,11 +134,13 @@ class Warzone(
             removeEntities()
         }
         if (plugin.hasPlugin("FastAsyncWorldEdit")) {
-            plugin.server.scheduler.runTaskLater(plugin, { _ ->
+            plugin.server.scheduler.runTaskAsynchronously(plugin) { _ ->
+                val start = System.currentTimeMillis()
+                restoreVolume()
+                plugin.logger.info("Warzone volume reset took ${System.currentTimeMillis() - start} ms")
                 state = oldState
-            }, 40L)
+            }
         }
-        restoreVolume()
         teams.values.forEach { team ->
             team.resetAttributes(resetTeamScores)
             team.resetSpawns()
@@ -351,8 +353,8 @@ class Warzone(
     }
 
     fun saveVolume(): Result<Unit, WarError> {
-        if (!plugin.hasPlugin("WorldEdit")) {
-            return Err(WorldEditError("WorldEdit is not loaded"))
+        if (!plugin.hasPlugin("FastAsyncWorldEdit")) {
+            return Err(WorldEditError("FastAsyncWorldEdit is not loaded"))
         }
 
         val (minX, minY, minZ) = region.getMinimumPoint()
@@ -371,8 +373,8 @@ class Warzone(
     }
 
     fun restoreVolume(): Result<Unit, WarError> {
-        if (!plugin.hasPlugin("WorldEdit")) {
-            return Err(WorldEditError("WorldEdit is not loaded"))
+        if (!plugin.hasPlugin("FastAsyncWorldEdit")) {
+            return Err(WorldEditError("FastAsyncWorldEdit is not loaded"))
         }
 
         val clipboard = loadSchematic(volumePath)
@@ -589,7 +591,7 @@ class Warzone(
         return false
     }
 
-    fun onBlockPlace(entity: Entity, block: Block): Boolean {
+    fun onBlockPlace(entity: Entity?, block: Block): Boolean {
         objectives.values.forEach {
             if (it.handleBlockPlace(entity, block)) {
                 return true

@@ -8,6 +8,7 @@ import com.github.james9909.warplus.config.WarzoneConfigType
 import com.github.james9909.warplus.extensions.get
 import com.github.james9909.warplus.listeners.BlockListener
 import com.github.james9909.warplus.listeners.EntityListener
+import com.github.james9909.warplus.listeners.FaweListener
 import com.github.james9909.warplus.listeners.MagicSpellsListener
 import com.github.james9909.warplus.listeners.PlayerListener
 import com.github.james9909.warplus.managers.ClassManager
@@ -19,6 +20,7 @@ import com.github.james9909.warplus.managers.WarzoneManager
 import com.github.james9909.warplus.runnable.UpdateScoreboardRunnable
 import com.github.james9909.warplus.sql.MySqlConnectionFactory
 import com.github.james9909.warplus.sql.SqliteConnectionFactory
+import com.sk89q.worldedit.WorldEdit
 import net.milkbowl.vault.economy.Economy
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.event.HandlerList
@@ -27,7 +29,6 @@ import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.plugin.java.JavaPluginLoader
 import org.yaml.snakeyaml.error.YAMLException
 import java.io.File
-import java.lang.IllegalArgumentException
 import java.util.concurrent.atomic.AtomicBoolean
 
 const val WARPLUS_BASE_COMMAND = "wp"
@@ -75,6 +76,7 @@ class WarPlus : JavaPlugin {
     private var databaseManager: DatabaseManager? = null // late initialization
     private var usr = UpdateScoreboardRunnable(this)
     private val allowedCommands = mutableSetOf<String>()
+    private var worldEditSubscriber: FaweListener? = null // late initialization
     var loaded = AtomicBoolean()
         private set
     var economy: Economy? = null
@@ -146,6 +148,9 @@ class WarPlus : JavaPlugin {
         databaseManager?.close()
         itemNameManager.clear()
         cancelRunnables()
+        if (server.name != "ServerMock") {
+            WorldEdit.getInstance().eventBus.unregister(worldEditSubscriber)
+        }
         loaded.set(false)
     }
 
@@ -167,6 +172,8 @@ class WarPlus : JavaPlugin {
         pluginManager.registerEvents(PlayerListener(this), this)
         if (server.name != "ServerMock") {
             pluginManager.registerEvents(MagicSpellsListener(this), this)
+            worldEditSubscriber = FaweListener(this)
+            WorldEdit.getInstance().eventBus.register(worldEditSubscriber)
         }
     }
 
