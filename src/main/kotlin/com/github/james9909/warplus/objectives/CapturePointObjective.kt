@@ -11,6 +11,7 @@ import org.bukkit.block.Block
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
+import java.lang.IllegalStateException
 
 const val CAPTURE_POINT_TIMER_INTERVAL_TICKS = 20L
 
@@ -65,12 +66,20 @@ class CapturePointObjective(
     }
 
     override fun start() {
-        timer.runTaskTimer(plugin, 0, CAPTURE_POINT_TIMER_INTERVAL_TICKS)
+        try {
+            timer.runTaskTimer(plugin, 0, CAPTURE_POINT_TIMER_INTERVAL_TICKS)
+        } catch (e: IllegalStateException) {
+            // Ignore the exception, this isn't harmful.
+        }
     }
 
     override fun stop() {
-        timer.cancel()
-        timer = CapturePointRunnable(plugin, warzone)
+        try {
+            timer.cancel()
+            timer = CapturePointRunnable(plugin, warzone)
+        } catch (e: IllegalStateException) {
+            // Ignore the exception, this isn't harmful.
+        }
     }
 
     override fun delete() {
