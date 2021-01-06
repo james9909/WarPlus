@@ -137,7 +137,7 @@ class Warzone(
             plugin.server.scheduler.runTaskAsynchronously(plugin) { _ ->
                 val start = System.currentTimeMillis()
                 restoreVolume()
-                println("Paste time: ${System.currentTimeMillis() - start}")
+                plugin.logger.info("Warzone volume reset took ${System.currentTimeMillis() - start} ms")
                 state = oldState
             }
         }
