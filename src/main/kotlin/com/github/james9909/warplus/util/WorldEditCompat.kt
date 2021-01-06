@@ -10,7 +10,6 @@ import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
 import com.sk89q.worldedit.WorldEdit
 import com.sk89q.worldedit.WorldEditException
-import com.sk89q.worldedit.bukkit.BukkitAdapter
 import com.sk89q.worldedit.bukkit.BukkitWorld
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard
 import com.sk89q.worldedit.extent.clipboard.Clipboard
