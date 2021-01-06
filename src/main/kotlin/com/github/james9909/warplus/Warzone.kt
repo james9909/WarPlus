@@ -134,11 +134,13 @@ class Warzone(
             removeEntities()
         }
         if (plugin.hasPlugin("FastAsyncWorldEdit")) {
-            plugin.server.scheduler.runTaskLater(plugin, { _ ->
+            plugin.server.scheduler.runTaskAsynchronously(plugin) { _ ->
+                val start = System.currentTimeMillis()
+                restoreVolume()
+                println("Paste time: ${System.currentTimeMillis() - start}")
                 state = oldState
-            }, 40L)
+            }
         }
-        restoreVolume()
         teams.values.forEach { team ->
             team.resetAttributes(resetTeamScores)
             team.resetSpawns()

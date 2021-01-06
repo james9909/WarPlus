@@ -1,5 +1,6 @@
 package com.github.james9909.warplus.util
 
+import com.boydti.fawe.util.EditSessionBuilder
 import com.github.james9909.warplus.FileError
 import com.github.james9909.warplus.InvalidSchematicError
 import com.github.james9909.warplus.WarError
@@ -10,6 +11,7 @@ import com.github.michaelbull.result.Result
 import com.sk89q.worldedit.WorldEdit
 import com.sk89q.worldedit.WorldEditException
 import com.sk89q.worldedit.bukkit.BukkitAdapter
+import com.sk89q.worldedit.bukkit.BukkitWorld
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import com.sk89q.worldedit.extent.clipboard.io.BuiltInClipboardFormat
@@ -43,12 +45,17 @@ fun loadSchematic(fileName: String): Result<Clipboard, WarError> {
 
 fun pasteSchematic(clipboard: Clipboard, location: Location, ignoreAirBlocks: Boolean): Result<Unit, WarError> {
     try {
-        val editSession =
-            WorldEdit.getInstance().editSessionFactory.getEditSession(BukkitAdapter.adapt(location.world), -1)
-        editSession.use {
+        val session = EditSessionBuilder(BukkitWorld(location.world))
+            .autoQueue(true)
+            .fastmode(true)
+            .combineStages(true)
+            .checkMemory(false)
+            .limitUnlimited()
+            .build()
+        session.use {
             val clipboardHolder = ClipboardHolder(clipboard)
             val operation = clipboardHolder
-                .createPaste(editSession)
+                .createPaste(session)
                 .to(BlockVector3.at(location.blockX, location.blockY, location.blockZ))
                 .ignoreAirBlocks(ignoreAirBlocks)
                 .build()
