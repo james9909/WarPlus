@@ -175,7 +175,7 @@ class WarzoneManager(val plugin: WarPlus) {
                 settings = cascadingTeamSettings,
                 classes = classes
             )
-            if (plugin.hasPlugin("WorldEdit")) {
+            if (plugin.hasPlugin("FastAsyncWorldEdit")) {
                 team.resetSpawns()
             }
             teams.add(team)
@@ -198,7 +198,7 @@ class WarzoneManager(val plugin: WarPlus) {
                 else -> null
             }
             if (objective != null) {
-                if (plugin.hasPlugin("WorldEdit")) {
+                if (plugin.hasPlugin("FastAsyncWorldEdit")) {
                     objective.reset()
                 }
                 warzone.objectives[objective.name] = objective
@@ -218,7 +218,7 @@ class WarzoneManager(val plugin: WarPlus) {
             val portal = WarzonePortalStructure(
                 plugin, origin, portalName, warzone
             )
-            if (plugin.hasPlugin("WorldEdit")) {
+            if (plugin.hasPlugin("FastAsyncWorldEdit")) {
                 portal.build()
             }
             warzone.addPortal(portal)

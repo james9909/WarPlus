@@ -44,7 +44,7 @@ class CapturePointObjective(
         return capturePoints.firstOrNull { it.contains(block.location) } != null
     }
 
-    override fun handleBlockPlace(entity: Entity, block: Block): Boolean {
+    override fun handleBlockPlace(entity: Entity?, block: Block): Boolean {
         return capturePoints.firstOrNull { it.contains(block.location) } != null
     }
 

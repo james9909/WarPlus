@@ -17,7 +17,7 @@ abstract class Objective(plugin: WarPlus, warzone: Warzone) {
         return false
     }
 
-    open fun handleBlockPlace(entity: Entity, block: Block): Boolean {
+    open fun handleBlockPlace(entity: Entity?, block: Block): Boolean {
         return false
     }
 

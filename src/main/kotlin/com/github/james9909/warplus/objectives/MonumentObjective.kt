@@ -57,7 +57,7 @@ class MonumentObjective(
         return false
     }
 
-    override fun handleBlockPlace(entity: Entity, block: Block): Boolean {
+    override fun handleBlockPlace(entity: Entity?, block: Block): Boolean {
         val monument = monuments.firstOrNull { it.contains(block.location) } ?: return false
         if (block.location != monument.blockLocation) {
             // Can only place into the center block
