@@ -5,7 +5,7 @@ import com.github.james9909.warplus.WarPlus
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
-class StatsCommand: PlayerCommand() {
+class StatsCommand : PlayerCommand() {
     override val usageString = "/$WARPLUS_BASE_COMMAND stats"
     override val description = "View your stats"
 
