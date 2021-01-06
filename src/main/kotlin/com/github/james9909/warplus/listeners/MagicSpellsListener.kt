@@ -7,6 +7,11 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import com.nisovin.magicspells.events.SpellCastEvent
 import com.nisovin.magicspells.events.SpellTargetEvent
+import com.nisovin.magicspells.events.SpellTargetLocationEvent
+import com.nisovin.magicspells.events.MagicSpellsBlockBreakEvent
+import com.nisovin.magicspells.events.MagicSpellsBlockPlaceEvent
+import com.nisovin.magicspells.spells.targeted.PulserSpell
+import org.bukkit.Location
 import org.bukkit.entity.Player
 
 class MagicSpellsListener(val plugin: WarPlus) : Listener {
@@ -81,6 +86,21 @@ class MagicSpellsListener(val plugin: WarPlus) : Listener {
             if (spell.isBeneficial) {
                 event.isCancelled = true
             }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    fun onSpellTargetLocationEvent(event: SpellTargetLocationEvent) {
+        if (event.spell !is PulserSpell) {
+            return
+        }
+        val targetLocation: Location = event.targetLocation
+        val warzone = plugin.warzoneManager.getWarzones().firstOrNull { warzone ->
+            warzone.contains(targetLocation)
+        } ?: return
+        val realBlock = targetLocation.block
+        if (warzone.isSpawnBlock(realBlock) || warzone.onBlockPlace(event.caster, realBlock)) {
+            event.isCancelled = true
         }
     }
 }

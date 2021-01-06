@@ -9,6 +9,7 @@ import com.github.james9909.warplus.extensions.format
 import com.github.james9909.warplus.extensions.toLocation
 import com.github.james9909.warplus.structures.FlagStructure
 import org.bukkit.Location
+import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Entity
@@ -151,6 +152,7 @@ class FlagObjective(
             )
             return true
         }
+        flag.flagBlock.type = Material.AIR
         flagThieves[player] = flag
 
         // Fill the player's inventory with wool
