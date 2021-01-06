@@ -8,7 +8,7 @@ import java.lang.NumberFormatException
 import org.bukkit.command.CommandSender
 
 class AdminStatsCommand : AdminCommand() {
-    override val usageString = "/$WARPLUS_BASE_COMMAND adminstats <clear|addheal <player> <amount>>"
+    override val usageString = "/$WARPLUS_BASE_COMMAND adminstats <clear|view <player>|addheal <player> <amount>>"
     override val description = "Manage warzone stats"
 
     override fun execute(plugin: WarPlus, sender: CommandSender, args: List<String>): Boolean {
@@ -37,7 +37,6 @@ class AdminStatsCommand : AdminCommand() {
             }
             "addheal" -> {
                 if (args.size < 3) {
-                    showUsageString(plugin, sender)
                     return false
                 }
                 val player = plugin.server.getPlayer(args[1])
@@ -62,6 +61,35 @@ class AdminStatsCommand : AdminCommand() {
                     plugin.playerManager.sendMessage(sender, "Heal added for ${player.name}.")
                 }
             }
+            "view" -> {
+                if (args.size < 2) {
+                    return false
+                }
+                val player = plugin.server.getPlayer(args[1])
+                if (player == null) {
+                    plugin.playerManager.sendMessage(sender, "No such player ${args[1]}")
+                    return true
+                }
+                val dbm = plugin.databaseManager
+                if (dbm == null) {
+                    plugin.playerManager.sendMessage(sender, "Stats are disabled.")
+                    return true
+                }
+                plugin.server.scheduler.runTaskAsynchronously(plugin) { _ ->
+                    val stats = dbm.getPlayerStat(player.uniqueId)
+                    if (stats == null) {
+                        plugin.playerManager.sendMessage(sender, "${player.name} has not completed a warzone yet.")
+                    } else {
+                        plugin.playerManager.sendMessage(sender, "WarPlus stats for ${player.name}:")
+                        plugin.playerManager.sendMessage(sender, "Wins: ${stats.wins}")
+                        plugin.playerManager.sendMessage(sender, "Losses: ${stats.losses}")
+                        plugin.playerManager.sendMessage(sender, "Kills: ${stats.kills}")
+                        plugin.playerManager.sendMessage(sender, "Deaths: ${stats.deaths}")
+                        plugin.playerManager.sendMessage(sender, "Heals: ${stats.heals}")
+                        plugin.playerManager.sendMessage(sender, "Flag captures: ${stats.flagCaptures}")
+                    }
+                }
+            }
         }
         return true
     }
@@ -69,7 +97,7 @@ class AdminStatsCommand : AdminCommand() {
     override fun tab(plugin: WarPlus, sender: CommandSender, args: List<String>): List<String> {
         return when (args.size) {
             1 -> {
-                listOf("clear", "addheal").filter {
+                listOf("clear", "addheal", "view").filter {
                     it.startsWith(args[0])
                 }
             }
