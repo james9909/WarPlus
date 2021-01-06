@@ -134,12 +134,20 @@ class Warzone(
         state = WarzoneState.RUNNING
 
         id = plugin.databaseManager?.addWarzone() ?: -1
+        statTracker?.warzoneId = id
+
+        // Add all joins retroactively upon warzone start since we now have a warzone ID.
+        teams.forEach { (kind, team) ->
+            team.players.forEach { player ->
+                statTracker?.addJoin(player.uniqueId, kind)
+            }
+        }
+
         initialize(resetTeamScores = false)
         startObjectives()
     }
 
     private fun initialize(resetTeamScores: Boolean) {
-        val oldState = state
         state = WarzoneState.RESETTING
         if (warzoneSettings.get(WarzoneConfigType.REMOVE_ENTITIES_ON_RESET)) {
             removeEntities()
@@ -149,19 +157,22 @@ class Warzone(
                 val start = System.currentTimeMillis()
                 restoreVolume()
                 plugin.logger.info("Warzone volume reset took ${System.currentTimeMillis() - start} ms")
-                state = oldState
+                plugin.server.scheduler.runTask(plugin) { _ ->
+                    teams.values.forEach { team ->
+                        team.resetAttributes(resetTeamScores)
+                        team.resetSpawns()
+                        team.players.forEach { player ->
+                            respawnPlayer(player)
+                        }
+                    }
+                    resetObjectives()
+                    state = if (resetTeamScores) {
+                        WarzoneState.IDLING
+                    } else {
+                        WarzoneState.RUNNING
+                    }
+                }
             }
-        }
-        teams.values.forEach { team ->
-            team.resetAttributes(resetTeamScores)
-            team.resetSpawns()
-            team.players.forEach { player ->
-                respawnPlayer(player)
-            }
-        }
-        resetObjectives()
-        if (!plugin.hasPlugin("FastAsyncWorldEdit")) {
-            state = oldState
         }
     }
 
@@ -254,9 +265,11 @@ class Warzone(
         player.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.baseValue = warzoneSettings.get(WarzoneConfigType.MAX_HEALTH)
         respawnPlayer(player)
         broadcast("${player.name} joined team $team")
-        statTracker?.addJoin(id, player.uniqueId, team.kind)
 
-        if (state != WarzoneState.RUNNING && canStart()) {
+        if (state == WarzoneState.RUNNING) {
+            // Only immediately add the join if the warzone is currently running.
+            statTracker?.addJoin(player.uniqueId, team.kind)
+        } else if (canStart()) {
             start()
         }
         return true
@@ -403,9 +416,7 @@ class Warzone(
         val deathEvent = WarzonePlayerDeathEvent(player, this, entity, cause)
         plugin.server.pluginManager.callEvent(deathEvent)
 
-        statTracker?.apply {
-            addDeath(player.uniqueId)
-        }
+        statTracker?.addDeath(player.uniqueId)
 
         objectives.values.forEach {
             it.handleDeath(player)
@@ -476,14 +487,10 @@ class Warzone(
                             plugin.logger.warning("Failed to reward ${player.name}: ${response.errorMessage}")
                         }
                     }
-                    statTracker?.apply {
-                        addWin(player.uniqueId)
-                    }
+                    statTracker?.addWin(player.uniqueId)
                 } else {
                     reward.giveLossReward(player)
-                    statTracker?.apply {
-                        addLoss(player.uniqueId)
-                    }
+                    statTracker?.addLoss(player.uniqueId)
                 }
             }
         }
@@ -529,7 +536,7 @@ class Warzone(
             val defenderClass = defenderInfo.warClass
             // This check should not be necessary, but let's be safe
             if (attackerClass != null && defenderClass != null) {
-                addKill(id, attacker.uniqueId, defender.uniqueId, attackerClass, defenderClass)
+                addKill(attacker.uniqueId, defender.uniqueId, attackerClass, defenderClass)
             }
         }
         handleDeath(defender, attacker, cause)
@@ -1014,7 +1021,7 @@ class Warzone(
         statTracker?.apply {
             // Switching teams via autobalance is best represented as a leave-then-join
             addLeave(player.uniqueId)
-            addJoin(id, player.uniqueId, newTeam.kind)
+            addJoin(player.uniqueId, newTeam.kind)
         }
         newTeam.addPlayer(player)
         val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
@@ -1038,6 +1045,7 @@ class Warzone(
 
         plugin.databaseManager?.endWarzone(id, winningTeams.map { it.kind })
         id = -1
+        statTracker?.warzoneId = id
 
         stopObjectives()
         state = WarzoneState.IDLING

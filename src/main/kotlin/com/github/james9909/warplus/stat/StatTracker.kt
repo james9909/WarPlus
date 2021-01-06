@@ -13,11 +13,12 @@ import java.util.LinkedList
 import java.util.UUID
 
 class StatTracker(private val databaseManager: DatabaseManager) {
+    var warzoneId: Int = -1
     private val playerStats: HashMap<UUID, PlayerStatModel> = hashMapOf()
     private val killHistory = LinkedList<KillModel>()
     private val joinLog = hashMapOf<UUID, LinkedList<WarzoneJoinLog>>()
 
-    fun addKill(warzoneId: Int, attacker: UUID, defender: UUID, attackerClass: WarClass, defenderClass: WarClass) {
+    fun addKill(attacker: UUID, defender: UUID, attackerClass: WarClass, defenderClass: WarClass) {
         killHistory.add(KillModel(
             warzoneId,
             Timestamp.from(Instant.now()),
@@ -41,7 +42,7 @@ class StatTracker(private val databaseManager: DatabaseManager) {
         }
     }
 
-    fun addHeal(warzoneId: Int, healer: UUID, amount: Int) {
+    fun addHeal(healer: UUID, amount: Int) {
         playerStats[healer] = playerStats.getOrElse(healer, {
             PlayerStatModel.default(healer)
         }).apply {
@@ -73,7 +74,7 @@ class StatTracker(private val databaseManager: DatabaseManager) {
         }
     }
 
-    fun addJoin(warzoneId: Int, player: UUID, team: TeamKind) {
+    fun addJoin(player: UUID, team: TeamKind) {
         if (!joinLog.containsKey(player)) {
             joinLog[player] = LinkedList()
         }

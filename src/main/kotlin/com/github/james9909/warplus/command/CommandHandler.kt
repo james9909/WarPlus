@@ -1,6 +1,7 @@
 package com.github.james9909.warplus.command
 
 import com.github.james9909.warplus.WarPlus
+import com.github.james9909.warplus.command.admin.AdminStatsCommand
 import com.github.james9909.warplus.command.admin.LoadCommand
 import com.github.james9909.warplus.command.admin.ReloadCommand
 import com.github.james9909.warplus.command.admin.UnloadCommand
@@ -57,6 +58,7 @@ class CommandHandler(val plugin: WarPlus) : CommandExecutor, TabCompleter {
         commands["addcapturepoint"] = AddCapturePointCommand()
         commands["deletecapturepoint"] = DeleteCapturePointCommand()
         commands["rewards"] = RewardsCommand()
+        commands["adminstats"] = AdminStatsCommand()
     }
 
     override fun onTabComplete(
@@ -102,7 +104,7 @@ class CommandHandler(val plugin: WarPlus) : CommandExecutor, TabCompleter {
         }
         try {
             if (!warCommand.execute(plugin, sender, rest)) {
-                plugin.playerManager.sendMessage(sender, "Usage: ${warCommand.usageString}\n${warCommand.description}")
+                warCommand.showUsageString(plugin, sender)
             }
         } catch (e: Exception) {
             val uuid = UUID.randomUUID()
