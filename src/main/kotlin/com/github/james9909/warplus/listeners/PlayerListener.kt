@@ -215,6 +215,11 @@ class PlayerListener(val plugin: WarPlus) : Listener {
     @EventHandler
     fun onPlayerJoin(event: PlayerJoinEvent) {
         plugin.inventoryManager.restoreInventoryFromFile(event.player)
+        plugin.databaseManager?.apply {
+            plugin.server.scheduler.runTaskAsynchronously(plugin) { _ ->
+                addPlayer(event.player.uniqueId)
+            }
+        }
     }
 
     @EventHandler

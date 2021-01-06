@@ -73,7 +73,8 @@ class WarPlus : JavaPlugin {
     val playerManager = PlayerManager(this)
     val inventoryManager = InventoryManager(this)
     val itemNameManager = ItemNameManager(this)
-    private var databaseManager: DatabaseManager? = null // late initialization
+    var databaseManager: DatabaseManager? = null // late initialization
+        private set
     private var usr = UpdateScoreboardRunnable(this)
     private val allowedCommands = mutableSetOf<String>()
     private var worldEditSubscriber: FaweListener? = null // late initialization
@@ -128,10 +129,10 @@ class WarPlus : JavaPlugin {
             allowedCommands.add(it.trim().toLowerCase())
         }
 
+        setupDatabase()
         classManager.loadClasses()
         warzoneManager.loadWarzones()
         itemNameManager.loadItemNames()
-        setupDatabase()
         getCommand(WARPLUS_BASE_COMMAND)?.setExecutor(CommandHandler(this))
         setupRunnables()
         setupEconomy()
@@ -226,8 +227,12 @@ class WarPlus : JavaPlugin {
                 null
             }
         }
-        databaseManager?.init()
-        databaseManager?.createTables()
+        databaseManager?.let { dbm ->
+            server.scheduler.runTaskAsynchronously(this) { _ ->
+                dbm.init()
+                dbm.createTables()
+            }
+        }
     }
 
     fun canExecuteCommand(command: String): Boolean {
