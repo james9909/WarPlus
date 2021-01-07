@@ -254,6 +254,9 @@ class Warzone(
     private fun addPlayer(player: Player, team: WarTeam): Boolean {
         val joinEvent = WarzoneJoinEvent(player, this)
         plugin.server.pluginManager.callEvent(joinEvent)
+        plugin.server.scheduler.runTaskAsynchronously(plugin) { _ ->
+            plugin.databaseManager?.addPlayer(player.uniqueId)
+        }
 
         assert(!team.isFull())
         team.addPlayer(player)

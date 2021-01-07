@@ -128,7 +128,6 @@ class DatabaseManager(
             conn.prepareStatement("INSERT OR IGNORE INTO `players` (`uuid`) VALUES (?)").use { statement ->
                 statement.setBytes(1, uuid.toBytes())
                 statement.executeUpdate()
-                statement.close()
             }
         }
     }
