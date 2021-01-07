@@ -41,6 +41,14 @@ import com.nisovin.magicspells.mana.ManaChangeReason
 import com.sk89q.worldedit.bukkit.BukkitAdapter
 import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.regions.CuboidRegion
+import java.io.File
+import java.math.RoundingMode
+import java.text.DecimalFormat
+import kotlin.math.abs
+import kotlin.math.ceil
+import kotlin.math.max
+import kotlin.math.sqrt
+import kotlin.random.Random
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.GameMode
@@ -56,14 +64,6 @@ import org.bukkit.entity.Player
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause
 import org.bukkit.event.inventory.InventoryAction
 import org.bukkit.inventory.ItemStack
-import java.io.File
-import java.math.RoundingMode
-import java.text.DecimalFormat
-import kotlin.math.abs
-import kotlin.math.ceil
-import kotlin.math.max
-import kotlin.math.sqrt
-import kotlin.random.Random
 
 enum class WarzoneState {
     IDLING,
@@ -153,33 +153,52 @@ class Warzone(
             removeEntities()
         }
         if (plugin.hasPlugin("FastAsyncWorldEdit")) {
-            plugin.server.scheduler.runTaskAsynchronously(plugin) { _ ->
+            if (plugin.isEnabled) {
+                plugin.server.scheduler.runTaskAsynchronously(plugin) { _ ->
+                    val start = System.currentTimeMillis()
+                    restoreVolume()
+                    plugin.logger.info("Warzone volume reset took ${System.currentTimeMillis() - start} ms")
+                    plugin.server.scheduler.runTask(plugin) { _ ->
+                        teams.values.forEach { team ->
+                            team.resetAttributes(resetTeamScores)
+                            team.resetSpawns()
+                            team.players.forEach { player ->
+                                respawnPlayer(player)
+                            }
+                        }
+                        resetObjectives()
+                        state = if (resetTeamScores) {
+                            WarzoneState.IDLING
+                        } else {
+                            WarzoneState.RUNNING
+                        }
+                    }
+                }
+            } else {
                 val start = System.currentTimeMillis()
                 restoreVolume()
                 plugin.logger.info("Warzone volume reset took ${System.currentTimeMillis() - start} ms")
-                plugin.server.scheduler.runTask(plugin) { _ ->
-                    teams.values.forEach { team ->
-                        team.resetAttributes(resetTeamScores)
-                        team.resetSpawns()
-                        team.players.forEach { player ->
-                            respawnPlayer(player)
-                        }
+                teams.values.forEach { team ->
+                    team.resetAttributes(resetTeamScores)
+                    team.resetSpawns()
+                    team.players.forEach { player ->
+                        respawnPlayer(player)
                     }
-                    resetObjectives()
-                    state = if (resetTeamScores) {
-                        WarzoneState.IDLING
-                    } else {
-                        WarzoneState.RUNNING
-                    }
+                }
+                resetObjectives()
+                state = if (resetTeamScores) {
+                    WarzoneState.IDLING
+                } else {
+                    WarzoneState.RUNNING
                 }
             }
         }
     }
 
     fun removePlayer(player: Player, team: WarTeam, showLeaveMessage: Boolean = true, autoBalance: Boolean = true) {
+        statTracker?.addLeave(player.uniqueId)
         team.removePlayer(player)
         removePlayer(player)
-        statTracker?.addLeave(player.uniqueId)
         if (showLeaveMessage) {
             broadcast("${player.name} left the zone")
         }
@@ -1036,8 +1055,15 @@ class Warzone(
 
         // Write all stats to the database
         statTracker?.apply {
-            plugin.server.scheduler.runTaskAsynchronously(plugin) { _ ->
+            plugin.logger.info("Writing stats to the database...")
+            if (plugin.isEnabled) {
+                plugin.server.scheduler.runTaskAsynchronously(plugin) { _ ->
+                    flush()
+                    plugin.logger.info("Stats flushed.")
+                }
+            } else {
                 flush()
+                plugin.logger.info("Stats flushed.")
             }
         }
 
