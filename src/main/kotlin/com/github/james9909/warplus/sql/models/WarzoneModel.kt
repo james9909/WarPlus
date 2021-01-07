@@ -6,6 +6,7 @@ import java.sql.Timestamp
 
 data class WarzoneModel(
     val id: Int,
+    val name: String,
     val startTime: Timestamp,
     val endTime: Timestamp?,
     val winners: List<TeamKind>?
@@ -13,13 +14,14 @@ data class WarzoneModel(
     override fun write(conn: Connection) {
         conn.prepareStatement(
             """
-            INSERT INTO `warzones` (`id`, `start_time`, `end_time`, `winners`) VALUES (?, ?, ?, ?)
+            INSERT INTO `warzones` (`id`, `name`, `start_time`, `end_time`, `winners`) VALUES (?, ?, ?, ?)
             """.trimIndent()
         ).use { statement ->
             statement.setInt(1, id)
-            statement.setTimestamp(2, startTime)
-            statement.setTimestamp(3, endTime)
-            statement.setString(4, winners?.joinToString(","))
+            statement.setString(2, name)
+            statement.setTimestamp(3, startTime)
+            statement.setTimestamp(4, endTime)
+            statement.setString(5, winners?.joinToString(","))
             statement.executeUpdate()
         }
     }

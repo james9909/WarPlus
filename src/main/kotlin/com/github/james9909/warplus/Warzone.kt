@@ -133,7 +133,7 @@ class Warzone(
         plugin.logger.info("Starting warzone $name")
         state = WarzoneState.RUNNING
 
-        id = plugin.databaseManager?.addWarzone() ?: -1
+        id = plugin.databaseManager?.addWarzone(name) ?: -1
         statTracker?.warzoneId = id
 
         // Add all joins retroactively upon warzone start since we now have a warzone ID.
@@ -1055,6 +1055,7 @@ class Warzone(
     private fun endZone(winningTeams: List<WarTeam>) {
         val endEvent = WarzoneEndEvent(this)
         plugin.server.pluginManager.callEvent(endEvent)
+        plugin.logger.info("Ending warzone $name, winners: ${winningTeams.joinToString(",")}")
 
         // Write all stats to the database
         statTracker?.apply {

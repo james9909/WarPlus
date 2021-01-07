@@ -50,13 +50,13 @@ class DatabaseManagerTest {
 
     @Test
     fun `adds warzones with incrementing IDs`() {
-        assert(databaseManager.addWarzone() == 1)
-        assert(databaseManager.addWarzone() == 2)
+        assert(databaseManager.addWarzone("testzone") == 1)
+        assert(databaseManager.addWarzone("testzone") == 2)
     }
 
     @Test
     fun `gets a warzone by id`() {
-        assert(databaseManager.addWarzone() == 1)
+        assert(databaseManager.addWarzone("testzone") == 1)
         val warzone = databaseManager.getWarzone(1)
         assert(warzone != null)
         require(warzone != null)
@@ -67,12 +67,13 @@ class DatabaseManagerTest {
 
     @Test
     fun `ends a warzone with a winner and end time`() {
-        assert(databaseManager.addWarzone() == 1)
+        assert(databaseManager.addWarzone("testzone") == 1)
         var warzone = databaseManager.getWarzone(1)
         assert(warzone != null)
         require(warzone != null)
 
         assert(warzone.id == 1)
+        assert(warzone.name == "testzone")
         assert(warzone.endTime == null)
         assert(warzone.winners == null)
 
@@ -82,6 +83,7 @@ class DatabaseManagerTest {
         require(warzone != null)
 
         assert(warzone.id == 1)
+        assert(warzone.name == "testzone")
         assert(warzone.endTime != null)
         assert(warzone.winners == listOf(TeamKind.BLUE))
     }

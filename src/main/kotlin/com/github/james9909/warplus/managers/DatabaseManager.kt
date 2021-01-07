@@ -64,6 +64,7 @@ class DatabaseManager(
                     """
                 CREATE TABLE IF NOT EXISTS `warzones` (
                     `id` INTEGER PRIMARY KEY,
+                    `name` TEXT,
                     `start_time` DATETIME NOT NULL,
                     `end_time` DATETIME,
                     `winner` TEXT
@@ -132,13 +133,14 @@ class DatabaseManager(
         }
     }
 
-    fun addWarzone(): Int {
+    fun addWarzone(name: String): Int {
         var warzoneId = -1
         runSql { conn ->
             conn.prepareStatement(
-                "INSERT INTO `warzones` (`start_time`) VALUES (CURRENT_TIMESTAMP)",
+                "INSERT INTO `warzones` (`name`, `start_time`) VALUES (?, CURRENT_TIMESTAMP)",
                 PreparedStatement.RETURN_GENERATED_KEYS
             ).use { statement ->
+                statement.setString(1, name)
                 statement.executeUpdate()
                 val rs = statement.generatedKeys
                 if (rs.next()) {
@@ -162,18 +164,19 @@ class DatabaseManager(
     fun getWarzone(id: Int): WarzoneModel? {
         var data: WarzoneModel? = null
         runSql { conn ->
-            conn.prepareStatement("SELECT `id`, `start_time`, `end_time`, `winner` FROM `warzones` WHERE `id` = ?").use { statement ->
+            conn.prepareStatement("SELECT `id`, `name`, `start_time`, `end_time`, `winner` FROM `warzones` WHERE `id` = ?").use { statement ->
                 statement.setInt(1, id)
                 val rs = statement.executeQuery()
                 if (rs.next()) {
-                    val winners = rs.getString(4)
+                    val winners = rs.getString(5)
                     val parsedWinners = winners?.split(",")?.map {
                         TeamKind.valueOf(it.toUpperCase())
                     }
                     data = WarzoneModel(
                         id,
-                        rs.getTimestamp(2),
+                        rs.getString(2),
                         rs.getTimestamp(3),
+                        rs.getTimestamp(4),
                         parsedWinners
                     )
                 }
