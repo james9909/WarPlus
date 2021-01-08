@@ -11,6 +11,7 @@ import com.github.james9909.warplus.event.WarzonePlayerDeathEvent
 import com.github.james9909.warplus.event.WarzoneStartEvent
 import com.github.james9909.warplus.extensions.blockLocation
 import com.github.james9909.warplus.extensions.clearPotionEffects
+import com.github.james9909.warplus.extensions.color
 import com.github.james9909.warplus.extensions.format
 import com.github.james9909.warplus.extensions.get
 import com.github.james9909.warplus.extensions.pairs
@@ -131,6 +132,8 @@ class Warzone(
         val startEvent = WarzoneStartEvent(this)
         plugin.server.pluginManager.callEvent(startEvent)
         plugin.logger.info("Starting warzone $name")
+        broadcast("Let the battle begin!")
+
         state = WarzoneState.RUNNING
 
         id = plugin.databaseManager?.addWarzone(name) ?: -1
@@ -471,13 +474,13 @@ class Warzone(
     }
 
     private fun handleTeamLoss(team: WarTeam, player: Player) {
-        val winningTeams = mutableListOf<WarTeam>()
+        val winningTeams = mutableListOf<TeamKind>()
         teams.values.filter {
             it != team
         }.forEach {
             it.addPoint()
             if (it.score >= it.settings.get(TeamConfigType.MAX_SCORE)) {
-                winningTeams.add(it)
+                winningTeams.add(it.kind)
             }
         }
         broadcast(teamLossMessage(team, player))
@@ -488,12 +491,11 @@ class Warzone(
         }
     }
 
-    fun handleWin(winningTeams: List<WarTeam>) {
-        broadcast("Score cap reached. Game is over! Winning teams: ${winningTeams.joinToString()}")
+    fun handleWin(winningTeams: List<TeamKind>) {
         val numPlayers = numPlayers()
         val maxPlayers = maxPlayers()
         teams.values.forEach { team ->
-            val won = team in winningTeams
+            val won = team.kind in winningTeams
             val (econWinReward, econLossReward) = getEconRewards(team.settings.get(TeamConfigType.ECON_REWARD), numPlayers, maxPlayers)
             val teamPlayers = team.players.toList()
             teamPlayers.forEach { player ->
@@ -510,12 +512,11 @@ class Warzone(
                 }
                 plugin.economy?.apply {
                     val response = depositPlayer(player, econReward)
-                    if (response.transactionSuccess()) {
-                        plugin.playerManager.sendMessage(player, "You earned \$${response.amount}")
-                    } else {
+                    if (!response.transactionSuccess()) {
                         plugin.logger.warning("Failed to reward ${player.name}: ${response.errorMessage}")
                     }
                 }
+                sendFinalResults(player, winningTeams, econReward)
             }
         }
         spectators.forEach { removeSpectator(it) }
@@ -1055,7 +1056,7 @@ class Warzone(
         broadcast("[Auto Balance] - ${player.name} was moved to $newTeam")
     }
 
-    private fun endZone(winningTeams: List<WarTeam>) {
+    private fun endZone(winningTeams: List<TeamKind>) {
         val endEvent = WarzoneEndEvent(this)
         plugin.server.pluginManager.callEvent(endEvent)
         plugin.logger.info("Ending warzone $name, winners: ${winningTeams.joinToString(",")}")
@@ -1076,11 +1077,21 @@ class Warzone(
 
         initialize(resetTeamScores = true)
 
-        plugin.databaseManager?.endWarzone(id, winningTeams.map { it.kind })
+        plugin.databaseManager?.endWarzone(id, winningTeams)
         id = -1
         statTracker?.warzoneId = id
 
         stopObjectives()
         state = WarzoneState.IDLING
+    }
+
+    private fun sendFinalResults(player: Player, winners: List<TeamKind>, econReward: Double) {
+        val losers = teams.keys.filter { !winners.contains(it) }
+        plugin.playerManager.sendMessage(player, "&8&m----------------------------------------".color(), withPrefix = false)
+        plugin.playerManager.sendMessage(player, "               &d&lWarzone Over".color(), withPrefix = false)
+        plugin.playerManager.sendMessage(player, "    &a&lWinner: ${winners.joinToString(", ") { it.format() }}        &c&lLoser: ${losers.joinToString(", ") { it.format() }}".color(), withPrefix = false)
+        plugin.playerManager.sendMessage(player, "&7 ".color(), withPrefix = false)
+        plugin.playerManager.sendMessage(player, "               &6You earned &a${'$'}$econReward".color(), withPrefix = false)
+        plugin.playerManager.sendMessage(player, "&8&m----------------------------------------".color(), withPrefix = false)
     }
 }
