@@ -494,25 +494,27 @@ class Warzone(
         val maxPlayers = maxPlayers()
         teams.values.forEach { team ->
             val won = team in winningTeams
-            val econReward = getEconReward(team.settings.get(TeamConfigType.ECON_REWARD), numPlayers, maxPlayers)
+            val (econWinReward, econLossReward) = getEconRewards(team.settings.get(TeamConfigType.ECON_REWARD), numPlayers, maxPlayers)
             val teamPlayers = team.players.toList()
             teamPlayers.forEach { player ->
                 removePlayer(player, team, showLeaveMessage = false, autoBalance = false)
 
-                if (won) {
+                val econReward = if (won) {
                     reward.giveWinReward(player)
-                    plugin.economy?.apply {
-                        val response = depositPlayer(player, econReward)
-                        if (response.transactionSuccess()) {
-                            plugin.playerManager.sendMessage(player, "You earned \$${response.amount}")
-                        } else {
-                            plugin.logger.warning("Failed to reward ${player.name}: ${response.errorMessage}")
-                        }
-                    }
                     statTracker?.addWin(player.uniqueId)
+                    econWinReward
                 } else {
                     reward.giveLossReward(player)
                     statTracker?.addLoss(player.uniqueId)
+                    econLossReward
+                }
+                plugin.economy?.apply {
+                    val response = depositPlayer(player, econReward)
+                    if (response.transactionSuccess()) {
+                        plugin.playerManager.sendMessage(player, "You earned \$${response.amount}")
+                    } else {
+                        plugin.logger.warning("Failed to reward ${player.name}: ${response.errorMessage}")
+                    }
                 }
             }
         }
@@ -837,12 +839,13 @@ class Warzone(
         return df.format(number).toDouble()
     }
 
-    private fun getEconReward(base: Double, numPlayers: Int, maxPlayers: Int): Double {
+    private fun getEconRewards(base: Double, numPlayers: Int, maxPlayers: Int): Pair<Double, Double> {
         if (numPlayers < 2) {
-            return 0.0
+            return Pair(0.0, 0.0)
         }
         val result = base + (base * (numPlayers - 2) / (sqrt(maxPlayers.toDouble()) * 2))
-        return max(0.0, roundToDecimal(result))
+        val winReward = max(0.0, roundToDecimal(result))
+        return Pair(winReward, roundToDecimal(winReward / 4))
     }
 
     private fun removeEntities() {
