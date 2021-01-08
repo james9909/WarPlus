@@ -74,6 +74,24 @@ class StatTracker(private val databaseManager: DatabaseManager) {
         }
     }
 
+    fun addMvp(player: UUID) {
+        playerStats[player] = playerStats.getOrElse(player, {
+            PlayerStatModel.default(player)
+        }).apply {
+            mvps += 1
+        }
+    }
+
+    fun maxStatsBy(key: (PlayerStatModel) -> Int): UUID? {
+        val max = playerStats.maxBy { entry ->
+            key(entry.value)
+        }
+        if (max != null && key(max.value) > 0) {
+            return max.key
+        }
+        return null
+    }
+
     fun addJoin(player: UUID, team: TeamKind) {
         if (!joinLog.containsKey(player)) {
             joinLog[player] = LinkedList()

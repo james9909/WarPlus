@@ -8,7 +8,7 @@ import org.bukkit.entity.Player
 import java.lang.NumberFormatException
 
 class RewardsCommand : ZonemakerCommand() {
-    override val usageString = "/$WARPLUS_BASE_COMMAND rewards <warzone> <win|loss> <add|remove [index]|list>"
+    override val usageString = "/$WARPLUS_BASE_COMMAND rewards <warzone> <win|loss|mvp> <add|remove [index]|list>"
     override val description = "Manage warzone rewards"
 
     override fun execute(plugin: WarPlus, sender: CommandSender, args: List<String>): Boolean {
@@ -27,6 +27,7 @@ class RewardsCommand : ZonemakerCommand() {
         val reward = when (args[1].toLowerCase()) {
             "win" -> warzone.reward.winReward
             "loss" -> warzone.reward.lossReward
+            "mvp" -> warzone.reward.mvpReward
             else -> {
                 plugin.playerManager.sendMessage(sender, "Reward type must be 'win' or 'loss'.")
                 return true
@@ -91,7 +92,7 @@ class RewardsCommand : ZonemakerCommand() {
                 }
             }
             2 -> {
-                listOf("win", "loss").filter {
+                listOf("win", "loss", "mvp").filter {
                     it.startsWith(args[1])
                 }
             }
