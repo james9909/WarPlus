@@ -19,23 +19,18 @@ val materialMap by lazy {
 
 sealed class ItemModification {
     data class Meta(val type: Material?, val name: String?, val lore: List<String>?) : ItemModification() {
-        fun apply(item: ItemStack): Boolean {
-            var modified = false
+        fun apply(item: ItemStack) {
             if (type != null) {
-                modified = item.type != type
                 item.type = type
             }
             val meta = item.itemMeta
             if (name != null) {
-                modified = modified || (meta != null && meta.displayName != name)
                 meta?.setDisplayName(name)
             }
             if (lore != null) {
-                modified = modified || (meta != null && meta.lore != lore)
                 meta?.lore = lore
             }
             item.itemMeta = meta
-            return modified
         }
 
         companion object {
@@ -51,24 +46,6 @@ sealed class ItemModification {
     }
 
     data class CustomItemStack(val customItem: ItemStack) : ItemModification() {
-        fun apply(item: ItemStack): Boolean {
-            if (item == customItem) {
-                return false
-            }
-            item.type = customItem.type
-            item.itemMeta = customItem.itemMeta
-            item.data = customItem.data
-            item.amount = customItem.amount
-            item.enchantments.clear()
-            item.enchantments.forEach { (enchant, _) ->
-                item.removeEnchantment(enchant)
-            }
-            customItem.enchantments.forEach { (enchant, level) ->
-                item.addEnchantment(enchant, level)
-            }
-            return true
-        }
-
         companion object {
             fun fromConfig(config: ConfigurationSection): CustomItemStack? {
                 val item = config.toItemStack() ?: return null
@@ -121,14 +98,15 @@ class ItemNameManager(private val plugin: WarPlus) {
 
     fun clear() = itemNames.clear()
 
-    fun applyItem(item: ItemStack): Boolean {
-        val mod = itemNames[item.type] ?: return false
+    fun applyItem(item: ItemStack): ItemStack {
+        val mod = itemNames[item.type] ?: return item
         return when (mod) {
             is ItemModification.CustomItemStack -> {
-                mod.apply(item)
+                mod.customItem
             }
             is ItemModification.Meta -> {
                 mod.apply(item)
+                item
             }
         }
     }
