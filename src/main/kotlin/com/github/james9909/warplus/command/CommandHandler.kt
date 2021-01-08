@@ -1,6 +1,7 @@
 package com.github.james9909.warplus.command
 
 import com.github.james9909.warplus.WarPlus
+import com.github.james9909.warplus.command.admin.AdminStatsCommand
 import com.github.james9909.warplus.command.admin.LoadCommand
 import com.github.james9909.warplus.command.admin.ReloadCommand
 import com.github.james9909.warplus.command.admin.UnloadCommand
@@ -8,6 +9,7 @@ import com.github.james9909.warplus.command.player.ClassCommand
 import com.github.james9909.warplus.command.player.JoinWarzoneCommand
 import com.github.james9909.warplus.command.player.LeaveWarzoneCommand
 import com.github.james9909.warplus.command.player.SpectateWarzoneCommand
+import com.github.james9909.warplus.command.player.StatsCommand
 import com.github.james9909.warplus.command.zonemaker.AddCapturePointCommand
 import com.github.james9909.warplus.command.zonemaker.AddMonumentCommand
 import com.github.james9909.warplus.command.zonemaker.AddPortalCommand
@@ -57,6 +59,8 @@ class CommandHandler(val plugin: WarPlus) : CommandExecutor, TabCompleter {
         commands["addcapturepoint"] = AddCapturePointCommand()
         commands["deletecapturepoint"] = DeleteCapturePointCommand()
         commands["rewards"] = RewardsCommand()
+        commands["adminstats"] = AdminStatsCommand()
+        commands["stats"] = StatsCommand()
     }
 
     override fun onTabComplete(
@@ -102,7 +106,7 @@ class CommandHandler(val plugin: WarPlus) : CommandExecutor, TabCompleter {
         }
         try {
             if (!warCommand.execute(plugin, sender, rest)) {
-                plugin.playerManager.sendMessage(sender, "Usage: ${warCommand.usageString}\n${warCommand.description}")
+                warCommand.showUsageString(plugin, sender)
             }
         } catch (e: Exception) {
             val uuid = UUID.randomUUID()

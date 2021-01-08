@@ -10,4 +10,8 @@ interface WarCommand {
     fun execute(plugin: WarPlus, sender: CommandSender, args: List<String>): Boolean
     fun tab(plugin: WarPlus, sender: CommandSender, args: List<String>): List<String>
     fun canExecute(sender: CommandSender): Boolean
+
+    fun showUsageString(plugin: WarPlus, sender: CommandSender) {
+        plugin.playerManager.sendMessage(sender, "Usage: ${usageString}\n$description")
+    }
 }

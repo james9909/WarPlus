@@ -113,6 +113,9 @@ class FlagObjective(
         flag.build()
         team.warzone.broadcast("${player.name} captured ${flag.kind.format()}'s flag. Team $team scores one point.")
         team.addPoint()
+        team.warzone.statTracker?.apply {
+            addFlagCapture(player.uniqueId)
+        }
 
         // Detect win condition
         if (team.score >= team.settings.get(TeamConfigType.MAX_SCORE)) {

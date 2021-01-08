@@ -19,6 +19,7 @@ import com.github.james9909.warplus.objectives.FlagObjective
 import com.github.james9909.warplus.objectives.MonumentObjective
 import com.github.james9909.warplus.objectives.Objective
 import com.github.james9909.warplus.region.Region
+import com.github.james9909.warplus.stat.StatTracker
 import com.github.james9909.warplus.structures.CapturePointStructure
 import com.github.james9909.warplus.structures.FlagStructure
 import com.github.james9909.warplus.structures.MonumentStructure
@@ -40,6 +41,14 @@ import com.nisovin.magicspells.mana.ManaChangeReason
 import com.sk89q.worldedit.bukkit.BukkitAdapter
 import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.regions.CuboidRegion
+import java.io.File
+import java.math.RoundingMode
+import java.text.DecimalFormat
+import kotlin.math.abs
+import kotlin.math.ceil
+import kotlin.math.max
+import kotlin.math.sqrt
+import kotlin.random.Random
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.GameMode
@@ -55,14 +64,6 @@ import org.bukkit.entity.Player
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause
 import org.bukkit.event.inventory.InventoryAction
 import org.bukkit.inventory.ItemStack
-import java.io.File
-import java.math.RoundingMode
-import java.text.DecimalFormat
-import kotlin.math.abs
-import kotlin.math.ceil
-import kotlin.math.max
-import kotlin.math.sqrt
-import kotlin.random.Random
 
 enum class WarzoneState {
     IDLING,
@@ -84,11 +85,20 @@ class Warzone(
 ) {
     var state = WarzoneState.IDLING
     val teams = HashMap<TeamKind, WarTeam>()
+    val statTracker: StatTracker? = run {
+        val dbm = plugin.databaseManager
+        if (dbm != null) {
+            StatTracker(dbm)
+        } else {
+            null
+        }
+    }
     private val spectators = HashSet<Player>()
     private val configPath = "${plugin.dataFolder.absolutePath}/warzone-$name.yml"
     private val volumeFolder = "${plugin.dataFolder.absolutePath}/volumes/warzones"
     private val volumePath = "$volumeFolder/$name.schem"
     private val portalsByLocation: HashMap<String, WarzonePortalStructure> = hashMapOf()
+    private var id: Int = -1
 
     init {
         portals.values.forEach {
@@ -123,38 +133,70 @@ class Warzone(
         plugin.logger.info("Starting warzone $name")
         state = WarzoneState.RUNNING
 
+        id = plugin.databaseManager?.addWarzone(name) ?: -1
+        statTracker?.warzoneId = id
+
+        // Add all joins retroactively upon warzone start since we now have a warzone ID.
+        teams.forEach { (kind, team) ->
+            team.players.forEach { player ->
+                statTracker?.addJoin(player.uniqueId, kind)
+            }
+        }
+
         initialize(resetTeamScores = false)
         startObjectives()
     }
 
     private fun initialize(resetTeamScores: Boolean) {
-        val oldState = state
         state = WarzoneState.RESETTING
         if (warzoneSettings.get(WarzoneConfigType.REMOVE_ENTITIES_ON_RESET)) {
             removeEntities()
         }
         if (plugin.hasPlugin("FastAsyncWorldEdit")) {
-            plugin.server.scheduler.runTaskAsynchronously(plugin) { _ ->
+            if (plugin.isEnabled) {
+                plugin.server.scheduler.runTaskAsynchronously(plugin) { _ ->
+                    val start = System.currentTimeMillis()
+                    restoreVolume()
+                    plugin.logger.info("Warzone volume reset took ${System.currentTimeMillis() - start} ms")
+                    plugin.server.scheduler.runTask(plugin) { _ ->
+                        teams.values.forEach { team ->
+                            team.resetAttributes(resetTeamScores)
+                            team.resetSpawns()
+                            team.players.forEach { player ->
+                                respawnPlayer(player)
+                            }
+                        }
+                        resetObjectives()
+                        state = if (resetTeamScores) {
+                            WarzoneState.IDLING
+                        } else {
+                            WarzoneState.RUNNING
+                        }
+                    }
+                }
+            } else {
                 val start = System.currentTimeMillis()
                 restoreVolume()
                 plugin.logger.info("Warzone volume reset took ${System.currentTimeMillis() - start} ms")
-                state = oldState
+                teams.values.forEach { team ->
+                    team.resetAttributes(resetTeamScores)
+                    team.resetSpawns()
+                    team.players.forEach { player ->
+                        respawnPlayer(player)
+                    }
+                }
+                resetObjectives()
+                state = if (resetTeamScores) {
+                    WarzoneState.IDLING
+                } else {
+                    WarzoneState.RUNNING
+                }
             }
-        }
-        teams.values.forEach { team ->
-            team.resetAttributes(resetTeamScores)
-            team.resetSpawns()
-            team.players.forEach { player ->
-                respawnPlayer(player)
-            }
-        }
-        resetObjectives()
-        if (!plugin.hasPlugin("FastAsyncWorldEdit")) {
-            state = oldState
         }
     }
 
     fun removePlayer(player: Player, team: WarTeam, showLeaveMessage: Boolean = true, autoBalance: Boolean = true) {
+        statTracker?.addLeave(player.uniqueId)
         team.removePlayer(player)
         removePlayer(player)
         if (showLeaveMessage) {
@@ -188,9 +230,7 @@ class Warzone(
         ) {
             // Only reinitialize the zone if everyone left in the middle of the game
             plugin.logger.info("Last player left warzone $name. Reinitializing the warzone...")
-            initialize(resetTeamScores = true)
-            stopObjectives()
-            state = WarzoneState.IDLING
+            endZone(emptyList())
         }
     }
 
@@ -214,6 +254,9 @@ class Warzone(
     private fun addPlayer(player: Player, team: WarTeam): Boolean {
         val joinEvent = WarzoneJoinEvent(player, this)
         plugin.server.pluginManager.callEvent(joinEvent)
+        plugin.server.scheduler.runTaskAsynchronously(plugin) { _ ->
+            plugin.databaseManager?.addPlayer(player.uniqueId)
+        }
 
         assert(!team.isFull())
         team.addPlayer(player)
@@ -245,7 +288,10 @@ class Warzone(
         respawnPlayer(player)
         broadcast("${player.name} joined team $team")
 
-        if (state != WarzoneState.RUNNING && canStart()) {
+        if (state == WarzoneState.RUNNING) {
+            // Only immediately add the join if the warzone is currently running.
+            statTracker?.addJoin(player.uniqueId, team.kind)
+        } else if (canStart()) {
             start()
         }
         return true
@@ -392,6 +438,8 @@ class Warzone(
         val deathEvent = WarzonePlayerDeathEvent(player, this, entity, cause)
         plugin.server.pluginManager.callEvent(deathEvent)
 
+        statTracker?.addDeath(player.uniqueId)
+
         objectives.values.forEach {
             it.handleDeath(player)
         }
@@ -441,11 +489,7 @@ class Warzone(
     }
 
     fun handleWin(winningTeams: List<WarTeam>) {
-        val endEvent = WarzoneEndEvent(this)
-        plugin.server.pluginManager.callEvent(endEvent)
-
         broadcast("Score cap reached. Game is over! Winning teams: ${winningTeams.joinToString()}")
-        state = WarzoneState.IDLING
         val numPlayers = numPlayers()
         val maxPlayers = maxPlayers()
         teams.values.forEach { team ->
@@ -465,14 +509,15 @@ class Warzone(
                             plugin.logger.warning("Failed to reward ${player.name}: ${response.errorMessage}")
                         }
                     }
+                    statTracker?.addWin(player.uniqueId)
                 } else {
                     reward.giveLossReward(player)
+                    statTracker?.addLoss(player.uniqueId)
                 }
             }
         }
         spectators.forEach { removeSpectator(it) }
-        initialize(resetTeamScores = true)
-        stopObjectives()
+        endZone(winningTeams)
     }
 
     fun handleSuicide(player: Player, cause: DamageCause) {
@@ -508,6 +553,14 @@ class Warzone(
             broadcast(message)
         }
 
+        statTracker?.apply {
+            val attackerClass = attackerInfo.warClass
+            val defenderClass = defenderInfo.warClass
+            // This check should not be necessary, but let's be safe
+            if (attackerClass != null && defenderClass != null) {
+                addKill(attacker.uniqueId, defender.uniqueId, attackerClass, defenderClass)
+            }
+        }
         handleDeath(defender, attacker, cause)
     }
 
@@ -987,10 +1040,44 @@ class Warzone(
         objectives.values.forEach {
             it.handleLeave(player)
         }
+        statTracker?.apply {
+            // Switching teams via autobalance is best represented as a leave-then-join
+            addLeave(player.uniqueId)
+            addJoin(player.uniqueId, newTeam.kind)
+        }
         newTeam.addPlayer(player)
         val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
         plugin.playerManager.setPlayerInfo(player, playerInfo.copy(team = newTeam))
         respawnPlayer(player)
         broadcast("[Auto Balance] - ${player.name} was moved to $newTeam")
+    }
+
+    private fun endZone(winningTeams: List<WarTeam>) {
+        val endEvent = WarzoneEndEvent(this)
+        plugin.server.pluginManager.callEvent(endEvent)
+        plugin.logger.info("Ending warzone $name, winners: ${winningTeams.joinToString(",")}")
+
+        // Write all stats to the database
+        statTracker?.apply {
+            plugin.logger.info("Writing stats to the database...")
+            if (plugin.isEnabled) {
+                plugin.server.scheduler.runTaskAsynchronously(plugin) { _ ->
+                    flush()
+                    plugin.logger.info("Stats flushed.")
+                }
+            } else {
+                flush()
+                plugin.logger.info("Stats flushed.")
+            }
+        }
+
+        initialize(resetTeamScores = true)
+
+        plugin.databaseManager?.endWarzone(id, winningTeams.map { it.kind })
+        id = -1
+        statTracker?.warzoneId = id
+
+        stopObjectives()
+        state = WarzoneState.IDLING
     }
 }
