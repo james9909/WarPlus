@@ -12,7 +12,7 @@ import org.bukkit.entity.Player
 
 enum class TeamKind(val material: Material, val chatColor: ChatColor) {
     BLACK(Material.BLACK_WOOL, ChatColor.BLACK),
-    BLUE(Material.LIGHT_BLUE_WOOL, ChatColor.BLUE),
+    BLUE(Material.BLUE_WOOL, ChatColor.BLUE),
     BROWN(Material.BROWN_WOOL, ChatColor.DARK_RED),
     DARKGREEN(Material.GREEN_WOOL, ChatColor.DARK_GREEN),
     DIAMOND(Material.CYAN_WOOL, ChatColor.DARK_AQUA),
@@ -21,7 +21,6 @@ enum class TeamKind(val material: Material, val chatColor: ChatColor) {
     GREEN(Material.GREEN_WOOL, ChatColor.GREEN),
     IRON(Material.LIGHT_GRAY_WOOL, ChatColor.GRAY),
     MAGENTA(Material.MAGENTA_WOOL, ChatColor.LIGHT_PURPLE),
-    NAVY(Material.BLUE_WOOL, ChatColor.DARK_BLUE),
     ORANGE(Material.ORANGE_WOOL, ChatColor.GOLD),
     PINK(Material.PINK_WOOL, ChatColor.LIGHT_PURPLE),
     PURPLE(Material.PURPLE_WOOL, ChatColor.DARK_PURPLE),

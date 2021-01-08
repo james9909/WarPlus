@@ -50,9 +50,9 @@ class ConfigurationSectionUtilsTest {
     fun `get() correctly retrieves default ConfigKey values for enums`() {
         val configFile = File("src/test/resources/fixtures/config/warzone-valid.yml")
         val config = YamlConfiguration.loadConfiguration(configFile)
-        val navyConfig = config.getConfigurationSection("teams.navy.settings")
-        require(navyConfig != null)
-        assert(navyConfig.get(TeamConfigType.SPAWN_STYLE) == SpawnStyle.SMALL)
+        val blueConfig = config.getConfigurationSection("teams.blue.settings")
+        require(blueConfig != null)
+        assert(blueConfig.get(TeamConfigType.SPAWN_STYLE) == SpawnStyle.SMALL)
 
         val redConfig = config.getConfigurationSection("teams.red.settings")
         require(redConfig != null)

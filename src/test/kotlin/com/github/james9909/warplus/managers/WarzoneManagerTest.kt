@@ -47,8 +47,8 @@ class WarzoneManagerTest {
         assert(warzone.name == "valid")
         assert(warzone.isEnabled())
         assert(warzone.teams.size == 2)
-        warzone.teams[TeamKind.NAVY]?.apply {
-            assert(kind == TeamKind.NAVY)
+        warzone.teams[TeamKind.BLUE]?.apply {
+            assert(kind == TeamKind.BLUE)
             assert(spawns.size == 1)
             spawns[0].apply {
                 assert(origin.x == 50.0)
@@ -56,7 +56,7 @@ class WarzoneManagerTest {
                 assert(origin.z == 50.0)
                 assert(origin.world?.name == "flat")
             }
-        } ?: fail("Navy team is null")
+        } ?: fail("Blue team is null")
 
         warzone.teams[TeamKind.RED]?.apply {
             assert(kind == TeamKind.RED)
@@ -76,13 +76,13 @@ class WarzoneManagerTest {
         require(flagObjective != null)
         assert(flagObjective.flags.size == 2)
         flagObjective.flags[0].apply {
-            assert(kind == TeamKind.NAVY)
+            assert(kind == TeamKind.BLUE)
             assert(origin.x == 60.0)
             assert(origin.y == 50.0)
             assert(origin.z == 40.0)
         }
         flagObjective.flags[1].apply {
-            assert(kind == TeamKind.NAVY)
+            assert(kind == TeamKind.RED)
             assert(origin.x == 40.0)
             assert(origin.y == 50.0)
             assert(origin.z == 60.0)
@@ -135,12 +135,12 @@ class WarzoneManagerTest {
             assert(settings.get(TeamConfigType.MAX_SCORE) == 5)
         } ?: fail("Team red is null")
 
-        warzone.teams[TeamKind.NAVY]?.apply {
+        warzone.teams[TeamKind.BLUE]?.apply {
             assert(settings.get(TeamConfigType.LIVES) == 30)
             assert(settings.get(TeamConfigType.SPAWN_STYLE) == SpawnStyle.SMALL)
             assert(settings.get(TeamConfigType.MIN_PLAYERS) == 1)
             assert(settings.get(TeamConfigType.MAX_PLAYERS) == 20)
             assert(settings.get(TeamConfigType.MAX_SCORE) == 5)
-        } ?: fail("Team navy is null")
+        } ?: fail("Team blue is null")
     }
 }
