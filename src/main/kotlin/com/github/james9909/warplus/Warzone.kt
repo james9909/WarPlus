@@ -494,8 +494,7 @@ class Warzone(
         val maxPlayers = maxPlayers()
         teams.values.forEach { team ->
             val won = team in winningTeams
-            val econWinReward = getEconReward(team.settings.get(TeamConfigType.ECON_REWARD), numPlayers, maxPlayers)
-            val econLossReward = econWinReward / 4
+            val (econWinReward, econLossReward) = getEconRewards(team.settings.get(TeamConfigType.ECON_REWARD), numPlayers, maxPlayers)
             val teamPlayers = team.players.toList()
             teamPlayers.forEach { player ->
                 removePlayer(player, team, showLeaveMessage = false, autoBalance = false)
@@ -840,12 +839,13 @@ class Warzone(
         return df.format(number).toDouble()
     }
 
-    private fun getEconReward(base: Double, numPlayers: Int, maxPlayers: Int): Double {
+    private fun getEconRewards(base: Double, numPlayers: Int, maxPlayers: Int): Pair<Double, Double> {
         if (numPlayers < 2) {
-            return 0.0
+            return Pair(0.0, 0.0)
         }
         val result = base + (base * (numPlayers - 2) / (sqrt(maxPlayers.toDouble()) * 2))
-        return max(0.0, roundToDecimal(result))
+        val winReward = max(0.0, roundToDecimal(result))
+        return Pair(winReward, roundToDecimal(winReward / 4))
     }
 
     private fun removeEntities() {
