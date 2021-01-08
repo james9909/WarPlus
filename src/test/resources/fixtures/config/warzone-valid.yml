@@ -53,3 +53,7 @@ rewards:
     '0':
       type: diamond
       amount: 2
+  mvp:
+    '0':
+      type: emerald
+      amount: 1

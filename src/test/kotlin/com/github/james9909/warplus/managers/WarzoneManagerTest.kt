@@ -108,6 +108,11 @@ class WarzoneManagerTest {
         assert(reward.lossReward[0].first.type == Material.DIAMOND)
         assert(reward.lossReward[0].first.amount == 2)
         assert(reward.lossReward[0].second != null)
+
+        assert(reward.mvpReward.size == 1)
+        assert(reward.mvpReward[0].first.type == Material.EMERALD)
+        assert(reward.mvpReward[0].first.amount == 1)
+        assert(reward.mvpReward[0].second != null)
     }
 
     @Test

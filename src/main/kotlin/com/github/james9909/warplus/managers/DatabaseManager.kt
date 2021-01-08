@@ -57,11 +57,11 @@ class DatabaseManager(
                     `heals` INTEGER NOT NULL,
                     `wins` INTEGER NOT NULL,
                     `losses` INTEGER NOT NULL,
-                    `flag_captures` INTEGER NOT NULL
+                    `flag_captures` INTEGER NOT NULL,
+                    `mvps` INTEGER NOT NULL
                 )""".trimIndent()
                 )
-                statement.executeUpdate(
-                    """
+                statement.executeUpdate("""
                 CREATE TABLE IF NOT EXISTS `warzones` (
                     `id` INTEGER PRIMARY KEY,
                     `name` TEXT,
@@ -71,8 +71,7 @@ class DatabaseManager(
                 )""".trimIndent()
                 )
                 statement.executeUpdate("CREATE INDEX IF NOT EXISTS `pk_warzones_id` on `warzones`(`id`)")
-                statement.executeUpdate(
-                    """
+                statement.executeUpdate("""
                 CREATE TABLE IF NOT EXISTS `warzone_join_logs` (
                      `warzone_id` INT NOT NULL,
                      `player_id` BINARY(16) NOT NULL,
@@ -85,8 +84,7 @@ class DatabaseManager(
                 )
                 statement.executeUpdate("CREATE INDEX IF NOT EXISTS `warzone_join_logs_player_fk` on `warzone_join_logs`(`player_id`)")
                 statement.executeUpdate("CREATE INDEX IF NOT EXISTS `warzone_join_logs_warzone_fk` on `warzone_join_logs`(`warzone_id`)")
-                statement.executeUpdate(
-                    """
+                statement.executeUpdate("""
                 CREATE TABLE IF NOT EXISTS kills (
                     `date` DATETIME NOT NULL,
                     `warzone_id` INT NOT NULL,
@@ -188,7 +186,7 @@ class DatabaseManager(
     fun getPlayerStat(playerId: UUID): PlayerStatModel? {
         var data: PlayerStatModel? = null
         runSql { conn ->
-            conn.prepareStatement("SELECT `kills`, `deaths`, `heals`, `wins`, `losses`, `flag_captures` FROM `player_stats` WHERE `id` = ?").use { statement ->
+            conn.prepareStatement("SELECT `kills`, `deaths`, `heals`, `wins`, `losses`, `flag_captures`, `mvps` FROM `player_stats` WHERE `id` = ?").use { statement ->
                 statement.setBytes(1, playerId.toBytes())
                 val rs = statement.executeQuery()
                 if (rs.next()) {
@@ -199,7 +197,8 @@ class DatabaseManager(
                         rs.getInt(3),
                         rs.getInt(4),
                         rs.getInt(5),
-                        rs.getInt(6)
+                        rs.getInt(6),
+                        rs.getInt(7)
                     )
                 }
             }

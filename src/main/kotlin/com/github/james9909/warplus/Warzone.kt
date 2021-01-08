@@ -494,6 +494,18 @@ class Warzone(
     fun handleWin(winningTeams: List<TeamKind>) {
         val numPlayers = numPlayers()
         val maxPlayers = maxPlayers()
+        val mostKills = statTracker?.maxStatsBy { it.kills }?.run {
+            statTracker.addMvp(this)
+            plugin.server.getPlayer(this)
+        }
+        val mostHeals = statTracker?.maxStatsBy { it.heals }?.run {
+            statTracker.addMvp(this)
+            plugin.server.getPlayer(this)
+        }
+        val mostPoints = statTracker?.maxStatsBy { it.flagCaptures }?.run {
+            statTracker.addMvp(this)
+            plugin.server.getPlayer(this)
+        }
         teams.values.forEach { team ->
             val won = team.kind in winningTeams
             val (econWinReward, econLossReward) = getEconRewards(team.settings.get(TeamConfigType.ECON_REWARD), numPlayers, maxPlayers)
@@ -510,13 +522,25 @@ class Warzone(
                     statTracker?.addLoss(player.uniqueId)
                     econLossReward
                 }
+
+                // Handle mvp rewards separately
+                if (player == mostKills) {
+                    reward.giveMvpReward(player)
+                }
+                if (player == mostHeals) {
+                    reward.giveMvpReward(player)
+                }
+                if (player == mostPoints) {
+                    reward.giveMvpReward(player)
+                }
+
                 plugin.economy?.apply {
                     val response = depositPlayer(player, econReward)
                     if (!response.transactionSuccess()) {
                         plugin.logger.warning("Failed to reward ${player.name}: ${response.errorMessage}")
                     }
                 }
-                sendFinalResults(player, winningTeams, econReward)
+                sendFinalResults(player, winningTeams, econReward, mostKills, mostHeals, mostPoints)
             }
         }
         spectators.forEach { removeSpectator(it) }
@@ -1085,12 +1109,28 @@ class Warzone(
         state = WarzoneState.IDLING
     }
 
-    private fun sendFinalResults(player: Player, winners: List<TeamKind>, econReward: Double) {
+    private fun sendFinalResults(player: Player, winners: List<TeamKind>, econReward: Double, mostKills: Player?, mostHeals: Player?, mostPoints: Player?) {
         val losers = teams.keys.filter { !winners.contains(it) }
         plugin.playerManager.sendMessage(player, "&8&m----------------------------------------".color(), withPrefix = false)
         plugin.playerManager.sendMessage(player, "               &d&lWarzone Over".color(), withPrefix = false)
         plugin.playerManager.sendMessage(player, "    &a&lWinner: ${winners.joinToString(", ") { it.format() }}        &c&lLoser: ${losers.joinToString(", ") { it.format() }}".color(), withPrefix = false)
         plugin.playerManager.sendMessage(player, "&7 ".color(), withPrefix = false)
+        var hasMvp = false
+        if (mostKills != null) {
+            plugin.playerManager.sendMessage(player, "            &bMost Kills: &f${mostKills.name}".color(), withPrefix = false)
+            hasMvp = true
+        }
+        if (mostHeals != null) {
+            plugin.playerManager.sendMessage(player, "            &bMost Heals: &f${mostHeals.name}".color(), withPrefix = false)
+            hasMvp = true
+        }
+        if (mostPoints != null) {
+            plugin.playerManager.sendMessage(player, "            &bMost Points: &f${mostPoints.name}".color(), withPrefix = false)
+            hasMvp = true
+        }
+        if (hasMvp) {
+            plugin.playerManager.sendMessage(player, "&7 ".color(), withPrefix = false)
+        }
         plugin.playerManager.sendMessage(player, "               &6You earned &a${'$'}$econReward".color(), withPrefix = false)
         plugin.playerManager.sendMessage(player, "&8&m----------------------------------------".color(), withPrefix = false)
     }

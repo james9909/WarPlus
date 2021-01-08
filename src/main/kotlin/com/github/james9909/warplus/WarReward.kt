@@ -8,58 +8,53 @@ import org.bukkit.inventory.ItemStack
 
 typealias RewardItem = Pair<ItemStack, ConfigurationSection?>
 
-class WarReward(val winReward: MutableList<RewardItem>, val lossReward: MutableList<RewardItem>) {
-    fun giveWinReward(player: Player) {
-        winReward.forEach { item ->
-            player.inventory.addItem(item.first)
+private fun writeToSection(section: ConfigurationSection, rewards: List<RewardItem>) {
+    rewards.forEachIndexed { i, item ->
+        if (item.second == null) {
+            section.set("$i.data", item.first)
+        } else {
+            section.set("$i", item.second)
         }
     }
+}
 
-    fun giveLossReward(player: Player) {
-        lossReward.forEach { item ->
-            player.inventory.addItem(item.first)
-        }
+private fun readFromSection(section: ConfigurationSection?): List<RewardItem> {
+    val rewards = mutableListOf<RewardItem>()
+    section?.getKeys(false)?.forEach forEach@{
+        val itemSection = section.getConfigurationSection(it) ?: return@forEach
+        val item = itemSection.toItemStack() ?: return@forEach
+        rewards.add(RewardItem(item, itemSection))
     }
+    return rewards
+}
+
+class WarReward(val winReward: MutableList<RewardItem>, val lossReward: MutableList<RewardItem>, val mvpReward: MutableList<RewardItem>) {
+    fun giveWinReward(player: Player) = giveReward(player, winReward)
+
+    fun giveLossReward(player: Player) = giveReward(player, lossReward)
+
+    fun giveMvpReward(player: Player) = giveReward(player, mvpReward)
 
     fun saveConfig(config: ConfigurationSection) {
-        val winSection = config.getOrCreateSection("win")
-        winReward.forEachIndexed { i, item ->
-            if (item.second == null) {
-                winSection.set("$i.data", item.first)
-            } else {
-                winSection.set("$i", item.second)
-            }
-        }
-        val lossSection = config.getOrCreateSection("loss")
-        lossReward.forEachIndexed { i, item ->
-            if (item.second == null) {
-                lossSection.set("$i.data", item.first)
-            } else {
-                lossSection.set("$i", item.second)
-            }
+        writeToSection(config.getOrCreateSection("win"), winReward)
+        writeToSection(config.getOrCreateSection("loss"), lossReward)
+        writeToSection(config.getOrCreateSection("mvp"), mvpReward)
+    }
+
+    private fun giveReward(player: Player, items: List<RewardItem>) {
+        items.forEach { item ->
+            player.inventory.addItem(item.first)
         }
     }
 
     companion object {
         fun fromConfig(section: ConfigurationSection): WarReward {
-            val winSection = section.getConfigurationSection("win")
-            val winReward = mutableListOf<RewardItem>()
-            winSection?.getKeys(false)?.forEach forEach@{
-                val itemSection = winSection.getConfigurationSection(it) ?: return@forEach
-                val item = itemSection.toItemStack() ?: return@forEach
-                winReward.add(RewardItem(item, itemSection))
-            }
-
-            val lossSection = section.getConfigurationSection("loss")
-            val lossReward = mutableListOf<RewardItem>()
-            lossSection?.getKeys(false)?.forEach forEach@{
-                val itemSection = lossSection.getConfigurationSection(it) ?: return@forEach
-                val item = itemSection.toItemStack() ?: return@forEach
-                lossReward.add(RewardItem(item, itemSection))
-            }
-            return WarReward(winReward, lossReward)
+            val winReward = readFromSection(section.getConfigurationSection("win")).toMutableList()
+            val lossReward = readFromSection(section.getConfigurationSection("loss")).toMutableList()
+            val mvpReward = readFromSection(section.getConfigurationSection("mvp")).toMutableList()
+            return WarReward(winReward, lossReward, mvpReward)
         }
 
-        fun default(): WarReward = WarReward(mutableListOf(), mutableListOf())
+        fun default(): WarReward = WarReward(mutableListOf(), mutableListOf(), mutableListOf())
     }
 }

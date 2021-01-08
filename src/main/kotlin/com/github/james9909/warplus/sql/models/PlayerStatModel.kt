@@ -4,14 +4,14 @@ import com.github.james9909.warplus.extensions.toBytes
 import java.sql.Connection
 import java.util.UUID
 
-class PlayerStatModel(var id: UUID, var kills: Int, var deaths: Int, var heals: Int, var wins: Int, var losses: Int, var flagCaptures: Int) : AbstractModel() {
+class PlayerStatModel(var id: UUID, var kills: Int, var deaths: Int, var heals: Int, var wins: Int, var losses: Int, var flagCaptures: Int, var mvps: Int) : AbstractModel() {
     override fun write(conn: Connection) {
         // We only want to upsert here
 
         conn.prepareStatement(
             """
-            INSERT OR IGNORE INTO `player_stats` (`id`, `kills`, `deaths`, `heals`, `wins`, `losses`, `flag_captures`)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            INSERT OR IGNORE INTO `player_stats` (`id`, `kills`, `deaths`, `heals`, `wins`, `losses`, `flag_captures`, `mvps`)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """.trimIndent()
         ).use { insert ->
             insert.setBytes(1, id.toBytes())
@@ -21,6 +21,7 @@ class PlayerStatModel(var id: UUID, var kills: Int, var deaths: Int, var heals: 
             insert.setInt(5, wins)
             insert.setInt(6, losses)
             insert.setInt(7, flagCaptures)
+            insert.setInt(8, mvps)
             if (insert.executeUpdate() == 0) {
                 // Insert ignored, update the row instead
                 conn.prepareStatement(
@@ -31,7 +32,8 @@ class PlayerStatModel(var id: UUID, var kills: Int, var deaths: Int, var heals: 
                         `heals` = `heals` + ?,
                         `wins` = `wins` + ?,
                         `losses` = `losses` + ?,
-                        `flag_captures` = `flag_captures` + ?
+                        `flag_captures` = `flag_captures` + ?,
+                        `mvps` = `mvps` + ?
                         WHERE `id` = ?
                     """.trimIndent()
                 ).use { update ->
@@ -41,7 +43,8 @@ class PlayerStatModel(var id: UUID, var kills: Int, var deaths: Int, var heals: 
                     update.setInt(4, wins)
                     update.setInt(5, losses)
                     update.setInt(6, flagCaptures)
-                    update.setBytes(7, id.toBytes())
+                    update.setInt(7, mvps)
+                    update.setBytes(8, id.toBytes())
                     update.executeUpdate()
                 }
             }
@@ -56,7 +59,8 @@ class PlayerStatModel(var id: UUID, var kills: Int, var deaths: Int, var heals: 
             heals = 0,
             wins = 0,
             losses = 0,
-            flagCaptures = 0
+            flagCaptures = 0,
+            mvps = 0
         )
     }
 }
