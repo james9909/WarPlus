@@ -38,9 +38,13 @@ class PlayerManager(val plugin: WarPlus) {
         chatPrefix = tempPrefix
     }
 
-    fun sendMessage(sender: CommandSender, message: String) {
+    fun sendMessage(sender: CommandSender, message: String, withPrefix: Boolean = true) {
         if (sender is Player) {
-            sender.sendMessage("$chatPrefix${ChatColor.RESET}$message${ChatColor.RESET}")
+            if (withPrefix) {
+                sender.sendMessage("$chatPrefix${ChatColor.RESET}$message${ChatColor.RESET}")
+            } else {
+                sender.sendMessage("${ChatColor.RESET}$message${ChatColor.RESET}")
+            }
         } else {
             sender.sendMessage(message)
         }

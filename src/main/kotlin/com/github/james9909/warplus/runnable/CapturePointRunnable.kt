@@ -39,7 +39,7 @@ class CapturePointRunnable(private val plugin: WarPlus, private val zone: Warzon
 
                     // Detect win condition
                     if (team.score >= team.settings.get(TeamConfigType.MAX_SCORE)) {
-                        team.warzone.handleWin(listOf(team))
+                        team.warzone.handleWin(listOf(team.kind))
                         return@forEach
                     }
                     state.controlTime = 0

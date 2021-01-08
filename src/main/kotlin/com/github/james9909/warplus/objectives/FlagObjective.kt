@@ -119,7 +119,7 @@ class FlagObjective(
 
         // Detect win condition
         if (team.score >= team.settings.get(TeamConfigType.MAX_SCORE)) {
-            team.warzone.handleWin(listOf(team))
+            team.warzone.handleWin(listOf(team.kind))
             return
         }
         flagThieves.remove(player)

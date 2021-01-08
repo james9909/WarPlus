@@ -120,7 +120,7 @@ class CapturePointStructure(
             team.addPoint()
             // Detect win condition
             if (team.score >= team.settings.get(TeamConfigType.MAX_SCORE)) {
-                zone.handleWin(listOf(team))
+                zone.handleWin(listOf(team.kind))
             }
         }
     }
