@@ -494,25 +494,28 @@ class Warzone(
         val maxPlayers = maxPlayers()
         teams.values.forEach { team ->
             val won = team in winningTeams
-            val econReward = getEconReward(team.settings.get(TeamConfigType.ECON_REWARD), numPlayers, maxPlayers)
+            val econWinReward = getEconReward(team.settings.get(TeamConfigType.ECON_REWARD), numPlayers, maxPlayers)
+            val econLossReward = econWinReward / 4
             val teamPlayers = team.players.toList()
             teamPlayers.forEach { player ->
                 removePlayer(player, team, showLeaveMessage = false, autoBalance = false)
 
-                if (won) {
+                val econReward = if (won) {
                     reward.giveWinReward(player)
-                    plugin.economy?.apply {
-                        val response = depositPlayer(player, econReward)
-                        if (response.transactionSuccess()) {
-                            plugin.playerManager.sendMessage(player, "You earned \$${response.amount}")
-                        } else {
-                            plugin.logger.warning("Failed to reward ${player.name}: ${response.errorMessage}")
-                        }
-                    }
                     statTracker?.addWin(player.uniqueId)
+                    econWinReward
                 } else {
                     reward.giveLossReward(player)
                     statTracker?.addLoss(player.uniqueId)
+                    econLossReward
+                }
+                plugin.economy?.apply {
+                    val response = depositPlayer(player, econReward)
+                    if (response.transactionSuccess()) {
+                        plugin.playerManager.sendMessage(player, "You earned \$${response.amount}")
+                    } else {
+                        plugin.logger.warning("Failed to reward ${player.name}: ${response.errorMessage}")
+                    }
                 }
             }
         }
