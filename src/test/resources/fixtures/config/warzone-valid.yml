@@ -14,7 +14,7 @@ team-settings:
   min-players: 1
   max-players: 20
 teams:
-  navy:
+  blue:
     settings:
       lives: 30
       spawn-style: small
@@ -34,9 +34,9 @@ objectives:
   flags:
     locations:
     - origin: flat:60.0,50.0,40.0,0.0,0.0
-      team: navy
+      team: blue
     - origin: flat:40.0,50.0,60.0,0.0,0.0
-      team: navy
+      team: red
   monuments:
     locations:
     - name: Monument1
