@@ -121,16 +121,17 @@ fun ConfigurationSection.toItemStack(): ItemStack? {
         return null
     }
 
-    val meta = item.itemMeta ?: return null
-    val name = getString("name")
-    if (name != null) {
-        meta.setDisplayName(name.color())
+    item.itemMeta?.let { meta ->
+        val name = getString("name")
+        if (name != null) {
+            meta.setDisplayName(name.color())
+        }
+
+        handleLore(meta, this)
+        handleEnchants(meta, this)
+        handleColor(meta, this)
+
+        item.itemMeta = meta
     }
-
-    handleLore(meta, this)
-    handleEnchants(meta, this)
-    handleColor(meta, this)
-
-    item.itemMeta = meta
     return item
 }

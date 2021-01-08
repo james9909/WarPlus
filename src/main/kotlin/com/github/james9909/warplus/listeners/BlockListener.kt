@@ -4,6 +4,7 @@ import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.WarzoneState
 import com.github.james9909.warplus.config.TeamConfigType
 import com.github.james9909.warplus.config.WarzoneConfigType
+import org.bukkit.Material
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
@@ -50,8 +51,11 @@ class BlockListener(val plugin: WarPlus) : Listener {
         event.isCancelled = playerZone.onBlockBreak(player, block)
         if (!event.isCancelled) {
             val toDrop = ItemStack(event.block.type)
-            if (plugin.itemNameManager.applyItem(toDrop)) {
-                block.world.dropItemNaturally(block.location, toDrop)
+            val modified = plugin.itemNameManager.applyItem(toDrop)
+            if (modified != toDrop) {
+                if (modified.type != Material.AIR) {
+                    block.world.dropItemNaturally(block.location, toDrop)
+                }
                 event.isDropItems = false
             }
         }
