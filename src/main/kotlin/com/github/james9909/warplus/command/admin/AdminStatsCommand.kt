@@ -87,6 +87,7 @@ class AdminStatsCommand : AdminCommand() {
                         plugin.playerManager.sendMessage(sender, "Deaths: ${stats.deaths}")
                         plugin.playerManager.sendMessage(sender, "Heals: ${stats.heals}")
                         plugin.playerManager.sendMessage(sender, "Flag captures: ${stats.flagCaptures}")
+                        plugin.playerManager.sendMessage(sender, "MVPs: ${stats.mvps}")
                     }
                 }
             }
