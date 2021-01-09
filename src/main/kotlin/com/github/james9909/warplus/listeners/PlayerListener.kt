@@ -164,9 +164,7 @@ class PlayerListener(val plugin: WarPlus) : Listener {
         val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
         val teamMaterial = playerInfo.team.kind.material
         if (event.slotType == InventoryType.SlotType.ARMOR && event.currentItem?.type == teamMaterial) {
-            if (event.isRightClick) {
-                event.whoClicked.setItemOnCursor(ItemStack(teamMaterial))
-            }
+            event.whoClicked.setItemOnCursor(ItemStack(teamMaterial))
             event.isCancelled = true
             return
         }
