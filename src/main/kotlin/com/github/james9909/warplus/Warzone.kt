@@ -198,20 +198,20 @@ class Warzone(
         }
     }
 
-    fun removePlayer(player: Player, team: WarTeam, showLeaveMessage: Boolean = true, autoBalance: Boolean = true) {
+    fun removePlayer(player: Player, team: WarTeam, showLeaveMessage: Boolean = true, finished: Boolean = false) {
         statTracker?.addLeave(player.uniqueId)
         team.removePlayer(player)
-        removePlayer(player)
+        removePlayer(player, finished)
         if (showLeaveMessage) {
             broadcast("${player.name} left the zone")
         }
-        if (autoBalance) {
+        if (!finished) {
             // Maintain a maximum team size delta of 1
             balanceTeams()
         }
     }
 
-    private fun removePlayer(player: Player) {
+    private fun removePlayer(player: Player, finished: Boolean = false) {
         val leaveEvent = WarzoneLeaveEvent(player, this)
         plugin.server.pluginManager.callEvent(leaveEvent)
 
@@ -229,7 +229,8 @@ class Warzone(
         if (
             numPlayers() == 0 &&
             state == WarzoneState.RUNNING &&
-            warzoneSettings.get(WarzoneConfigType.RESET_ON_EMPTY)
+            warzoneSettings.get(WarzoneConfigType.RESET_ON_EMPTY) &&
+            !finished
         ) {
             // Only reinitialize the zone if everyone left in the middle of the game
             plugin.logger.info("Last player left warzone $name. Reinitializing the warzone...")
@@ -384,7 +385,7 @@ class Warzone(
         restoreVolume()
         teams.values.forEach { team ->
             ImmutableList.copyOf(team.players).forEach { player ->
-                removePlayer(player, team, autoBalance = false)
+                removePlayer(player, team, finished = true)
             }
             team.reset()
         }
@@ -511,7 +512,7 @@ class Warzone(
             val (econWinReward, econLossReward) = getEconRewards(team.settings.get(TeamConfigType.ECON_REWARD), numPlayers, maxPlayers)
             val teamPlayers = team.players.toList()
             teamPlayers.forEach { player ->
-                removePlayer(player, team, showLeaveMessage = false, autoBalance = false)
+                removePlayer(player, team, showLeaveMessage = false, finished = true)
 
                 val econReward = if (won) {
                     reward.giveWinReward(player)
