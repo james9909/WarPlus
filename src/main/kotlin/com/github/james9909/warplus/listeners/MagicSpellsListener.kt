@@ -15,6 +15,11 @@ import org.bukkit.entity.Player
 class MagicSpellsListener(val plugin: WarPlus) : Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onSpellCast(event: SpellCastEvent) {
+        if (event.isCancelled) {
+            // Apparently we might be receiving a cancelled event despite not opting into
+            // ignoreCancelled. Might as well short circuit and validate our assumptions.
+            return
+        }
         val caster = event.caster
         if (caster !is Player) {
             return
@@ -37,6 +42,12 @@ class MagicSpellsListener(val plugin: WarPlus) : Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onSpellTarget(event: SpellTargetEvent) {
+        if (event.isCancelled) {
+            // Apparently we might be receiving a cancelled event despite not opting into
+            // ignoreCancelled. Might as well short circuit and validate our assumptions.
+            return
+        }
+
         val caster = event.caster
         if (caster !is Player) {
             return
@@ -89,6 +100,12 @@ class MagicSpellsListener(val plugin: WarPlus) : Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onSpellTargetLocationEvent(event: SpellTargetLocationEvent) {
+        if (event.isCancelled) {
+            // Apparently we might be receiving a cancelled event despite not opting into
+            // ignoreCancelled. Might as well short circuit and validate our assumptions.
+            return
+        }
+
         if (event.spell !is PulserSpell) {
             return
         }
