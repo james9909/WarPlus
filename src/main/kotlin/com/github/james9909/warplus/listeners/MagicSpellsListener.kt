@@ -27,7 +27,7 @@ class MagicSpellsListener(val plugin: WarPlus) : Listener {
                     event.isCancelled = true
                     return
                 }
-                playerInfo.team.warzone.onSpellCast(caster)
+                event.isCancelled = playerInfo.team.warzone.onSpellCast(caster)
             }
             is WarParticipant.Spectator -> {
                 event.isCancelled = true
