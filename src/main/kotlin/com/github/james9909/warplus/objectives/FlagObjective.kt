@@ -110,6 +110,17 @@ class FlagObjective(
             return
         }
 
+        val ourFlagStolen = flagThieves.values.any {
+            it.kind == team.kind
+        }
+        if (ourFlagStolen) {
+            plugin.playerManager.sendMessage(
+                player,
+                "You can't capture $otherTeam's flag until your team's flag is returned!"
+            )
+            return
+        }
+
         flag.build()
         team.warzone.broadcast("${player.name} captured ${flag.kind.format()}'s flag. Team $team scores one point.")
         team.addPoint()
