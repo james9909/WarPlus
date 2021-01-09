@@ -1115,22 +1115,9 @@ class Warzone(
         plugin.playerManager.sendMessage(player, "               &d&lWarzone Over".color(), withPrefix = false)
         plugin.playerManager.sendMessage(player, "    &a&lWinner: ${winners.joinToString(", ") { it.format() }}        &c&lLoser: ${losers.joinToString(", ") { it.format() }}".color(), withPrefix = false)
         plugin.playerManager.sendMessage(player, "&7 ".color(), withPrefix = false)
-        var hasMvp = false
-        if (mostKills != null) {
-            plugin.playerManager.sendMessage(player, "            &bMost Kills: &f${mostKills.name}".color(), withPrefix = false)
-            hasMvp = true
-        }
-        if (mostHeals != null) {
-            plugin.playerManager.sendMessage(player, "            &bMost Heals: &f${mostHeals.name}".color(), withPrefix = false)
-            hasMvp = true
-        }
-        if (mostPoints != null) {
-            plugin.playerManager.sendMessage(player, "            &bMost Points: &f${mostPoints.name}".color(), withPrefix = false)
-            hasMvp = true
-        }
-        if (hasMvp) {
-            plugin.playerManager.sendMessage(player, "&7 ".color(), withPrefix = false)
-        }
+        plugin.playerManager.sendMessage(player, "  &bMost Kills: &f${mostKills?.name ?: "Nobody"} &d|| &bMost Heals: &f${mostHeals?.name ?: "Nobody"}".color(), withPrefix = false)
+        plugin.playerManager.sendMessage(player, "            &bMost Points: &f${mostPoints?.name ?: "Nobody"}".color(), withPrefix = false)
+        plugin.playerManager.sendMessage(player, "&7 ".color(), withPrefix = false)
         plugin.playerManager.sendMessage(player, "               &6You earned &a${'$'}$econReward".color(), withPrefix = false)
         plugin.playerManager.sendMessage(player, "&8&m----------------------------------------".color(), withPrefix = false)
     }
