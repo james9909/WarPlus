@@ -10,6 +10,7 @@ import com.github.james9909.warplus.command.player.JoinWarzoneCommand
 import com.github.james9909.warplus.command.player.LeaveWarzoneCommand
 import com.github.james9909.warplus.command.player.SpectateWarzoneCommand
 import com.github.james9909.warplus.command.player.StatsCommand
+import com.github.james9909.warplus.command.player.TeamChatCommand
 import com.github.james9909.warplus.command.zonemaker.AddCapturePointCommand
 import com.github.james9909.warplus.command.zonemaker.AddMonumentCommand
 import com.github.james9909.warplus.command.zonemaker.AddPortalCommand
@@ -61,6 +62,7 @@ class CommandHandler(val plugin: WarPlus) : CommandExecutor, TabCompleter {
         commands["rewards"] = RewardsCommand()
         commands["adminstats"] = AdminStatsCommand()
         commands["stats"] = StatsCommand()
+        commands["team"] = TeamChatCommand()
     }
 
     override fun onTabComplete(
