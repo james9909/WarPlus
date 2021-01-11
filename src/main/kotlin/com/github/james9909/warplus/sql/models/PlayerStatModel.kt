@@ -1,8 +1,11 @@
 package com.github.james9909.warplus.sql.models
 
+import com.github.james9909.warplus.WarPlus
+import com.github.james9909.warplus.extensions.color
 import com.github.james9909.warplus.extensions.toBytes
 import java.sql.Connection
 import java.util.UUID
+import org.bukkit.entity.Player
 
 class PlayerStatModel(var id: UUID, var kills: Int, var deaths: Int, var heals: Int, var wins: Int, var losses: Int, var flagCaptures: Int, var mvps: Int) : AbstractModel() {
     override fun write(conn: Connection) {
@@ -49,6 +52,19 @@ class PlayerStatModel(var id: UUID, var kills: Int, var deaths: Int, var heals: 
                 }
             }
         }
+    }
+
+    fun sendToPlayer(plugin: WarPlus, player: Player) {
+        plugin.playerManager.sendMessage(player, "&8&m------------------".color(), withPrefix = false)
+        plugin.playerManager.sendMessage(player, "&9&lStats".color(), withPrefix = false)
+        plugin.playerManager.sendMessage(player, "   &bWins: &a$wins".color(), withPrefix = false)
+        plugin.playerManager.sendMessage(player, "   &bLosses: &a$losses".color(), withPrefix = false)
+        plugin.playerManager.sendMessage(player, "   &bKills: &a$kills".color(), withPrefix = false)
+        plugin.playerManager.sendMessage(player, "   &bDeaths: &a$deaths".color(), withPrefix = false)
+        plugin.playerManager.sendMessage(player, "   &bHeals: &a$heals".color(), withPrefix = false)
+        plugin.playerManager.sendMessage(player, "   &bFlag captures: &a$flagCaptures".color(), withPrefix = false)
+        plugin.playerManager.sendMessage(player, "   &bMVPs: &a$mvps".color(), withPrefix = false)
+        plugin.playerManager.sendMessage(player, "&8&m------------------".color(), withPrefix = false)
     }
 
     companion object {

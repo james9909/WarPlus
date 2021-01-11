@@ -80,14 +80,7 @@ class AdminStatsCommand : AdminCommand() {
                     if (stats == null) {
                         plugin.playerManager.sendMessage(sender, "${player.name} has not completed a warzone yet.")
                     } else {
-                        plugin.playerManager.sendMessage(sender, "WarPlus stats for ${player.name}:")
-                        plugin.playerManager.sendMessage(sender, "Wins: ${stats.wins}")
-                        plugin.playerManager.sendMessage(sender, "Losses: ${stats.losses}")
-                        plugin.playerManager.sendMessage(sender, "Kills: ${stats.kills}")
-                        plugin.playerManager.sendMessage(sender, "Deaths: ${stats.deaths}")
-                        plugin.playerManager.sendMessage(sender, "Heals: ${stats.heals}")
-                        plugin.playerManager.sendMessage(sender, "Flag captures: ${stats.flagCaptures}")
-                        plugin.playerManager.sendMessage(sender, "MVPs: ${stats.mvps}")
+                        stats.sendToPlayer(plugin, player)
                     }
                 }
             }
