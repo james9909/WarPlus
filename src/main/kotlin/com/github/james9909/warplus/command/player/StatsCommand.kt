@@ -24,9 +24,7 @@ class StatsCommand : PlayerCommand() {
             if (stats == null) {
                 plugin.playerManager.sendMessage(sender, "You have not completed a warzone yet.")
             } else {
-                plugin.playerManager.sendMessage(sender, "Your stats:")
-                plugin.playerManager.sendMessage(sender, "Wins: ${stats.wins}")
-                plugin.playerManager.sendMessage(sender, "Losses: ${stats.losses}")
+                stats.sendToPlayer(plugin, sender)
             }
         }
         return true
