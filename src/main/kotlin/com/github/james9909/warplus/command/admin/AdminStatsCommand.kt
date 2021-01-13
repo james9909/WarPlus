@@ -6,6 +6,7 @@ import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import java.lang.NumberFormatException
 import org.bukkit.command.CommandSender
+import org.bukkit.entity.Player
 
 class AdminStatsCommand : AdminCommand() {
     override val usageString = "/$WARPLUS_BASE_COMMAND adminstats <clear|view <player>|addheal <player> <amount>>"
@@ -52,13 +53,17 @@ class AdminStatsCommand : AdminCommand() {
                 }
                 val playerInfo = plugin.playerManager.getPlayerInfo(player)
                 if (playerInfo == null) {
-                    plugin.playerManager.sendMessage(sender, "${player.name} is not participating in a warzone.")
+                    if (sender is Player) {
+                        plugin.playerManager.sendMessage(sender, "${player.name} is not participating in a warzone.")
+                    }
                     return true
                 }
                 val warzone = playerInfo.team.warzone
                 plugin.server.scheduler.runTaskAsynchronously(plugin) addHealTask@{ _ ->
                     warzone.statTracker?.addHeal(player.uniqueId, amount)
-                    plugin.playerManager.sendMessage(sender, "Heal added for ${player.name}.")
+                    if (sender is Player) {
+                        plugin.playerManager.sendMessage(sender, "Heal added for ${player.name}.")
+                    }
                 }
             }
             "view" -> {
