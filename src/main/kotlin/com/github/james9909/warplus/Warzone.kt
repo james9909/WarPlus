@@ -156,39 +156,29 @@ class Warzone(
             removeEntities()
         }
         if (plugin.hasPlugin("FastAsyncWorldEdit")) {
+            teams.values.forEach { team ->
+                team.resetAttributes(resetTeamScores)
+                team.resetSpawns()
+                team.players.forEach { player ->
+                    respawnPlayer(player)
+                }
+            }
+            resetObjectives()
             if (plugin.isEnabled) {
                 plugin.server.scheduler.runTaskAsynchronously(plugin) { _ ->
                     val start = System.currentTimeMillis()
                     restoreVolume()
                     plugin.logger.info("Warzone volume reset took ${System.currentTimeMillis() - start} ms")
-                    plugin.server.scheduler.runTask(plugin) { _ ->
-                        teams.values.forEach { team ->
-                            team.resetAttributes(resetTeamScores)
-                            team.resetSpawns()
-                            team.players.forEach { player ->
-                                respawnPlayer(player)
-                            }
-                        }
-                        resetObjectives()
-                        state = if (resetTeamScores) {
-                            WarzoneState.IDLING
-                        } else {
-                            WarzoneState.RUNNING
-                        }
+                    state = if (resetTeamScores) {
+                        WarzoneState.IDLING
+                    } else {
+                        WarzoneState.RUNNING
                     }
                 }
             } else {
                 val start = System.currentTimeMillis()
                 restoreVolume()
                 plugin.logger.info("Warzone volume reset took ${System.currentTimeMillis() - start} ms")
-                teams.values.forEach { team ->
-                    team.resetAttributes(resetTeamScores)
-                    team.resetSpawns()
-                    team.players.forEach { player ->
-                        respawnPlayer(player)
-                    }
-                }
-                resetObjectives()
                 state = if (resetTeamScores) {
                     WarzoneState.IDLING
                 } else {
