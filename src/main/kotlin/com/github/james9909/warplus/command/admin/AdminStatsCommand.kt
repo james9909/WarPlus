@@ -6,6 +6,7 @@ import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import java.lang.NumberFormatException
 import org.bukkit.command.CommandSender
+import org.bukkit.entity.Player
 
 class AdminStatsCommand : AdminCommand() {
     override val usageString = "/$WARPLUS_BASE_COMMAND adminstats <clear|view <player>|addheal <player> <amount>>"
