@@ -26,6 +26,8 @@ warzone:
       monument-heal-chance: 0.2
       remove-entities-on-reset: true
       reset-on-empty: true
+      capture-point-time: 20
+      spawn-protection-radius: 10
 team:
   default:
     config:

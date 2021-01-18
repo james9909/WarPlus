@@ -64,6 +64,7 @@ val DEFAULT_WARZONE_CONFIG by lazy {
     config[WarzoneConfigType.REMOVE_ENTITIES_ON_RESET.path] = WarzoneConfigType.REMOVE_ENTITIES_ON_RESET.default
     config[WarzoneConfigType.RESET_ON_EMPTY.path] = WarzoneConfigType.RESET_ON_EMPTY.default
     config[WarzoneConfigType.CAPTURE_POINT_TIME.path] = WarzoneConfigType.CAPTURE_POINT_TIME.default
+    config[WarzoneConfigType.SPAWN_PROTECTION_RADIUS.path] = WarzoneConfigType.SPAWN_PROTECTION_RADIUS.default
     config
 }
 

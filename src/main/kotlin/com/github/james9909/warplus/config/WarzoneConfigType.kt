@@ -15,5 +15,6 @@ class WarzoneConfigType private constructor() {
         val REMOVE_ENTITIES_ON_RESET = booleanKey("remove-entities-on-reset", true)
         val RESET_ON_EMPTY = booleanKey("reset-on-empty", true)
         val CAPTURE_POINT_TIME = integerKey("capture-point-time", 20)
+        val SPAWN_PROTECTION_RADIUS = integerKey("spawn-protection-radius", 10)
     }
 }
