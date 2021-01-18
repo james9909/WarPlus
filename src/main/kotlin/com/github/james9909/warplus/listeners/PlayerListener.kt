@@ -42,6 +42,8 @@ class PlayerListener(val plugin: WarPlus) : Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onPlayerTeleport(event: PlayerTeleportEvent) {
+        if (event.isCancelled) return
+
         val player = event.player
         val playerInfo = plugin.playerManager.getParticipantInfo(player) ?: return
 
@@ -70,6 +72,8 @@ class PlayerListener(val plugin: WarPlus) : Listener {
 
     @EventHandler
     fun onPlayerDamageItem(event: PlayerItemDamageEvent) {
+        if (event.isCancelled) return
+
         val player = event.player
         plugin.playerManager.getPlayerInfo(player) ?: return
 
@@ -78,6 +82,8 @@ class PlayerListener(val plugin: WarPlus) : Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onPlayerMove(event: PlayerMoveEvent) {
+        if (event.isCancelled) return
+
         val player = event.player
         val to = event.to ?: return
         val from = event.from
@@ -146,6 +152,8 @@ class PlayerListener(val plugin: WarPlus) : Listener {
 
     @EventHandler
     fun onPlayerDropItem(event: PlayerDropItemEvent) {
+        if (event.isCancelled) return
+
         val player = event.player
         val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
         val warzone = playerInfo.team.warzone
@@ -173,6 +181,7 @@ class PlayerListener(val plugin: WarPlus) : Listener {
 
     @EventHandler
     fun onPlayerToggleSneakEvent(event: PlayerToggleSneakEvent) {
+        if (event.isCancelled) return
         if (!event.isSneaking) {
             // Only handle the initial sneak, not release
             return
@@ -222,6 +231,7 @@ class PlayerListener(val plugin: WarPlus) : Listener {
 
     @EventHandler
     fun onPlayerBucketEmpty(event: PlayerBucketEmptyEvent) {
+        if (event.isCancelled) return
         val block = event.blockClicked
         val warzone = plugin.warzoneManager.getWarzoneByLocation(block.location) ?: return
         event.isCancelled = warzone.isSpawnBlock(block) || warzone.onBlockPlace(event.player, block)
@@ -245,6 +255,8 @@ class PlayerListener(val plugin: WarPlus) : Listener {
 
     @EventHandler
     fun onPlayerPickupArrowEvent(event: PlayerPickupArrowEvent) {
+        if (event.isCancelled) return
+
         // Allow picked up arrows to be renamed by the plugin
         val player = event.player
         plugin.playerManager.getPlayerInfo(player) ?: return

@@ -20,6 +20,8 @@ class BlockListener(val plugin: WarPlus) : Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onBlockBreak(event: BlockBreakEvent) {
+        if (event.isCancelled) return
+
         val block = event.block
         val player = event.player
         val targetZone = plugin.warzoneManager.getWarzoneByLocation(block.location)
@@ -63,6 +65,8 @@ class BlockListener(val plugin: WarPlus) : Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onBlockPlace(event: BlockPlaceEvent) {
+        if (event.isCancelled) return
+
         val block = event.block
         val player = event.player
         val targetZone = plugin.warzoneManager.getWarzoneByLocation(block.location)
@@ -92,6 +96,7 @@ class BlockListener(val plugin: WarPlus) : Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onBlockBurn(event: BlockBurnEvent) {
+        if (event.isCancelled) return
         val block = event.block
         val warzone = plugin.warzoneManager.getWarzoneByLocation(block.location) ?: return
         event.isCancelled = warzone.onBlockBreak(null, block)
@@ -99,6 +104,7 @@ class BlockListener(val plugin: WarPlus) : Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onBlockIgnite(event: BlockIgniteEvent) {
+        if (event.isCancelled) return
         val block = event.block
         val warzone = plugin.warzoneManager.getWarzoneByLocation(block.location) ?: return
         event.isCancelled = warzone.onBlockBreak(null, block)
@@ -106,6 +112,7 @@ class BlockListener(val plugin: WarPlus) : Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onBlockSpread(event: BlockSpreadEvent) {
+        if (event.isCancelled) return
         val block = event.block
         val warzone = plugin.warzoneManager.getWarzoneByLocation(block.location) ?: return
         event.isCancelled = warzone.isSpawnBlock(block) || warzone.onBlockBreak(null, block)
@@ -113,6 +120,7 @@ class BlockListener(val plugin: WarPlus) : Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onBlockFromTo(event: BlockFromToEvent) {
+        if (event.isCancelled) return
         val to = event.toBlock
         val warzone = plugin.warzoneManager.getWarzoneByLocation(to.location) ?: return
         event.isCancelled = warzone.isSpawnBlock(to) || warzone.onBlockBreak(null, to)
