@@ -114,7 +114,11 @@ class WarzoneManager(val plugin: WarPlus) {
             classes = config.getStringList("classes"),
             reward = reward
         )
-        warzone.restoreVolume()
+        if (plugin.hasPlugin("FastAsyncWorldEdit")) {
+            plugin.server.scheduler.runTaskAsynchronously(plugin) { _ ->
+                warzone.restoreVolume()
+            }
+        }
 
         // Get teams
         val teamNames = teamsSection.getKeys(false)
