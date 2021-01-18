@@ -48,6 +48,7 @@ import java.text.DecimalFormat
 import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.max
+import kotlin.math.pow
 import kotlin.math.sqrt
 import kotlin.random.Random
 import org.bukkit.Bukkit
@@ -623,13 +624,34 @@ class Warzone(
         handleDeath(player, entity, cause)
     }
 
+    // Whether or not the location is spawn protected from the point of view of `entity`
+    private fun isSpawnProtectedAsEntity(entity: Entity?, location: Location): Boolean {
+        val spawnRadius = warzoneSettings.get(WarzoneConfigType.SPAWN_PROTECTION_RADIUS).toDouble().pow(2)
+        if (spawnRadius <= 1) return false
+        teams.values.forEach { team ->
+            team.spawns.forEach { spawn ->
+                if (spawn.origin.distanceSquared(location) <= spawnRadius) {
+                    if (entity is Player) {
+                        val playerInfo = plugin.playerManager.getPlayerInfo(entity) ?: return true
+                        // Players can modify the blocks within the radius of their own spawns
+                        return playerInfo.team != team
+                    }
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
     fun onBlockBreak(player: Player?, block: Block): Boolean {
         objectives.values.forEach {
             if (it.handleBlockBreak(player, block)) {
                 return true
             }
         }
-        return false
+        // Allow objectives to handle block breaks otherwise
+        // objectives like flags and monuments won't work
+        return isSpawnProtectedAsEntity(player, block.location)
     }
 
     fun onPlayerPickupItem(player: Player, item: Item): Boolean {
@@ -671,7 +693,9 @@ class Warzone(
                 return true
             }
         }
-        return false
+        // Allow objectives to handle block breaks otherwise
+        // objectives like flags and monuments won't work
+        return isSpawnProtectedAsEntity(entity, block.location)
     }
 
     fun onSpellCast(player: Player): Boolean {
