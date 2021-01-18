@@ -372,7 +372,6 @@ class Warzone(
     }
 
     fun unload() {
-        restoreVolume()
         teams.values.forEach { team ->
             ImmutableList.copyOf(team.players).forEach { player ->
                 removePlayer(player, team, finished = true)
