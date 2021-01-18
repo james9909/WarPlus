@@ -2,6 +2,7 @@ package com.github.james9909.warplus.managers
 
 import com.github.james9909.warplus.DEFAULT_TEAM_CONFIG
 import com.github.james9909.warplus.DEFAULT_WARZONE_CONFIG
+import com.github.james9909.warplus.FileError
 import com.github.james9909.warplus.IllegalTeamKindError
 import com.github.james9909.warplus.IllegalWarzoneError
 import com.github.james9909.warplus.WarReward
@@ -25,6 +26,7 @@ import com.github.james9909.warplus.structures.WarzonePortalStructure
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
+import java.io.File
 import org.bukkit.Location
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.YamlConfiguration
@@ -40,14 +42,23 @@ class WarzoneManager(val plugin: WarPlus) {
             }
             val name = it.nameWithoutExtension.substring(8)
             plugin.logger.info("Loading zone $name")
-            when (val result = loadWarzone(name, YamlConfiguration.loadConfiguration(it))) {
+            when (val result = loadWarzone(name)) {
                 is Ok -> {
-                    warzones[name.toLowerCase()] = result.value
                     plugin.logger.info("Loaded zone $name")
+                    addWarzone(result.value)
                 }
                 is Err -> plugin.logger.warning("Failed to load warzone $name: ${result.error}")
             }
         }
+    }
+
+    fun loadWarzone(name: String): Result<Warzone, WarError> {
+        val file = File(plugin.dataFolder, "warzone-$name.yml")
+        if (!file.exists()) {
+            return Err(FileError("Warzone config file not found"))
+        }
+        plugin.logger.info("Loading zone $name")
+        return loadWarzone(name, YamlConfiguration.loadConfiguration(file))
     }
 
     fun loadWarzone(
@@ -257,6 +268,16 @@ class WarzoneManager(val plugin: WarPlus) {
             warzone.value.unload()
         }
         this.warzones.clear()
+    }
+
+    fun unloadWarzone(name: String): Boolean {
+        val warzone = warzones[name.toLowerCase()]
+        if (warzone != null) {
+            warzone.unload()
+            warzones.remove(name)
+            return true
+        }
+        return false
     }
 
     fun deleteWarzone(warzone: Warzone): Boolean {
