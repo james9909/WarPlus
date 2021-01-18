@@ -31,6 +31,8 @@ class EntityListener(val plugin: WarPlus) : Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onEntityDamageByEntity(event: EntityDamageByEntityEvent) {
+        if (event.isCancelled) return
+
         val defender = event.entity
         val damager = event.damager
 
@@ -172,6 +174,7 @@ class EntityListener(val plugin: WarPlus) : Listener {
 
     @EventHandler
     fun onEntityExplode(event: EntityExplodeEvent) {
+        if (event.isCancelled) return
         val originalSize = event.blockList().size
         // Prevent blocks that are important to any warzone from being blown up
         event.blockList().removeIf { block ->
@@ -196,9 +199,8 @@ class EntityListener(val plugin: WarPlus) : Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onEntityDamage(event: EntityDamageEvent) {
-        if (event is EntityDamageByEntityEvent) {
-            return
-        }
+        if (event.isCancelled) return
+        if (event is EntityDamageByEntityEvent) return
 
         val player = event.entity as? Player ?: return
         handleNaturalPlayerDamage(event, player)
@@ -206,6 +208,7 @@ class EntityListener(val plugin: WarPlus) : Listener {
 
     @EventHandler
     fun onEntityRegainHealth(event: EntityRegainHealthEvent) {
+        if (event.isCancelled) return
         val player = event.entity as? Player ?: return
         plugin.playerManager.getPlayerInfo(player) ?: return
 
@@ -221,6 +224,7 @@ class EntityListener(val plugin: WarPlus) : Listener {
 
     @EventHandler
     fun onFoodLevelChange(event: FoodLevelChangeEvent) {
+        if (event.isCancelled) return
         val player = event.entity as? Player ?: return
         val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
         if (!playerInfo.team.settings.get(TeamConfigType.HUNGER)) {
@@ -228,7 +232,7 @@ class EntityListener(val plugin: WarPlus) : Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST)
     fun onPlayerDeath(event: PlayerDeathEvent) {
         val player = event.entity as? Player ?: return
         plugin.playerManager.getPlayerInfo(player) ?: return
@@ -239,6 +243,7 @@ class EntityListener(val plugin: WarPlus) : Listener {
 
     @EventHandler
     fun onPotionSplash(event: PotionSplashEvent) {
+        if (event.isCancelled) return
         val potion = event.potion
         val shooter = potion.shooter
 
@@ -312,6 +317,7 @@ class EntityListener(val plugin: WarPlus) : Listener {
 
     @EventHandler
     fun onEntityPickupItem(event: EntityPickupItemEvent) {
+        if (event.isCancelled) { return }
         val player = event.entity as? Player ?: return
         val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
         val warzone = playerInfo.team.warzone
@@ -324,6 +330,7 @@ class EntityListener(val plugin: WarPlus) : Listener {
 
     @EventHandler
     fun onEntityRegainHealthEvent(event: EntityRegainHealthEvent) {
+        if (event.isCancelled) { return }
         val player = event.entity as? Player ?: return
         plugin.playerManager.getPlayerInfo(player) ?: return
         if (event.regainReason == EntityRegainHealthEvent.RegainReason.REGEN) {
@@ -333,6 +340,7 @@ class EntityListener(val plugin: WarPlus) : Listener {
 
     @EventHandler
     fun onEntityChangeBlockEvent(event: EntityChangeBlockEvent) {
+        if (event.isCancelled) { return }
         val block = event.block
         if (event.entityType != EntityType.FALLING_BLOCK) {
             return
