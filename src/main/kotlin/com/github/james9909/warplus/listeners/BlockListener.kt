@@ -56,7 +56,7 @@ class BlockListener(val plugin: WarPlus) : Listener {
             val modified = plugin.itemNameManager.applyItem(toDrop)
             if (modified != toDrop) {
                 if (modified.type != Material.AIR) {
-                    block.world.dropItemNaturally(block.location, toDrop)
+                    block.world.dropItemNaturally(block.location, modified)
                 }
                 event.isDropItems = false
             }

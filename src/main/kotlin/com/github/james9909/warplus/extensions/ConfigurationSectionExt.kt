@@ -112,7 +112,9 @@ fun ConfigurationSection.toItemStack(): ItemStack? {
         ItemStack(this, getInt("amount", 1))
     } ?: run {
         if (typeStr.startsWith("ms:")) {
-            MagicItems.getMagicItemFromString(typeStr.substring(3))?.itemStack
+            MagicItems.getMagicItemFromString(typeStr.substring(3))?.itemStack?.apply {
+                amount = 1
+            }
         } else {
             null
         }
