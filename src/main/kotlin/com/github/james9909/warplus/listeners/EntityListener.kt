@@ -177,22 +177,27 @@ class EntityListener(val plugin: WarPlus) : Listener {
         if (event.isCancelled) return
         val originalSize = event.blockList().size
         // Prevent blocks that are important to any warzone from being blown up
-        event.blockList().removeIf { block ->
-            plugin.warzoneManager.getWarzones().any { warzone ->
-                warzone.contains(block.location) &&
-                (
-                    warzone.state != WarzoneState.RUNNING ||
-                    !warzone.warzoneSettings.get(WarzoneConfigType.CAN_BREAK_BLOCKS) ||
-                    warzone.isSpawnBlock(block) ||
-                    warzone.onBlockBreak(null, block)
-                )
+        event.blockList().removeIf removeIf@{ block ->
+            plugin.warzoneManager.getWarzones().forEach { warzone ->
+                if (warzone.contains(block.location)) {
+                    // Minor optimization to avoid checking all warzones since we know
+                    // that warzones cannot overlap
+                    return@removeIf (
+                        warzone.state != WarzoneState.RUNNING ||
+                        !warzone.warzoneSettings.get(WarzoneConfigType.CAN_BREAK_BLOCKS) ||
+                        warzone.isSpawnBlock(block) ||
+                        warzone.onBlockBreak(null, block)
+                    )
+                }
             }
+            return@removeIf false
         }
 
-        // Change explosion yield after explosion protection
         val newSize = event.blockList().size
-        val scale = (originalSize - newSize).toFloat() / originalSize
-        event.yield *= scale
+        if (newSize != originalSize) {
+            // Change explosion yield after explosion protection
+            event.yield *= (originalSize - newSize).toFloat() / originalSize
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -320,9 +325,8 @@ class EntityListener(val plugin: WarPlus) : Listener {
         val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
         val warzone = playerInfo.team.warzone
 
-        // Overwrite item name
-        plugin.itemNameManager.applyItem(event.item.itemStack)
-
+        // Overwrite item
+        event.item.itemStack = plugin.itemNameManager.applyItem(event.item.itemStack)
         event.isCancelled = warzone.onPlayerPickupItem(player, event.item)
     }
 
