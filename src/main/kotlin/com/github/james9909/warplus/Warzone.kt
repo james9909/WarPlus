@@ -56,6 +56,7 @@ import org.bukkit.ChatColor
 import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.Material
+import org.bukkit.OfflinePlayer
 import org.bukkit.attribute.Attribute
 import org.bukkit.block.Block
 import org.bukkit.configuration.file.YamlConfiguration
@@ -90,7 +91,7 @@ class Warzone(
     val statTracker: StatTracker? = run {
         val dbm = plugin.databaseManager
         if (dbm != null) {
-            StatTracker(dbm)
+            StatTracker(plugin.playerManager, dbm)
         } else {
             null
         }
@@ -211,8 +212,8 @@ class Warzone(
         }
 
         // Remove player before restoring their state so the teleport doesn't get canceled
-        val playerState = plugin.playerManager.getPlayerInfo(player)
-        plugin.playerManager.removePlayer(player)
+        val playerState = plugin.playerManager.getPlayerInfo(player.uniqueId)
+        plugin.playerManager.removePlayer(player.uniqueId)
         playerState?.state?.restore(player)
         plugin.inventoryManager.restoreInventory(player)
 
@@ -315,7 +316,7 @@ class Warzone(
     }
 
     fun respawnPlayer(player: Player) {
-        val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
+        val playerInfo = plugin.playerManager.getPlayerInfo(player.uniqueId) ?: return
         resetPlayer(player)
         Bukkit.getScheduler().runTaskLater(plugin, { -> player.fireTicks = 0 }, 1)
         Bukkit.getScheduler().runTaskLater(plugin, { -> player.fireTicks = 0 }, 2)
@@ -428,7 +429,7 @@ class Warzone(
     }
 
     private fun handleDeath(player: Player, entity: Entity?, cause: DamageCause) {
-        val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
+        val playerInfo = plugin.playerManager.getPlayerInfo(player.uniqueId) ?: return
         val deathEvent = WarzonePlayerDeathEvent(player, this, entity, cause)
         plugin.server.pluginManager.callEvent(deathEvent)
 
@@ -485,26 +486,27 @@ class Warzone(
     fun handleWin(winningTeams: List<TeamKind>) {
         val numPlayers = numPlayers()
         val maxPlayers = maxPlayers()
-        val (mostKills, mostHeals, mostPoints) = if (numPlayers >= 4) {
-            Triple(statTracker?.maxStatsBy { it.kills }?.run {
-                statTracker.addMvp(this)
-                plugin.server.getPlayer(this)
-            },
-            statTracker?.maxStatsBy { it.heals }?.run {
-                statTracker.addMvp(this)
-                plugin.server.getPlayer(this)
-            },
-            statTracker?.maxStatsBy { it.flagCaptures }?.run {
-                statTracker.addMvp(this)
-                plugin.server.getPlayer(this)
-            })
-        } else {
-            Triple(null, null, null)
-        }
         teams.values.forEach { team ->
             val won = team.kind in winningTeams
             val (econWinReward, econLossReward) = getEconRewards(team.settings.get(TeamConfigType.ECON_REWARD), numPlayers, maxPlayers)
             val teamPlayers = team.players.toList()
+            val (mostKills, mostHeals, mostPoints) = if (teamPlayers.size >= team.settings.get(TeamConfigType.MIN_PLAYERS_FOR_MVP)) {
+                Triple(
+                    statTracker?.maxStatsBy(team.kind) { it.kills }?.run {
+                        statTracker.addMvp(first)
+                        Pair(plugin.server.getOfflinePlayer(first), second)
+                    },
+                    statTracker?.maxStatsBy(team.kind) { it.heals }?.run {
+                        statTracker.addMvp(first)
+                        Pair(plugin.server.getOfflinePlayer(first), second)
+                    },
+                    statTracker?.maxStatsBy(team.kind) { it.flagCaptures }?.run {
+                        statTracker.addMvp(first)
+                        Pair(plugin.server.getOfflinePlayer(first), second)
+                    })
+            } else {
+                Triple(null, null, null)
+            }
             teamPlayers.forEach { player ->
                 removePlayer(player, team, showLeaveMessage = false, finished = true)
 
@@ -543,7 +545,7 @@ class Warzone(
     }
 
     fun handleSuicide(player: Player, cause: DamageCause) {
-        val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
+        val playerInfo = plugin.playerManager.getPlayerInfo(player.uniqueId) ?: return
         if (warzoneSettings.get(WarzoneConfigType.DEATH_MESSAGES)) {
             broadcast("${playerInfo.team.kind.chatColor}${player.name}${ChatColor.RESET} committed suicide")
         }
@@ -551,8 +553,8 @@ class Warzone(
     }
 
     fun handleKill(attacker: Player, defender: Player, damager: Entity, cause: DamageCause, direct: Boolean) {
-        val attackerInfo = plugin.playerManager.getPlayerInfo(attacker) ?: return
-        val defenderInfo = plugin.playerManager.getPlayerInfo(defender) ?: return
+        val attackerInfo = plugin.playerManager.getPlayerInfo(attacker.uniqueId) ?: return
+        val defenderInfo = plugin.playerManager.getPlayerInfo(defender.uniqueId) ?: return
 
         if (warzoneSettings.get(WarzoneConfigType.DEATH_MESSAGES)) {
             val attackerColor = attackerInfo.team.kind.chatColor
@@ -587,7 +589,7 @@ class Warzone(
     }
 
     fun handleNaturalDeath(player: Player, cause: DamageCause) {
-        val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
+        val playerInfo = plugin.playerManager.getPlayerInfo(player.uniqueId) ?: return
         when (val damager = playerInfo.lastDamager.damager) {
             is Player -> {
                 handleKill(damager, player, damager, cause, false)
@@ -618,7 +620,7 @@ class Warzone(
     }
 
     fun handleMobDeath(player: Player, entity: LivingEntity, cause: DamageCause) {
-        val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
+        val playerInfo = plugin.playerManager.getPlayerInfo(player.uniqueId) ?: return
         val playerString = "${playerInfo.team.kind.chatColor}${player.name}${ChatColor.RESET}"
         broadcast("$playerString was slain by ${entity.name}")
         handleDeath(player, entity, cause)
@@ -632,7 +634,7 @@ class Warzone(
             team.spawns.forEach { spawn ->
                 if (spawn.origin.distanceSquared(location) <= spawnRadius) {
                     if (entity is Player) {
-                        val playerInfo = plugin.playerManager.getPlayerInfo(entity) ?: return true
+                        val playerInfo = plugin.playerManager.getPlayerInfo(entity.uniqueId) ?: return true
                         // Players can modify the blocks within the radius of their own spawns
                         return playerInfo.team != team
                     }
@@ -954,7 +956,7 @@ class Warzone(
     }
 
     fun equipClass(player: Player, warClass: WarClass, updatePlayerInfo: Boolean) {
-        val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
+        val playerInfo = plugin.playerManager.getPlayerInfo(player.uniqueId) ?: return
 
         warClass.giveToPlayer(player)
         if (warzoneSettings.get(WarzoneConfigType.BLOCK_HEADS)) {
@@ -1008,9 +1010,9 @@ class Warzone(
     }
 
     fun removeSpectator(player: Player) {
-        val spectator = plugin.playerManager.getSpectatorInfo(player) ?: return
+        val spectator = plugin.playerManager.getSpectatorInfo(player.uniqueId) ?: return
         spectators.remove(player)
-        plugin.playerManager.removePlayer(player)
+        plugin.playerManager.removePlayer(player.uniqueId)
 
         val permissions = plugin.playerManager.getPermissions(player)
         permissions.unsetPermission("magicspells.notarget")
@@ -1092,8 +1094,8 @@ class Warzone(
             addJoin(player.uniqueId, newTeam.kind)
         }
         newTeam.addPlayer(player)
-        val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
-        plugin.playerManager.setPlayerInfo(player, playerInfo.copy(team = newTeam))
+        val playerInfo = plugin.playerManager.getPlayerInfo(player.uniqueId) ?: return
+        plugin.playerManager.setPlayerInfo(player.uniqueId, playerInfo.copy(team = newTeam))
         respawnPlayer(player)
         broadcast("[Auto Balance] - ${player.name} was moved to $newTeam")
     }
@@ -1127,15 +1129,31 @@ class Warzone(
         state = WarzoneState.IDLING
     }
 
-    private fun sendFinalResults(player: Player, winners: List<TeamKind>, econReward: Double, mostKills: Player?, mostHeals: Player?, mostPoints: Player?) {
+    private fun sendFinalResults(
+        player: Player,
+        winners: List<TeamKind>,
+        econReward: Double,
+        mostKills: Pair<OfflinePlayer, Int>?,
+        mostHeals: Pair<OfflinePlayer, Int>?,
+        mostPoints: Pair<OfflinePlayer, Int>?
+    ) {
         val losers = teams.keys.filter { !winners.contains(it) }
         plugin.playerManager.sendMessage(player, "&8&m----------------------------------------".color(), withPrefix = false)
         plugin.playerManager.sendMessage(player, "               &d&lWarzone Over".color(), withPrefix = false)
         plugin.playerManager.sendMessage(player, "    &a&lWinner: ${winners.joinToString(", ") { it.format() }}        &c&lLoser: ${losers.joinToString(", ") { it.format() }}".color(), withPrefix = false)
         plugin.playerManager.sendMessage(player, "&7 ".color(), withPrefix = false)
         if (mostKills != null || mostHeals != null || mostPoints != null) {
-            plugin.playerManager.sendMessage(player, "  &bMost Kills: &f${mostKills?.name ?: "Nobody"} &d|| &bMost Heals: &f${mostHeals?.name ?: "Nobody"}".color(), withPrefix = false)
-            plugin.playerManager.sendMessage(player, "            &bMost Points: &f${mostPoints?.name ?: "Nobody"}".color(), withPrefix = false)
+            val killsDisplay = mostKills?.run {
+                "&f${first.name} &7[&4$second&7]"
+            } ?: "Nobody"
+            val healsDisplay = mostHeals?.run {
+                "&f${first.name} &7[&4$second&7]"
+            } ?: "Nobody"
+            val pointsDisplay = mostPoints?.run {
+                "&f${first.name} &7[&4$second&7]"
+            } ?: "Nobody"
+            plugin.playerManager.sendMessage(player, "  &bMost Kills: $killsDisplay &d|| &bMost Heals: $healsDisplay".color(), withPrefix = false)
+            plugin.playerManager.sendMessage(player, "            &bMost Points: &f$pointsDisplay".color(), withPrefix = false)
             plugin.playerManager.sendMessage(player, "&7 ".color(), withPrefix = false)
         }
         plugin.playerManager.sendMessage(player, "               &6You earned &a${'$'}$econReward".color(), withPrefix = false)

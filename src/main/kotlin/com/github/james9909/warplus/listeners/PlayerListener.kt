@@ -28,7 +28,7 @@ class PlayerListener(val plugin: WarPlus) : Listener {
     @EventHandler
     fun onPlayerQuit(event: PlayerQuitEvent) {
         val player = event.player
-        val playerInfo = plugin.playerManager.getParticipantInfo(player) ?: return
+        val playerInfo = plugin.playerManager.getParticipantInfo(player.uniqueId) ?: return
         when (playerInfo) {
             is WarParticipant.Player -> {
                 val warzone = playerInfo.team.warzone
@@ -45,7 +45,7 @@ class PlayerListener(val plugin: WarPlus) : Listener {
         if (event.isCancelled) return
 
         val player = event.player
-        val playerInfo = plugin.playerManager.getParticipantInfo(player) ?: return
+        val playerInfo = plugin.playerManager.getParticipantInfo(player.uniqueId) ?: return
 
         if (event.cause == PlayerTeleportEvent.TeleportCause.ENDER_PEARL) {
             event.isCancelled = true
@@ -75,7 +75,7 @@ class PlayerListener(val plugin: WarPlus) : Listener {
         if (event.isCancelled) return
 
         val player = event.player
-        plugin.playerManager.getPlayerInfo(player) ?: return
+        plugin.playerManager.getPlayerInfo(player.uniqueId) ?: return
 
         event.isCancelled = true
     }
@@ -92,7 +92,7 @@ class PlayerListener(val plugin: WarPlus) : Listener {
             return
         }
 
-        val playerInfo = plugin.playerManager.getParticipantInfo(player)
+        val playerInfo = plugin.playerManager.getParticipantInfo(player.uniqueId)
         when (playerInfo) {
             is WarParticipant.Player -> handlePlayerMove(event, player, playerInfo, from, to)
             is WarParticipant.Spectator -> handleSpectatorMove(event, player, playerInfo, to)
@@ -155,7 +155,7 @@ class PlayerListener(val plugin: WarPlus) : Listener {
         if (event.isCancelled) return
 
         val player = event.player
-        val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
+        val playerInfo = plugin.playerManager.getPlayerInfo(player.uniqueId) ?: return
         val warzone = playerInfo.team.warzone
         if (!warzone.warzoneSettings.get(WarzoneConfigType.ITEM_DROPS) || playerInfo.inSpawn) {
             event.isCancelled = true
@@ -169,7 +169,7 @@ class PlayerListener(val plugin: WarPlus) : Listener {
         // TuSKe is dumb about its event handling...
         if (event.isCancelled) return
         val player = event.whoClicked as? Player ?: return
-        val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
+        val playerInfo = plugin.playerManager.getPlayerInfo(player.uniqueId) ?: return
         val teamMaterial = playerInfo.team.kind.material
         if (event.slotType == InventoryType.SlotType.ARMOR && event.currentItem?.type == teamMaterial) {
             event.whoClicked.setItemOnCursor(ItemStack(teamMaterial))
@@ -188,7 +188,7 @@ class PlayerListener(val plugin: WarPlus) : Listener {
         }
 
         val player = event.player
-        val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
+        val playerInfo = plugin.playerManager.getPlayerInfo(player.uniqueId) ?: return
         if (!playerInfo.inSpawn) {
             if (playerInfo.team.spawns.any { spawn ->
                 spawn.contains(player.location)
@@ -241,7 +241,7 @@ class PlayerListener(val plugin: WarPlus) : Listener {
     fun onPlayerCommandPreprocess(event: PlayerCommandPreprocessEvent) {
         if (event.isCancelled) return
         val player = event.player
-        plugin.playerManager.getPlayerInfo(player) ?: return
+        plugin.playerManager.getPlayerInfo(player.uniqueId) ?: return
 
         // Admins can execute any command
         if (player.hasPermission("warplus.admin")) return
@@ -259,7 +259,7 @@ class PlayerListener(val plugin: WarPlus) : Listener {
 
         // Allow picked up arrows to be renamed by the plugin
         val player = event.player
-        plugin.playerManager.getPlayerInfo(player) ?: return
+        plugin.playerManager.getPlayerInfo(player.uniqueId) ?: return
 
         plugin.itemNameManager.applyItem(event.item.itemStack)
     }

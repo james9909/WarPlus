@@ -51,7 +51,7 @@ class AdminStatsCommand : AdminCommand() {
                     plugin.playerManager.sendMessage(sender, "Invalid amount ${args[2]}")
                     return true
                 }
-                val playerInfo = plugin.playerManager.getPlayerInfo(player)
+                val playerInfo = plugin.playerManager.getPlayerInfo(player.uniqueId)
                 if (playerInfo == null) {
                     if (sender is Player) {
                         plugin.playerManager.sendMessage(sender, "${player.name} is not participating in a warzone.")

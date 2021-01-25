@@ -26,7 +26,7 @@ sealed class WarParticipant {
 }
 
 class PlayerManager(val plugin: WarPlus) {
-    private val players = HashMap<Player, WarParticipant>()
+    private val players = HashMap<UUID, WarParticipant>()
     private val permissions = HashMap<UUID, PermissionAttachment>()
     private val chatPrefix: String
 
@@ -54,18 +54,18 @@ class PlayerManager(val plugin: WarPlus) {
         sendMessage(sender, message.msg)
     }
 
-    fun getParticipantInfo(player: Player): WarParticipant? = players[player]
+    fun getParticipantInfo(uuid: UUID): WarParticipant? = players[uuid]
 
-    fun getPlayerInfo(player: Player): WarParticipant.Player? = when (val p = players[player]) {
+    fun getPlayerInfo(uuid: UUID): WarParticipant.Player? = when (val p = players[uuid]) {
         is WarParticipant.Player -> p
         else -> null
     }
 
-    fun setPlayerInfo(player: Player, info: WarParticipant.Player) {
-        players[player] = info
+    fun setPlayerInfo(uuid: UUID, info: WarParticipant.Player) {
+        players[uuid] = info
     }
 
-    fun getSpectatorInfo(player: Player): WarParticipant.Spectator? = when (val p = players[player]) {
+    fun getSpectatorInfo(uuid: UUID): WarParticipant.Spectator? = when (val p = players[uuid]) {
         is WarParticipant.Spectator -> p
         else -> null
     }
@@ -78,18 +78,18 @@ class PlayerManager(val plugin: WarPlus) {
             warClass = null,
             lastDamager = LastDamager(null)
         )
-        players[player] = playerInfo
+        players[player.uniqueId] = playerInfo
         plugin.inventoryManager.saveInventory(player)
         return playerInfo
     }
 
     fun saveSpectatorState(player: Player, warzone: Warzone, saveLocation: Boolean): WarParticipant.Spectator {
         val playerInfo = WarParticipant.Spectator(PlayerState.fromPlayer(player, saveLocation), warzone)
-        players[player] = playerInfo
+        players[player.uniqueId] = playerInfo
         return playerInfo
     }
 
-    fun removePlayer(player: Player) = players.remove(player)
+    fun removePlayer(uuid: UUID) = players.remove(uuid)
 
     fun getPermissions(player: Player): PermissionAttachment {
         if (permissions.containsKey(player.uniqueId)) {

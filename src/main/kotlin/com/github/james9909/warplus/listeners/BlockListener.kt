@@ -25,7 +25,7 @@ class BlockListener(val plugin: WarPlus) : Listener {
         val block = event.block
         val player = event.player
         val targetZone = plugin.warzoneManager.getWarzoneByLocation(block.location)
-        val playerInfo = plugin.playerManager.getPlayerInfo(player)
+        val playerInfo = plugin.playerManager.getPlayerInfo(player.uniqueId)
         if (playerInfo == null) {
             if (targetZone != null && targetZone.state != WarzoneState.EDITING) {
                 event.isCancelled = true
@@ -70,7 +70,7 @@ class BlockListener(val plugin: WarPlus) : Listener {
         val block = event.block
         val player = event.player
         val targetZone = plugin.warzoneManager.getWarzoneByLocation(block.location)
-        val playerInfo = plugin.playerManager.getPlayerInfo(player)
+        val playerInfo = plugin.playerManager.getPlayerInfo(player.uniqueId)
         if (playerInfo == null) {
             if (targetZone != null && targetZone.state != WarzoneState.EDITING) {
                 event.isCancelled = true

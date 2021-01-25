@@ -25,7 +25,7 @@ class MagicSpellsListener(val plugin: WarPlus) : Listener {
             return
         }
 
-        val playerInfo = plugin.playerManager.getParticipantInfo(caster) ?: return
+        val playerInfo = plugin.playerManager.getParticipantInfo(caster.uniqueId) ?: return
         when (playerInfo) {
             is WarParticipant.Player -> {
                 if (playerInfo.inSpawn) {
@@ -58,8 +58,8 @@ class MagicSpellsListener(val plugin: WarPlus) : Listener {
         }
 
         val spell = event.spell
-        val targetInfo = plugin.playerManager.getPlayerInfo(target)
-        val casterInfo = plugin.playerManager.getPlayerInfo(caster)
+        val targetInfo = plugin.playerManager.getPlayerInfo(target.uniqueId)
+        val casterInfo = plugin.playerManager.getPlayerInfo(caster.uniqueId)
         if (casterInfo == null && targetInfo == null) {
             // Neither player is in a warzone, so only allow beneficial spells to target
             if (!spell.isBeneficial) {
