@@ -66,7 +66,7 @@ class FlagObjective(
         if (player == null) {
             return true
         }
-        val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return true
+        val playerInfo = plugin.playerManager.getPlayerInfo(player.uniqueId) ?: return true
         if (playerInfo.team.warzone != warzone) {
             return true
         }
@@ -92,7 +92,7 @@ class FlagObjective(
         if (!flagThieves.containsKey(player)) {
             return
         }
-        val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
+        val playerInfo = plugin.playerManager.getPlayerInfo(player.uniqueId) ?: return
         val team = playerInfo.team
         val inSpawn = team.spawns.any {
             it.contains(to)

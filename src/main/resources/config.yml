@@ -40,3 +40,4 @@ team:
       hunger: true
       place-blocks: true
       spawn-style: small
+      min-players-for-mvp: 2

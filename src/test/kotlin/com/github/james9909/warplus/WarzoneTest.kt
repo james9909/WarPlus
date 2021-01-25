@@ -38,7 +38,7 @@ class WarzoneTest {
     fun `joining correctly assigns a player to a team`() {
         val player = PlayerMock(server, "test", UUID.randomUUID())
         warzone.addPlayer(player)
-        val playerInfo = plugin.playerManager.getPlayerInfo(player)
+        val playerInfo = plugin.playerManager.getPlayerInfo(player.uniqueId)
         assert(playerInfo != null)
         assert(playerInfo!!.team.warzone == warzone)
     }

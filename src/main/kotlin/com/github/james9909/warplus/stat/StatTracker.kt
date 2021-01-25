@@ -3,6 +3,7 @@ package com.github.james9909.warplus.stat
 import com.github.james9909.warplus.TeamKind
 import com.github.james9909.warplus.WarClass
 import com.github.james9909.warplus.managers.DatabaseManager
+import com.github.james9909.warplus.managers.PlayerManager
 import com.github.james9909.warplus.sql.models.KillModel
 import com.github.james9909.warplus.sql.models.PlayerStatModel
 import com.github.james9909.warplus.sql.models.WarzoneJoinLog
@@ -12,7 +13,7 @@ import java.time.Instant
 import java.util.LinkedList
 import java.util.UUID
 
-class StatTracker(private val databaseManager: DatabaseManager) {
+class StatTracker(private val playerManager: PlayerManager, private val databaseManager: DatabaseManager) {
     var warzoneId: Int = -1
     private val playerStats: HashMap<UUID, PlayerStatModel> = hashMapOf()
     private val killHistory = LinkedList<KillModel>()
@@ -82,12 +83,14 @@ class StatTracker(private val databaseManager: DatabaseManager) {
         }
     }
 
-    fun maxStatsBy(key: (PlayerStatModel) -> Int): UUID? {
-        val max = playerStats.maxBy { entry ->
+    fun maxStatsBy(team: TeamKind, key: (PlayerStatModel) -> Int): Pair<UUID, Int>? {
+        val max = playerStats.filter {
+            playerManager.getPlayerInfo(it.key)?.team?.kind == team
+        }.maxBy { entry ->
             key(entry.value)
         }
         if (max != null && key(max.value) > 0) {
-            return max.key
+            return Pair(max.key, key(max.value))
         }
         return null
     }

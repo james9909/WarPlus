@@ -15,7 +15,7 @@ class LeaveWarzoneCommand : PlayerCommand() {
             plugin.playerManager.sendMessage(sender, "Only in-game players may do that")
             return true
         }
-        val playerInfo = plugin.playerManager.getParticipantInfo(sender)
+        val playerInfo = plugin.playerManager.getParticipantInfo(sender.uniqueId)
         if (playerInfo == null) {
             plugin.playerManager.sendMessage(sender, "You are not in a warzone")
             return true

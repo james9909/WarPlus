@@ -81,8 +81,8 @@ class EntityListener(val plugin: WarPlus) : Listener {
         damager: Player,
         canFriendlyFire: Boolean
     ) {
-        val damagerInfo = plugin.playerManager.getPlayerInfo(damager)
-        val defenderInfo = plugin.playerManager.getPlayerInfo(defender)
+        val damagerInfo = plugin.playerManager.getPlayerInfo(damager.uniqueId)
+        val defenderInfo = plugin.playerManager.getPlayerInfo(defender.uniqueId)
 
         if ((damagerInfo == null) xor (defenderInfo == null)) {
             // One is in a warzone while the other is not
@@ -130,7 +130,7 @@ class EntityListener(val plugin: WarPlus) : Listener {
     }
 
     private fun handleNaturalPlayerDamage(event: EntityDamageEvent, defender: Player) {
-        val defenderInfo = plugin.playerManager.getPlayerInfo(defender) ?: return
+        val defenderInfo = plugin.playerManager.getPlayerInfo(defender.uniqueId) ?: return
         if (defenderInfo.inSpawn) {
             event.isCancelled = true
             return
@@ -144,7 +144,7 @@ class EntityListener(val plugin: WarPlus) : Listener {
 
     private fun handlePlayerDamageByMonster(event: EntityDamageByEntityEvent, defender: Player, damager: LivingEntity) {
         // For future reference: handle minion damage
-        val defenderInfo = plugin.playerManager.getPlayerInfo(defender) ?: return
+        val defenderInfo = plugin.playerManager.getPlayerInfo(defender.uniqueId) ?: return
         if (defenderInfo.inSpawn) {
             event.isCancelled = true
             return
@@ -166,7 +166,7 @@ class EntityListener(val plugin: WarPlus) : Listener {
     }
 
     private fun handleMobDamageByPlayer(event: EntityDamageByEntityEvent, defender: LivingEntity, damager: Player) {
-        val damagerInfo = plugin.playerManager.getPlayerInfo(damager) ?: return
+        val damagerInfo = plugin.playerManager.getPlayerInfo(damager.uniqueId) ?: return
         if (damagerInfo.inSpawn) {
             event.isCancelled = true
         }
@@ -213,7 +213,7 @@ class EntityListener(val plugin: WarPlus) : Listener {
     fun onEntityRegainHealth(event: EntityRegainHealthEvent) {
         if (event.isCancelled) return
         val player = event.entity as? Player ?: return
-        plugin.playerManager.getPlayerInfo(player) ?: return
+        plugin.playerManager.getPlayerInfo(player.uniqueId) ?: return
 
         when (event.regainReason) {
             EntityRegainHealthEvent.RegainReason.REGEN -> {
@@ -229,7 +229,7 @@ class EntityListener(val plugin: WarPlus) : Listener {
     fun onFoodLevelChange(event: FoodLevelChangeEvent) {
         if (event.isCancelled) return
         val player = event.entity as? Player ?: return
-        val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
+        val playerInfo = plugin.playerManager.getPlayerInfo(player.uniqueId) ?: return
         if (!playerInfo.team.settings.get(TeamConfigType.HUNGER)) {
             event.isCancelled = true
         }
@@ -238,7 +238,7 @@ class EntityListener(val plugin: WarPlus) : Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onPlayerDeath(event: PlayerDeathEvent) {
         val player = event.entity as? Player ?: return
-        plugin.playerManager.getPlayerInfo(player) ?: return
+        plugin.playerManager.getPlayerInfo(player.uniqueId) ?: return
 
         // Remove drops
         event.drops.clear()
@@ -276,13 +276,13 @@ class EntityListener(val plugin: WarPlus) : Listener {
                 if (entity !is Player) {
                     continue
                 }
-                val warPlayer = plugin.playerManager.getPlayerInfo(entity) ?: continue
+                val warPlayer = plugin.playerManager.getPlayerInfo(entity.uniqueId) ?: continue
                 if (warPlayer.inSpawn) {
                     event.setIntensity(entity, 0.0)
                 }
             }
         } else {
-            val warShooter = plugin.playerManager.getPlayerInfo(shooter)
+            val warShooter = plugin.playerManager.getPlayerInfo(shooter.uniqueId)
             if (warShooter != null && warShooter.inSpawn) {
                 // Players in spawn can't do anything
                 event.isCancelled = true
@@ -293,7 +293,7 @@ class EntityListener(val plugin: WarPlus) : Listener {
                     continue
                 }
 
-                val warPlayer = plugin.playerManager.getPlayerInfo(entity)
+                val warPlayer = plugin.playerManager.getPlayerInfo(entity.uniqueId)
                 if ((warPlayer == null) xor (warShooter == null)) {
                     // One player is in a warzone, the other isn't
                     event.setIntensity(entity, 0.0)
@@ -322,7 +322,7 @@ class EntityListener(val plugin: WarPlus) : Listener {
     fun onEntityPickupItem(event: EntityPickupItemEvent) {
         if (event.isCancelled) { return }
         val player = event.entity as? Player ?: return
-        val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
+        val playerInfo = plugin.playerManager.getPlayerInfo(player.uniqueId) ?: return
         val warzone = playerInfo.team.warzone
 
         // Overwrite item
@@ -334,7 +334,7 @@ class EntityListener(val plugin: WarPlus) : Listener {
     fun onEntityRegainHealthEvent(event: EntityRegainHealthEvent) {
         if (event.isCancelled) { return }
         val player = event.entity as? Player ?: return
-        plugin.playerManager.getPlayerInfo(player) ?: return
+        plugin.playerManager.getPlayerInfo(player.uniqueId) ?: return
         if (event.regainReason == EntityRegainHealthEvent.RegainReason.REGEN) {
             event.isCancelled = true
         }

@@ -46,6 +46,7 @@ val DEFAULT_TEAM_CONFIG by lazy {
     config[TeamConfigType.HUNGER.path] = TeamConfigType.HUNGER.default
     config[TeamConfigType.PLACE_BLOCKS.path] = TeamConfigType.PLACE_BLOCKS.default
     config[TeamConfigType.SPAWN_STYLE.path] = TeamConfigType.SPAWN_STYLE.default
+    config[TeamConfigType.MIN_PLAYERS_FOR_MVP.path] = TeamConfigType.MIN_PLAYERS_FOR_MVP.default
     config
 }
 

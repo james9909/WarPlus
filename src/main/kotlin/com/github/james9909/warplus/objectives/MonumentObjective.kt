@@ -45,7 +45,7 @@ class MonumentObjective(
         if (player == null) {
             return true
         }
-        val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return true
+        val playerInfo = plugin.playerManager.getPlayerInfo(player.uniqueId) ?: return true
         if (playerInfo.team.warzone != warzone) {
             return true
         }
@@ -66,7 +66,7 @@ class MonumentObjective(
         if (entity !is Player) {
             return true
         }
-        val playerInfo = plugin.playerManager.getPlayerInfo(entity) ?: return true
+        val playerInfo = plugin.playerManager.getPlayerInfo(entity.uniqueId) ?: return true
         if (playerInfo.team.warzone != warzone || block.type != playerInfo.team.kind.material) {
             return true
         }
@@ -76,7 +76,7 @@ class MonumentObjective(
     }
 
     override fun handlePlayerMove(player: Player, from: Location, to: Location) {
-        val playerInfo = plugin.playerManager.getPlayerInfo(player) ?: return
+        val playerInfo = plugin.playerManager.getPlayerInfo(player.uniqueId) ?: return
         if (playerInfo.team.warzone != warzone) {
             return
         }

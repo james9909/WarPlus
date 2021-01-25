@@ -13,5 +13,6 @@ class TeamConfigType private constructor() {
         val MIN_PLAYERS = integerKey("min-players", 1)
         val PLACE_BLOCKS = booleanKey("place-blocks", true)
         val SPAWN_STYLE = enumKey("spawn-style", SpawnStyle.SMALL)
+        val MIN_PLAYERS_FOR_MVP = integerKey("min-players-for-mvp", 2)
     }
 }

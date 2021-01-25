@@ -20,7 +20,7 @@ class JoinWarzoneCommand : PlayerCommand() {
             return true
         }
 
-        val playerInfo = plugin.playerManager.getParticipantInfo(sender)
+        val playerInfo = plugin.playerManager.getParticipantInfo(sender.uniqueId)
         if (playerInfo != null) {
             plugin.playerManager.sendMessage(sender, "You are already in a warzone")
             return true
