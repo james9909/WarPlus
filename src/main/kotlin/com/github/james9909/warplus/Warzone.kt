@@ -1202,4 +1202,12 @@ class Warzone(
         plugin.playerManager.sendMessage(player, "               &6You earned &a${'$'}$econReward".color(), withPrefix = false)
         plugin.playerManager.sendMessage(player, "&8&m----------------------------------------".color(), withPrefix = false)
     }
+
+    fun isFlagThief(player: Player): Boolean = (objectives["flags"] as? FlagObjective)?.let { obj ->
+        obj.isFlagThief(player)
+    } ?: false
+
+    fun isBombCarrier(player: Player): Boolean = (objectives["bombs"] as? BombObjective)?.let { obj ->
+        obj.isBombCarrier(player)
+    } ?: false
 }
