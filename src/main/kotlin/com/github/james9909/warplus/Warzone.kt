@@ -523,13 +523,13 @@ class Warzone(
                 }
 
                 // Handle mvp rewards separately
-                if (player == mostKills) {
+                if (player.uniqueId == mostKills?.first?.uniqueId) {
                     reward.giveMvpReward(player)
                 }
-                if (player == mostHeals) {
+                if (player.uniqueId == mostHeals?.first?.uniqueId) {
                     reward.giveMvpReward(player)
                 }
-                if (player == mostPoints) {
+                if (player.uniqueId == mostPoints?.first?.uniqueId) {
                     reward.giveMvpReward(player)
                 }
 
