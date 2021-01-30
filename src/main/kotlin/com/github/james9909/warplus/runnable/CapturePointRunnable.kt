@@ -20,6 +20,7 @@ class CapturePointRunnable(private val plugin: WarPlus, private val zone: Warzon
         val capturePointTime = zone.warzoneSettings.get(WarzoneConfigType.CAPTURE_POINT_TIME)
         objective.capturePoints.forEach { cp ->
             cp.clearActiveTeams()
+            if (zone.teams.values.count { it.hasEnoughPlayers() } == 1) return
             zone.teams.forEach { (kind, team) ->
                 team.players.forEach { player ->
                     val block = player.location.block.getRelative(BlockFace.DOWN)
