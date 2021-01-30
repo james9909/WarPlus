@@ -63,19 +63,15 @@ class FlagObjective(
         val flagStructure = flags.find {
             it.contains(block.location)
         } ?: return false
-        if (player == null) {
-            return true
-        }
+        if (player == null) return true
+
         val playerInfo = plugin.playerManager.getPlayerInfo(player.uniqueId) ?: return true
-        if (playerInfo.team.warzone != warzone) {
-            return true
-        }
-        if (playerInfo.team.kind == flagStructure.kind ||
-            block != flagStructure.flagBlock ||
-            flagThieves.containsKey(player)
-        ) {
-            return true
-        }
+        if (playerInfo.team.warzone != warzone) return true
+        if (playerInfo.team.kind == flagStructure.kind) return true
+        if (block != flagStructure.flagBlock) return true
+        if (flagThieves.containsKey(player)) return true
+        if (warzone.isBombCarrier(player)) return true
+
         return stealFlag(player, flagStructure)
     }
 
@@ -201,4 +197,6 @@ class FlagObjective(
     override fun delete() {
         flags.forEach { it.deleteVolume() }
     }
+
+    fun isFlagThief(player: Player): Boolean = flagThieves.containsKey(player)
 }

@@ -48,10 +48,12 @@ class BombObjective(
         val bomb = bombs.firstOrNull { it.contains(block.location) } ?: return false
         if (player == null) return true
         if (block != bomb.tntBlock) return true
+        if (isBombCarrier(player)) return true
 
         val playerInfo = plugin.playerManager.getPlayerInfo(player.uniqueId) ?: return true
         if (playerInfo.team.warzone != warzone) return true
         if (bombCarriers.containsKey(player.uniqueId)) return true
+        if (warzone.isFlagThief(player)) return true
 
         bomb.tntBlock.type = Material.AIR
         bombCarriers[player.uniqueId] = bomb
@@ -144,4 +146,6 @@ class BombObjective(
     override fun delete() {
         bombs.forEach { it.deleteVolume() }
     }
+
+    fun isBombCarrier(player: Player): Boolean = bombCarriers.containsKey(player.uniqueId)
 }
