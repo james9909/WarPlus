@@ -5,6 +5,8 @@ import com.github.james9909.warplus.TeamKind
 import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.config.TeamConfigType
 import com.github.james9909.warplus.config.WarzoneConfigType
+import com.github.james9909.warplus.objectives.BombObjective
+import com.github.james9909.warplus.objectives.CapturePointObjective
 import com.github.james9909.warplus.objectives.FlagObjective
 import com.github.james9909.warplus.objectives.MonumentObjective
 import com.github.james9909.warplus.structures.SpawnStyle
@@ -71,7 +73,27 @@ class WarzoneManagerTest {
         assert(warzone.minPlayers() == 2)
         assert(warzone.maxPlayers() == 40)
 
-        assert(warzone.objectives.size == 2)
+        assert(warzone.objectives.size == 4)
+        val bombObjective = warzone.objectives["bombs"] as? BombObjective
+        require(bombObjective != null)
+        assert(bombObjective.bombs.size == 1)
+        bombObjective.bombs[0].apply {
+            assert(name == "Bomb1")
+            assert(origin.x == 20.0)
+            assert(origin.y == 21.0)
+            assert(origin.z == 22.0)
+        }
+
+        val cpObjective = warzone.objectives["capture_points"] as? CapturePointObjective
+        require(cpObjective != null)
+        assert(cpObjective.capturePoints.size == 1)
+        cpObjective.capturePoints[0].apply {
+            assert(name == "Capture Point 1")
+            assert(origin.x == 70.0)
+            assert(origin.y == 80.0)
+            assert(origin.z == 90.0)
+        }
+
         val flagObjective = warzone.objectives["flags"] as? FlagObjective
         require(flagObjective != null)
         assert(flagObjective.flags.size == 2)

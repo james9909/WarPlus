@@ -17,6 +17,7 @@ import com.github.james9909.warplus.extensions.LocationFormatException
 import com.github.james9909.warplus.extensions.getLocationFromString
 import com.github.james9909.warplus.extensions.getOrCreateSection
 import com.github.james9909.warplus.extensions.toLocation
+import com.github.james9909.warplus.objectives.createBombObjective
 import com.github.james9909.warplus.objectives.createCapturePointObjective
 import com.github.james9909.warplus.objectives.createFlagObjective
 import com.github.james9909.warplus.objectives.createMonumentObjective
@@ -201,15 +202,10 @@ class WarzoneManager(val plugin: WarPlus) {
         for (objectiveName in objectivesSection.getKeys(false)) {
             val objectiveSection = objectivesSection.getConfigurationSection(objectiveName) ?: continue
             val objective = when (objectiveName) {
-                "flags" -> {
-                    createFlagObjective(plugin, warzone, objectiveSection)
-                }
-                "monuments" -> {
-                    createMonumentObjective(plugin, warzone, objectiveSection)
-                }
-                "capture_points" -> {
-                    createCapturePointObjective(plugin, warzone, objectiveSection)
-                }
+                "flags" -> createFlagObjective(plugin, warzone, objectiveSection)
+                "monuments" -> createMonumentObjective(plugin, warzone, objectiveSection)
+                "capture_points" -> createCapturePointObjective(plugin, warzone, objectiveSection)
+                "bombs" -> createBombObjective(plugin, warzone, objectiveSection)
                 else -> null
             }
             if (objective != null) {

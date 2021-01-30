@@ -15,12 +15,14 @@ import com.github.james9909.warplus.extensions.color
 import com.github.james9909.warplus.extensions.format
 import com.github.james9909.warplus.extensions.get
 import com.github.james9909.warplus.extensions.pairs
+import com.github.james9909.warplus.objectives.BombObjective
 import com.github.james9909.warplus.objectives.CapturePointObjective
 import com.github.james9909.warplus.objectives.FlagObjective
 import com.github.james9909.warplus.objectives.MonumentObjective
 import com.github.james9909.warplus.objectives.Objective
 import com.github.james9909.warplus.region.Region
 import com.github.james9909.warplus.stat.StatTracker
+import com.github.james9909.warplus.structures.BombStructure
 import com.github.james9909.warplus.structures.CapturePointStructure
 import com.github.james9909.warplus.structures.FlagStructure
 import com.github.james9909.warplus.structures.MonumentStructure
@@ -1059,6 +1061,47 @@ class Warzone(
     fun getCapturePointByName(name: String): CapturePointStructure? {
         val objective = objectives["capture_points"] as? CapturePointObjective ?: return null
         return objective.capturePoints.firstOrNull { it.name.equals(name, true) }
+    }
+
+    fun addBombObjective(location: Location, name: String): Result<Unit, WarError> {
+        val bomb =
+            BombStructure(plugin, location, name)
+        val result = validateStructureRegion(bomb.region)
+        when (result) {
+            is Ok -> {
+                bomb.saveVolume()
+                bomb.build()
+                addBomb(bomb)
+                saveConfig()
+            }
+            is Err -> {
+            } // Do nothing, just return
+        }
+        return result
+    }
+
+    private fun addBomb(cp: BombStructure) {
+        val objective = objectives["bombs"] as? BombObjective ?: run {
+            val temp = BombObjective(plugin, this, mutableListOf())
+            objectives[temp.name] = temp
+            temp
+        }
+        objective.addBomb(cp)
+    }
+
+    fun removeBomb(cp: BombStructure): Boolean {
+        val objective = objectives["bombs"] as? BombObjective ?: return false
+        return objective.removeBomb(cp)
+    }
+
+    fun getBombAtLocation(location: Location): BombStructure? {
+        val objective = objectives["bombs"] as? BombObjective ?: return null
+        return objective.getBombAtLocation(location)
+    }
+
+    fun getBombByName(name: String): BombStructure? {
+        val objective = objectives["bombs"] as? BombObjective ?: return null
+        return objective.bombs.firstOrNull { it.name.equals(name, true) }
     }
 
     private fun balanceTeams() {
