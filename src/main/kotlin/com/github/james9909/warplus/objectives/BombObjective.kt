@@ -121,12 +121,10 @@ class BombObjective(
     override fun handleLeave(player: Player) = dropBomb(player)
 
     private fun dropBomb(player: Player) {
-        if (!bombCarriers.containsKey(player.uniqueId)) {
-            return
+        bombCarriers.remove(player.uniqueId)?.let { bomb ->
+            bomb.build()
+            warzone.broadcast("${player.name} has dropped bomb ${bomb.name}")
         }
-        val bomb = bombCarriers.remove(player.uniqueId) ?: return
-        bomb.build()
-        warzone.broadcast("${player.name} has dropped bomb ${bomb.name}")
     }
 
     override fun saveConfig(config: ConfigurationSection) {
