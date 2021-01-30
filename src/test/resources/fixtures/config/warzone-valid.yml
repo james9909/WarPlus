@@ -31,6 +31,14 @@ teams:
     classes:
     - tank
 objectives:
+  bombs:
+    locations:
+    - name: Bomb1
+      origin: flat:20.0,21.0,22.0,0.0,0.0
+  capture_points:
+    locations:
+    - name: Capture Point 1
+      origin: flat:70.0,80.0,90.0,0.0,0.0
   flags:
     locations:
     - origin: flat:60.0,50.0,40.0,0.0,0.0

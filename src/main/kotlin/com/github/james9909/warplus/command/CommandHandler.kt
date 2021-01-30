@@ -11,6 +11,7 @@ import com.github.james9909.warplus.command.player.LeaveWarzoneCommand
 import com.github.james9909.warplus.command.player.SpectateWarzoneCommand
 import com.github.james9909.warplus.command.player.StatsCommand
 import com.github.james9909.warplus.command.player.TeamChatCommand
+import com.github.james9909.warplus.command.zonemaker.AddBombCommand
 import com.github.james9909.warplus.command.zonemaker.AddCapturePointCommand
 import com.github.james9909.warplus.command.zonemaker.AddMonumentCommand
 import com.github.james9909.warplus.command.zonemaker.AddPortalCommand
@@ -18,6 +19,7 @@ import com.github.james9909.warplus.command.zonemaker.AddTeamFlagCommand
 import com.github.james9909.warplus.command.zonemaker.AddTeamSpawnCommand
 import com.github.james9909.warplus.command.zonemaker.ClassChestCommand
 import com.github.james9909.warplus.command.zonemaker.CreateWarzoneCommand
+import com.github.james9909.warplus.command.zonemaker.DeleteBombCommand
 import com.github.james9909.warplus.command.zonemaker.DeleteCapturePointCommand
 import com.github.james9909.warplus.command.zonemaker.DeleteMonumentCommand
 import com.github.james9909.warplus.command.zonemaker.DeletePortalCommand
@@ -63,6 +65,8 @@ class CommandHandler(val plugin: WarPlus) : CommandExecutor, TabCompleter {
         commands["adminstats"] = AdminStatsCommand()
         commands["stats"] = StatsCommand()
         commands["team"] = TeamChatCommand()
+        commands["addbomb"] = AddBombCommand()
+        commands["deletebomb"] = DeleteBombCommand()
     }
 
     override fun onTabComplete(
