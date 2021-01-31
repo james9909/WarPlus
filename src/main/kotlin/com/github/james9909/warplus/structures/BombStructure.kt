@@ -14,7 +14,7 @@ class BombStructure(plugin: WarPlus, origin: Location, val name: String) : Abstr
         val bottomRight = origin.block
             .getRelative(orientation.back.toBlockFace())
             .getRelative(orientation.right.toBlockFace())
-            .getRelative(BlockFace.UP, 2)
+            .getRelative(BlockFace.UP, 3)
         Pair(topLeft.location, bottomRight.location)
     }
     val tntBlock by lazy {
@@ -41,6 +41,11 @@ class BombStructure(plugin: WarPlus, origin: Location, val name: String) : Abstr
             arrayOf(
                 arrayOf(air, air, air),
                 arrayOf(air, tnt, air),
+                arrayOf(air, air, air)
+            ),
+            arrayOf(
+                arrayOf(air, air, air),
+                arrayOf(air, air, air),
                 arrayOf(air, air, air)
             )
         )

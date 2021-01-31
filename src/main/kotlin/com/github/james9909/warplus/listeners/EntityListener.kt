@@ -344,11 +344,15 @@ class EntityListener(val plugin: WarPlus) : Listener {
     fun onEntityChangeBlockEvent(event: EntityChangeBlockEvent) {
         if (event.isCancelled) { return }
         val block = event.block
-        if (event.entityType != EntityType.FALLING_BLOCK) {
-            return
-        }
         val location = block.location
         val warzone = plugin.warzoneManager.getWarzoneByLocation(location) ?: return
-        event.isCancelled = warzone.isSpawnBlock(block) || warzone.onBlockPlace(event.entity, block)
+        event.isCancelled = when (event.entityType) {
+            EntityType.FALLING_BLOCK -> {
+                warzone.isSpawnBlock(block) || warzone.onBlockPlace(event.entity, block)
+            }
+            else -> {
+                warzone.onEntityBlockChange(event.entity, block)
+            }
+        }
     }
 }
