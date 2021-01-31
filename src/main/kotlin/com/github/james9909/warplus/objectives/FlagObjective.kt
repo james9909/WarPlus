@@ -18,7 +18,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryAction
 import org.bukkit.inventory.ItemStack
 
-fun createFlagObjective(plugin: WarPlus, warzone: Warzone, config: ConfigurationSection): FlagObjective? {
+fun createFlagObjective(plugin: WarPlus, warzone: Warzone, config: ConfigurationSection): FlagObjective {
     val flags = mutableListOf<FlagStructure>()
     config.getMapList("locations").forEach { flagMap ->
         val teamKind: TeamKind

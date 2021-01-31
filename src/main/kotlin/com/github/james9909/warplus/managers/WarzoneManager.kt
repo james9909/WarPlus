@@ -55,9 +55,7 @@ class WarzoneManager(val plugin: WarPlus) {
 
     fun loadWarzone(name: String): Result<Warzone, WarError> {
         val file = File(plugin.dataFolder, "warzone-$name.yml")
-        if (!file.exists()) {
-            return Err(FileError("Warzone config file not found"))
-        }
+        if (!file.exists()) return Err(FileError("Warzone config file not found"))
         plugin.logger.info("Loading zone $name")
         return loadWarzone(name, YamlConfiguration.loadConfiguration(file))
     }

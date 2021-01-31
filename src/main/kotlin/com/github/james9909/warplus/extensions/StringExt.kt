@@ -11,9 +11,7 @@ class LocationFormatException(message: String) : IllegalArgumentException(messag
 fun String.toLocation(): Location {
     // Format: world:x,y,z[,[yaw],[pitch]]
     val split = this.split(":")
-    if (split.size != 2) {
-        throw LocationFormatException("Invalid location string: $this")
-    }
+    if (split.size != 2) throw LocationFormatException("Invalid location string: $this")
 
     val world = Bukkit.getWorld(split[0]) ?: throw LocationFormatException("Invalid world: ${split[0]}")
     val coords = split[1].split(",").toTypedArray().copyOf(5)
@@ -30,6 +28,4 @@ fun String.toLocation(): Location {
     }
 }
 
-fun String.color(): String {
-    return ChatColor.translateAlternateColorCodes('&', this)
-}
+fun String.color(): String = ChatColor.translateAlternateColorCodes('&', this)

@@ -20,18 +20,14 @@ fun ConfigurationSection.getOrCreateSection(path: String): ConfigurationSection 
 }
 
 fun ConfigurationSection.getLocationFromString(path: String): Location? {
-    if (!isString(path)) {
-        return null
-    }
+    if (!isString(path)) return null
 
     return getString(path)?.toLocation()
 }
 
 fun ConfigurationSection.getLocationList(path: String): List<Location> {
     val locations = mutableListOf<Location>()
-    getStringList(path).forEach {
-        locations.add(it.toLocation())
-    }
+    getStringList(path).forEach { locations.add(it.toLocation()) }
     return locations
 }
 
@@ -42,9 +38,7 @@ fun <T> ConfigurationSection.get(key: ConfigKey<T>, default: T): T = key.get(thi
 fun handleLore(itemMeta: ItemMeta, path: ConfigurationSection) {
     if (path.isList("lore")) {
         val lore = path.getStringList("lore")
-        lore.map {
-            it.color()
-        }
+        lore.map { it.color() }
         itemMeta.lore = lore
     } else if (path.isString("lore")) {
         val lore = path.getString("lore")
@@ -53,9 +47,7 @@ fun handleLore(itemMeta: ItemMeta, path: ConfigurationSection) {
 }
 
 fun handleEnchants(itemMeta: ItemMeta, path: ConfigurationSection) {
-    if (!path.isList("enchants")) {
-        return
-    }
+    if (!path.isList("enchants")) return
 
     val enchants = path.getStringList("enchants")
     enchants.forEach {
@@ -86,9 +78,7 @@ fun handleEnchants(itemMeta: ItemMeta, path: ConfigurationSection) {
 }
 
 fun handleColor(itemMeta: ItemMeta, path: ConfigurationSection) {
-    if (itemMeta !is LeatherArmorMeta) {
-        return
-    }
+    if (itemMeta !is LeatherArmorMeta) return
     val color = path.getString("color") ?: return
     val hex = color.removePrefix("#").toIntOrNull(16)
     if (hex == null) {
@@ -125,9 +115,7 @@ fun ConfigurationSection.toItemStack(): ItemStack? {
 
     item.itemMeta?.let { meta ->
         val name = getString("name")
-        if (name != null) {
-            meta.setDisplayName(name.color())
-        }
+        if (name != null) meta.setDisplayName(name.color())
 
         handleLore(meta, this)
         handleEnchants(meta, this)

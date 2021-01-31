@@ -92,8 +92,7 @@ class PlayerListener(val plugin: WarPlus) : Listener {
             return
         }
 
-        val playerInfo = plugin.playerManager.getParticipantInfo(player.uniqueId)
-        when (playerInfo) {
+        when (val playerInfo = plugin.playerManager.getParticipantInfo(player.uniqueId)) {
             is WarParticipant.Player -> handlePlayerMove(event, player, playerInfo, from, to)
             is WarParticipant.Spectator -> handleSpectatorMove(event, player, playerInfo, to)
             null -> handleOutsidePlayerMove(event, player, to)
@@ -108,9 +107,7 @@ class PlayerListener(val plugin: WarPlus) : Listener {
         to: Location
     ) {
         val team = playerInfo.team
-        val inSpawn = team.spawns.any {
-            it.contains(to)
-        }
+        val inSpawn = team.spawns.any { it.contains(to) }
         if (playerInfo.inSpawn) {
             if (!inSpawn) {
                 // Player has exited the spawn
@@ -245,9 +242,7 @@ class PlayerListener(val plugin: WarPlus) : Listener {
 
         // Admins can execute any command
         if (player.hasPermission("warplus.admin")) return
-        if (plugin.canExecuteCommand(event.message)) {
-            return
-        }
+        if (plugin.canExecuteCommand(event.message)) return
 
         event.isCancelled = true
         plugin.playerManager.sendMessage(player, "You can't execute that command in a warzone!")

@@ -81,12 +81,12 @@ class SetupWarzonePrompt(val plugin: WarPlus, val player: Player, val warzone: W
         return Prompt.END_OF_CONVERSATION
     }
 
-    private fun handleInvalid(): Prompt? {
+    private fun handleInvalid(): Prompt {
         text = "Invalid input. Type \"help\" for help"
         return this
     }
 
-    private fun handleTeam(input: String): Prompt? {
+    private fun handleTeam(input: String): Prompt {
         val team = input.split(" ")[1].trim()
         try {
             teamKind = TeamKind.valueOf(team.toUpperCase())
@@ -97,7 +97,7 @@ class SetupWarzonePrompt(val plugin: WarPlus, val player: Player, val warzone: W
         return this
     }
 
-    private fun handleHelp(): Prompt? {
+    private fun handleHelp(): Prompt {
         val sb = StringBuffer()
         sb.append("Help:\n")
         sb.append("help: Show this message\n")

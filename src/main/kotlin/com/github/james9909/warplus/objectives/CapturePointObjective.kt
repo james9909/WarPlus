@@ -15,7 +15,7 @@ import java.lang.IllegalStateException
 
 const val CAPTURE_POINT_TIMER_INTERVAL_TICKS = 20L
 
-fun createCapturePointObjective(plugin: WarPlus, warzone: Warzone, config: ConfigurationSection): CapturePointObjective? {
+fun createCapturePointObjective(plugin: WarPlus, warzone: Warzone, config: ConfigurationSection): CapturePointObjective {
     val capturePoints = mutableListOf<CapturePointStructure>()
     config.getMapList("locations").forEach { cpMap ->
         val name = cpMap["name"] as String
@@ -33,7 +33,7 @@ class CapturePointObjective(
     val capturePoints: MutableList<CapturePointStructure>
 ) : Objective(plugin, warzone) {
     override val name = "capture_points"
-    var timer = CapturePointRunnable(plugin, warzone)
+    private var timer = CapturePointRunnable(plugin, warzone)
 
     fun getCapturePointAtLocation(location: Location): CapturePointStructure? = capturePoints.firstOrNull { it.contains(location) }
 

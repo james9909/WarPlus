@@ -13,9 +13,7 @@ class AdminStatsCommand : AdminCommand() {
     override val description = "Manage warzone stats"
 
     override fun execute(plugin: WarPlus, sender: CommandSender, args: List<String>): Boolean {
-        if (args.isEmpty()) {
-            return false
-        }
+        if (args.isEmpty()) return false
         when (args[0].toLowerCase()) {
             "clear" -> {
                 plugin.server.scheduler.runTaskAsynchronously(plugin) { _ ->
@@ -59,7 +57,7 @@ class AdminStatsCommand : AdminCommand() {
                     return true
                 }
                 val warzone = playerInfo.team.warzone
-                plugin.server.scheduler.runTaskAsynchronously(plugin) addHealTask@{ _ ->
+                plugin.server.scheduler.runTaskAsynchronously(plugin) addHealTask@{ _ -> // Needed to remove ambiguity
                     warzone.statTracker?.addHeal(player.uniqueId, amount)
                     if (sender is Player) {
                         plugin.playerManager.sendMessage(sender, "Heal added for ${player.name}.")
@@ -67,9 +65,7 @@ class AdminStatsCommand : AdminCommand() {
                 }
             }
             "view" -> {
-                if (args.size < 2) {
-                    return false
-                }
+                if (args.size < 2) return false
                 val player = plugin.server.getPlayer(args[1])
                 if (player == null) {
                     plugin.playerManager.sendMessage(sender, "No such player ${args[1]}")

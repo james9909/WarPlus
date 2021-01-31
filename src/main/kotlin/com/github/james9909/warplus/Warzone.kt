@@ -213,9 +213,7 @@ class Warzone(
         val leaveEvent = WarzoneLeaveEvent(player, this)
         plugin.server.pluginManager.callEvent(leaveEvent)
 
-        objectives.values.forEach {
-            it.handleLeave(player)
-        }
+        objectives.values.forEach { it.handleLeave(player) }
 
         // Remove player before restoring their state so the teleport doesn't get canceled
         val playerState = plugin.playerManager.getPlayerInfo(player.uniqueId)
@@ -391,9 +389,7 @@ class Warzone(
 
     fun delete(): Boolean {
         var success = true
-        objectives.values.forEach {
-            it.delete()
-        }
+        objectives.values.forEach { it.delete() }
         success = success && File(configPath).delete()
         success = success && File(volumePath).delete()
         return success
@@ -412,9 +408,7 @@ class Warzone(
             BlockVector3.at(maxX, maxY, maxZ)
         )
         val clipboard = copyRegion(region)
-        if (clipboard is Err) {
-            return clipboard
-        }
+        if (clipboard is Err) return clipboard
         saveClipboard(clipboard.unwrap(), volumePath)
         return Ok(Unit)
     }
@@ -425,9 +419,7 @@ class Warzone(
         }
 
         val clipboard = loadSchematic(volumePath)
-        if (clipboard is Err) {
-            return clipboard
-        }
+        if (clipboard is Err) return clipboard
         val (x, y, z) = region.getMinimumPoint()
         val to = Location(region.world, x.toDouble(), y.toDouble(), z.toDouble())
         pasteSchematic(clipboard.unwrap(), to, false)
@@ -441,9 +433,7 @@ class Warzone(
 
         statTracker?.addDeath(player.uniqueId)
 
-        objectives.values.forEach {
-            it.handleDeath(player)
-        }
+        objectives.values.forEach { it.handleDeath(player) }
         val team = playerInfo.team
         val lives = team.lives
         if (lives == 0) {
@@ -453,9 +443,7 @@ class Warzone(
                 broadcast("Team $team's life pool is empty. One more death and they lose the battle!")
             }
             team.lives -= 1
-            team.spawns.forEach {
-                it.updateSign(team)
-            }
+            team.spawns.forEach { it.updateSign(team) }
             respawnPlayer(player)
         }
     }
@@ -662,37 +650,20 @@ class Warzone(
         return isSpawnProtectedAsEntity(player, block.location)
     }
 
-    fun onPlayerPickupItem(player: Player, item: Item): Boolean {
-        objectives.values.forEach {
-            if (it.handleItemPickup(player, item)) {
-                return true
-            }
-        }
-        return false
+    fun onPlayerPickupItem(player: Player, item: Item): Boolean = objectives.values.any {
+        it.handleItemPickup(player, item)
     }
 
-    fun onPlayerMove(player: Player, from: Location, to: Location) {
-        objectives.values.forEach {
-            it.handlePlayerMove(player, from, to)
-        }
+    fun onPlayerMove(player: Player, from: Location, to: Location) = objectives.values.forEach {
+        it.handlePlayerMove(player, from, to)
     }
 
-    fun onInventoryClick(player: Player, action: InventoryAction): Boolean {
-        objectives.values.forEach {
-            if (it.handleInventoryClick(player, action)) {
-                return true
-            }
-        }
-        return false
+    fun onInventoryClick(player: Player, action: InventoryAction): Boolean = objectives.values.any {
+        it.handleInventoryClick(player, action)
     }
 
-    fun onPlayerDropItem(player: Player, item: Item): Boolean {
-        objectives.values.forEach {
-            if (it.handlePlayerDropItem(player, item)) {
-                return true
-            }
-        }
-        return false
+    fun onPlayerDropItem(player: Player, item: Item): Boolean = objectives.values.any {
+        it.handlePlayerDropItem(player, item)
     }
 
     fun onBlockPlace(entity: Entity?, block: Block): Boolean {
@@ -706,28 +677,18 @@ class Warzone(
         return isSpawnProtectedAsEntity(entity, block.location)
     }
 
-    fun onSpellCast(player: Player): Boolean {
-        objectives.values.forEach {
-            if (it.handleSpellCast(player)) {
-                return true
-            }
-        }
-        return false
+    fun onSpellCast(player: Player): Boolean = objectives.values.any {
+        it.handleSpellCast(player)
     }
 
     fun onEntityBlockChange(entity: Entity, block: Block): Boolean = objectives.values.any {
         it.handleBlockChange(entity, block)
     }
 
-    fun isSpawnBlock(block: Block): Boolean {
-        teams.values.forEach { team ->
-            team.spawns.forEach { spawn ->
-                if (spawn.contains(block.location)) {
-                    return true
-                }
-            }
+    fun isSpawnBlock(block: Block): Boolean = teams.values.any { team ->
+        team.spawns.any { spawn ->
+            spawn.contains(block.location)
         }
-        return false
     }
 
     fun getFlagAtLocation(location: Location): FlagStructure? {
@@ -758,7 +719,7 @@ class Warzone(
         }
         (objectives["capture_points"] as? CapturePointObjective)?.capturePoints?.forEach { cp ->
             if (objectiveRegion.intersects(cp.region)) {
-                return Err(WarStructureError("A structure cannot overlap with a capture point monument"))
+                return Err(WarStructureError("A structure cannot overlap with a capture point"))
             }
         }
         return Ok(Unit)
@@ -836,10 +797,10 @@ class Warzone(
     }
 
     fun addTeamSpawn(origin: Location, kind: TeamKind): Result<Unit, WarError> {
-        var team = teams[kind]
-        if (team == null) {
-            team = WarTeam(kind, mutableListOf(), this)
-            addTeam(team)
+        val team = teams[kind] ?: run {
+            val newTeam = WarTeam(kind, mutableListOf(), this)
+            addTeam(newTeam)
+            newTeam
         }
         val spawnStyle = try {
             team.settings.get(TeamConfigType.SPAWN_STYLE)
@@ -856,8 +817,8 @@ class Warzone(
                 team.addTeamSpawn(teamSpawn)
                 saveConfig()
             }
-            is Err -> {
-            } // Do nothing, just return
+            is Err -> { /*Do nothing, just return*/
+            }
         }
         return result
     }
@@ -870,22 +831,16 @@ class Warzone(
         }
     }
 
-    private fun resetObjectives() {
-        objectives.values.forEach {
-            it.reset()
-        }
+    private fun resetObjectives() = objectives.values.forEach {
+        it.reset()
     }
 
-    private fun startObjectives() {
-        objectives.values.forEach {
-            it.start()
-        }
+    private fun startObjectives() = objectives.values.forEach {
+        it.start()
     }
 
-    private fun stopObjectives() {
-        objectives.values.forEach {
-            it.stop()
-        }
+    private fun stopObjectives() = objectives.values.forEach {
+        it.stop()
     }
 
     private fun roundToDecimal(number: Double): Double {
@@ -895,9 +850,7 @@ class Warzone(
     }
 
     private fun getEconRewards(base: Double, numPlayers: Int, maxPlayers: Int): Pair<Double, Double> {
-        if (numPlayers < 2) {
-            return Pair(0.0, 0.0)
-        }
+        if (numPlayers < 2) return Pair(0.0, 0.0)
         val result = base + (base * (numPlayers - 2) / (sqrt(maxPlayers.toDouble()) * 2))
         val winReward = max(0.0, roundToDecimal(result))
         return Pair(winReward, roundToDecimal(winReward / 4))
@@ -917,11 +870,9 @@ class Warzone(
             maxPoint.first - midPoint.first,
             maxPoint.second - midPoint.second,
             maxPoint.third - midPoint.third
-        )?.apply {
-            forEach {
-                if (it !is Player && region.contains(it.location)) {
-                    it.remove()
-                }
+        )?.onEach {
+            if (it !is Player && region.contains(it.location)) {
+                it.remove()
             }
         }
     }
@@ -938,6 +889,14 @@ class Warzone(
                 return@retainAll false
             }
             team.spawns.isEmpty()
+        }
+        (objectives["bombs"] as? BombObjective)?.bombs?.retainAll { bomb ->
+            if (region.contains(flag.region)) {
+                return@retainAll true
+            }
+            flag.restoreVolume()
+            pruned = true
+            return@retainAll false
         }
         (objectives["flags"] as? FlagObjective)?.flags?.retainAll { flag ->
             if (teams[flag.kind] != null && region.contains(flag.region)) {
@@ -1211,11 +1170,7 @@ class Warzone(
         plugin.playerManager.sendMessage(player, "&8&m----------------------------------------".color(), withPrefix = false)
     }
 
-    fun isFlagThief(player: Player): Boolean = (objectives["flags"] as? FlagObjective)?.let { obj ->
-        obj.isFlagThief(player)
-    } ?: false
+    fun isFlagThief(player: Player): Boolean = (objectives["flags"] as? FlagObjective)?.isFlagThief(player) ?: false
 
-    fun isBombCarrier(player: Player): Boolean = (objectives["bombs"] as? BombObjective)?.let { obj ->
-        obj.isBombCarrier(player)
-    } ?: false
+    fun isBombCarrier(player: Player): Boolean = (objectives["bombs"] as? BombObjective)?.isBombCarrier(player) ?: false
 }

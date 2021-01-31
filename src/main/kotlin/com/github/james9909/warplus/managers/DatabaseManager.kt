@@ -114,13 +114,9 @@ class DatabaseManager(
         }
     }
 
-    fun init() {
-        connectionFactory.init()
-    }
+    fun init() = connectionFactory.init()
 
-    fun close() {
-        connectionFactory.close()
-    }
+    fun close() = connectionFactory.close()
 
     fun addPlayer(uuid: UUID) {
         runSql { conn ->
@@ -206,11 +202,9 @@ class DatabaseManager(
         return data
     }
 
-    fun writeModels(models: Collection<AbstractModel>) {
-        runSql { conn ->
-            models.forEach { model ->
-                model.write(conn)
-            }
+    fun writeModels(models: Collection<AbstractModel>) = runSql { conn ->
+        models.forEach { model ->
+            model.write(conn)
         }
     }
 }

@@ -10,9 +10,7 @@ class DeletePortalCommand : ZonemakerCommand() {
     override val description = "Delete a warzone portal by its name"
 
     override fun execute(plugin: WarPlus, sender: CommandSender, args: List<String>): Boolean {
-        if (args.size < 2) {
-            return false
-        }
+        if (args.size < 2) return false
 
         val warzone = plugin.warzoneManager.getWarzone(args[0])
         if (warzone == null) {

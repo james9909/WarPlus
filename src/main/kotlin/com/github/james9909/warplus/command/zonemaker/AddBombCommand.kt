@@ -13,9 +13,7 @@ class AddBombCommand : ZonemakerCommand() {
     override val description = "Create a bomb at the current location"
 
     override fun execute(plugin: WarPlus, sender: CommandSender, args: List<String>): Boolean {
-        if (args.isEmpty()) {
-            return false
-        }
+        if (args.isEmpty()) return false
         if (sender !is Player) {
             plugin.playerManager.sendMessage(sender, "Only in-game players may do that")
             return true
@@ -27,8 +25,7 @@ class AddBombCommand : ZonemakerCommand() {
         }
 
         val origin = sender.location.subtract(0.0, 1.0, 0.0).blockLocation()
-        val result = warzone.addBombObjective(origin, args[0])
-        val message = when (result) {
+        val message = when (val result = warzone.addBombObjective(origin, args[0])) {
             is Ok -> "Bomb ${args[0]} created!"
             is Err -> result.error.toString()
         }

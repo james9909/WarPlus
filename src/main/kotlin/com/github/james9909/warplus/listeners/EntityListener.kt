@@ -135,9 +135,7 @@ class EntityListener(val plugin: WarPlus) : Listener {
             event.isCancelled = true
             return
         }
-        if (event.finalDamage < defender.health) {
-            return
-        }
+        if (event.finalDamage < defender.health) return
         event.isCancelled = true
         defenderInfo.team.warzone.handleNaturalDeath(defender, event.cause)
     }
@@ -149,9 +147,7 @@ class EntityListener(val plugin: WarPlus) : Listener {
             event.isCancelled = true
             return
         }
-        if (event.finalDamage < defender.health) {
-            return
-        }
+        if (event.finalDamage < defender.health) return
         event.isCancelled = true
         defenderInfo.team.warzone.handleMobDeath(defender, damager, event.cause)
     }
@@ -167,9 +163,7 @@ class EntityListener(val plugin: WarPlus) : Listener {
 
     private fun handleMobDamageByPlayer(event: EntityDamageByEntityEvent, defender: LivingEntity, damager: Player) {
         val damagerInfo = plugin.playerManager.getPlayerInfo(damager.uniqueId) ?: return
-        if (damagerInfo.inSpawn) {
-            event.isCancelled = true
-        }
+        if (damagerInfo.inSpawn) event.isCancelled = true
     }
 
     @EventHandler
@@ -184,10 +178,10 @@ class EntityListener(val plugin: WarPlus) : Listener {
                     // that warzones cannot overlap
                     return@removeIf (
                         warzone.state != WarzoneState.RUNNING ||
-                        !warzone.warzoneSettings.get(WarzoneConfigType.CAN_BREAK_BLOCKS) ||
-                        warzone.isSpawnBlock(block) ||
-                        warzone.onBlockBreak(null, block)
-                    )
+                            !warzone.warzoneSettings.get(WarzoneConfigType.CAN_BREAK_BLOCKS) ||
+                            warzone.isSpawnBlock(block) ||
+                            warzone.onBlockBreak(null, block)
+                        )
                 }
             }
             return@removeIf false
@@ -250,25 +244,17 @@ class EntityListener(val plugin: WarPlus) : Listener {
         val potion = event.potion
         val shooter = potion.shooter
 
-        var beneficial = true
-        val effects = potion.effects
-        loop@ for (effect in effects) {
-            when (effect.type) {
-                PotionEffectType.WITHER,
-                PotionEffectType.HARM,
-                PotionEffectType.POISON,
-                PotionEffectType.WEAKNESS,
-                PotionEffectType.BLINDNESS,
-                PotionEffectType.CONFUSION,
-                PotionEffectType.HUNGER,
-                PotionEffectType.SLOW_DIGGING,
-                PotionEffectType.UNLUCK,
-                PotionEffectType.SLOW_DIGGING,
-                PotionEffectType.SLOW -> {
-                    beneficial = false
-                    break@loop
-                }
-            }
+        val beneficial = potion.effects.any {
+            it.type == PotionEffectType.WITHER ||
+                it.type == PotionEffectType.HARM ||
+                it.type == PotionEffectType.POISON ||
+                it.type == PotionEffectType.WEAKNESS ||
+                it.type == PotionEffectType.BLINDNESS ||
+                it.type == PotionEffectType.CONFUSION ||
+                it.type == PotionEffectType.HUNGER ||
+                it.type == PotionEffectType.SLOW_DIGGING ||
+                it.type == PotionEffectType.UNLUCK ||
+                it.type == PotionEffectType.SLOW
         }
 
         if (shooter !is Player) {
@@ -320,7 +306,7 @@ class EntityListener(val plugin: WarPlus) : Listener {
 
     @EventHandler
     fun onEntityPickupItem(event: EntityPickupItemEvent) {
-        if (event.isCancelled) { return }
+        if (event.isCancelled) return
         val player = event.entity as? Player ?: return
         val playerInfo = plugin.playerManager.getPlayerInfo(player.uniqueId) ?: return
         val warzone = playerInfo.team.warzone
@@ -332,7 +318,7 @@ class EntityListener(val plugin: WarPlus) : Listener {
 
     @EventHandler
     fun onEntityRegainHealthEvent(event: EntityRegainHealthEvent) {
-        if (event.isCancelled) { return }
+        if (event.isCancelled) return
         val player = event.entity as? Player ?: return
         plugin.playerManager.getPlayerInfo(player.uniqueId) ?: return
         if (event.regainReason == EntityRegainHealthEvent.RegainReason.REGEN) {
@@ -342,7 +328,7 @@ class EntityListener(val plugin: WarPlus) : Listener {
 
     @EventHandler
     fun onEntityChangeBlockEvent(event: EntityChangeBlockEvent) {
-        if (event.isCancelled) { return }
+        if (event.isCancelled) return
         val block = event.block
         val location = block.location
         val warzone = plugin.warzoneManager.getWarzoneByLocation(location) ?: return

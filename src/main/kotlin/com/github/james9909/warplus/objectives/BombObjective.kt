@@ -19,7 +19,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryAction
 import org.bukkit.inventory.ItemStack
 
-fun createBombObjective(plugin: WarPlus, warzone: Warzone, config: ConfigurationSection): BombObjective? {
+fun createBombObjective(plugin: WarPlus, warzone: Warzone, config: ConfigurationSection): BombObjective {
     val bombs = config.getMapList("locations").map { cpMap ->
         val name = cpMap["name"] as String
         val origin = (cpMap["origin"] as String).toLocation()
