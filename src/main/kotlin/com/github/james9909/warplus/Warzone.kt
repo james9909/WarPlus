@@ -136,7 +136,6 @@ class Warzone(
         val startEvent = WarzoneStartEvent(this)
         plugin.server.pluginManager.callEvent(startEvent)
         plugin.logger.info("Starting warzone $name")
-        broadcast("Let the battle begin!")
 
         state = WarzoneState.RUNNING
 
@@ -159,35 +158,40 @@ class Warzone(
         if (warzoneSettings.get(WarzoneConfigType.REMOVE_ENTITIES_ON_RESET)) {
             removeEntities()
         }
-        if (plugin.hasPlugin("FastAsyncWorldEdit")) {
-            teams.values.forEach { team ->
-                team.resetAttributes(resetTeamScores)
-                team.resetSpawns()
-                team.players.forEach { player ->
-                    respawnPlayer(player)
-                }
+        teams.values.forEach { team ->
+            team.resetAttributes(resetTeamScores)
+            team.resetSpawns()
+            team.players.forEach { player ->
+                respawnPlayer(player)
             }
-            resetObjectives()
+        }
+        if (plugin.hasPlugin("FastAsyncWorldEdit")) {
             if (plugin.isEnabled) {
                 plugin.server.scheduler.runTaskAsynchronously(plugin) { _ ->
                     val start = System.currentTimeMillis()
                     restoreVolume()
                     plugin.logger.info("Warzone volume reset took ${System.currentTimeMillis() - start} ms")
-                    state = if (resetTeamScores) {
-                        WarzoneState.IDLING
-                    } else {
-                        WarzoneState.RUNNING
+                    plugin.server.scheduler.runTask(plugin) { _ ->
+                        resetObjectives()
+                        state = if (resetTeamScores) {
+                            WarzoneState.IDLING
+                        } else {
+                            WarzoneState.RUNNING
+                        }
+                        broadcast("Let the battle begin!")
                     }
                 }
             } else {
                 val start = System.currentTimeMillis()
                 restoreVolume()
                 plugin.logger.info("Warzone volume reset took ${System.currentTimeMillis() - start} ms")
+                resetObjectives()
                 state = if (resetTeamScores) {
                     WarzoneState.IDLING
                 } else {
                     WarzoneState.RUNNING
                 }
+                broadcast("Let the battle begin!")
             }
         }
     }
