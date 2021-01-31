@@ -891,10 +891,18 @@ class Warzone(
             team.spawns.isEmpty()
         }
         (objectives["bombs"] as? BombObjective)?.bombs?.retainAll { bomb ->
-            if (region.contains(flag.region)) {
+            if (region.contains(bomb.region)) {
                 return@retainAll true
             }
-            flag.restoreVolume()
+            bomb.restoreVolume()
+            pruned = true
+            return@retainAll false
+        }
+        (objectives["capture_points"] as? CapturePointObjective)?.capturePoints?.retainAll { cp ->
+            if (region.contains(cp.region)) {
+                return@retainAll true
+            }
+            cp.restoreVolume()
             pruned = true
             return@retainAll false
         }
