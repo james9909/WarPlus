@@ -147,5 +147,9 @@ class BombObjective(
         bombs.forEach { it.deleteVolume() }
     }
 
+    override fun handleBlockChange(entity: Entity, block: Block): Boolean = bombs.any {
+        it.tntBlock == block
+    }
+
     fun isBombCarrier(player: Player): Boolean = bombCarriers.containsKey(player.uniqueId)
 }

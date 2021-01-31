@@ -715,6 +715,10 @@ class Warzone(
         return false
     }
 
+    fun onEntityBlockChange(entity: Entity, block: Block): Boolean = objectives.values.any {
+        it.handleBlockChange(entity, block)
+    }
+
     fun isSpawnBlock(block: Block): Boolean {
         teams.values.forEach { team ->
             team.spawns.forEach { spawn ->
