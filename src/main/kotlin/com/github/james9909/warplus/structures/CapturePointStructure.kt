@@ -141,9 +141,6 @@ class CapturePointStructure(
                     if (currState.controller == null) {
                         // Bring the point back down to neutral
                         decrementStrengthFromContested(zone, null)
-                    } else {
-                        // Contestants left, so fortify the control point again
-                        fortifyPointAsController(zone, currState.controller)
                     }
                 } else if (majority.value <= totalPower / 2.0) {
                     // Nobody has the majority
