@@ -94,6 +94,9 @@ class MagicSpellsListener(val plugin: WarPlus) : Listener {
             // Only allow harmful spells to target enemies
             if (spell.isBeneficial) {
                 event.isCancelled = true
+            } else {
+                // Consider spell targeting as damaging
+                casterInfo.lastDamager.damager = caster
             }
         }
     }
