@@ -12,9 +12,7 @@ class AddPortalCommand : ZonemakerCommand() {
     override val description = "Create a warzone portal at the current location"
 
     override fun execute(plugin: WarPlus, sender: CommandSender, args: List<String>): Boolean {
-        if (args.size < 2) {
-            return false
-        }
+        if (args.size < 2) return false
         if (sender !is Player) {
             plugin.playerManager.sendMessage(sender, "Only in-game players may do that")
             return true

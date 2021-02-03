@@ -11,9 +11,7 @@ class DeleteWarzoneCommand : ZonemakerCommand() {
     override val description = "Fully delete a warzone"
 
     override fun execute(plugin: WarPlus, sender: CommandSender, args: List<String>): Boolean {
-        if (args.isEmpty()) {
-            return false
-        }
+        if (args.isEmpty()) return false
         if (sender !is Player) {
             plugin.playerManager.sendMessage(sender, "Only in-game players may do that")
             return true

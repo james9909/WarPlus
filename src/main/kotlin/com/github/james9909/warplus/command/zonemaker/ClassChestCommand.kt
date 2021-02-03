@@ -13,9 +13,7 @@ class ClassChestCommand : ZonemakerCommand() {
     override val description = "Set or remove a classchest"
 
     override fun execute(plugin: WarPlus, sender: CommandSender, args: List<String>): Boolean {
-        if (args.size != 2) {
-            return false
-        }
+        if (args.size != 2) return false
         if (sender !is Player) {
             plugin.playerManager.sendMessage(sender, "Only in-game players may do that")
             return true

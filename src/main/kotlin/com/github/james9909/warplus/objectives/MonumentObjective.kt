@@ -15,7 +15,7 @@ import org.bukkit.entity.Player
 import kotlin.math.min
 import kotlin.random.Random
 
-fun createMonumentObjective(plugin: WarPlus, warzone: Warzone, config: ConfigurationSection): MonumentObjective? {
+fun createMonumentObjective(plugin: WarPlus, warzone: Warzone, config: ConfigurationSection): MonumentObjective {
     val monuments: MutableList<MonumentStructure> = mutableListOf()
     config.getMapList("locations").forEach { monumentMap ->
         val name = monumentMap["name"] as String

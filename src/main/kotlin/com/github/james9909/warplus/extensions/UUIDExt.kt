@@ -6,6 +6,7 @@ import java.util.UUID
 
 fun uuidFromBytes(bytes: ByteArray): UUID {
     val buf = ByteBuffer.wrap(bytes)
+    // `getLong` has side effects, so let's be explicit about that
     return UUID(buf.getLong(), buf.getLong())
 }
 

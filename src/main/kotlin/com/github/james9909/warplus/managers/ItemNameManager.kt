@@ -79,7 +79,7 @@ class ItemNameManager(private val plugin: WarPlus) {
         loadItemNames(YamlConfiguration.loadConfiguration(itemNameFile))
     }
 
-    fun loadItemNames(config: ConfigurationSection) {
+    private fun loadItemNames(config: ConfigurationSection) {
         config.getKeys(false).forEach { materialName ->
             val material = materialMap[materialName.toLowerCase()]
             if (material != null) {

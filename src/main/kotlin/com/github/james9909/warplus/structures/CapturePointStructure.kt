@@ -147,14 +147,18 @@ class CapturePointStructure(
                     }
                 } else if (majority.value <= totalPower / 2.0) {
                     // Nobody has the majority
-                    if (currState.controller == null) {
-                        // Nobody holds the majority on a previously neutral point, so bring it down
-                        decrementStrengthFromContested(zone, null)
-                    } else if (activeTeams.getOrDefault(currState.controller, 0) < totalPower / 2.0) {
-                        // Controller has a strict minority, lose control of the point
-                        decrementStrengthFromContested(zone, currState.controller)
-                    } else {
-                        // Equal power, so do nothing
+                    when {
+                        currState.controller == null -> {
+                            // Nobody holds the majority on a previously neutral point, so bring it down
+                            decrementStrengthFromContested(zone, null)
+                        }
+                        activeTeams.getOrDefault(currState.controller, 0) < totalPower / 2.0 -> {
+                            // Controller has a strict minority, lose control of the point
+                            decrementStrengthFromContested(zone, currState.controller)
+                        }
+                        else -> {
+                            // Equal power, so do nothing
+                        }
                     }
                 } else {
                     // A team has the strict majority

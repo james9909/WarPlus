@@ -75,9 +75,7 @@ class CommandHandler(val plugin: WarPlus) : CommandExecutor, TabCompleter {
         alias: String,
         args: Array<out String>
     ): MutableList<String> {
-        if (sender !is Player || sender.isConversing) {
-            return mutableListOf()
-        }
+        if (sender !is Player || sender.isConversing) return mutableListOf()
         if (args.isEmpty()) {
             return commands
                 .filter { it.value.canExecute(sender) }
@@ -100,9 +98,7 @@ class CommandHandler(val plugin: WarPlus) : CommandExecutor, TabCompleter {
     }
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
-        if (args.isEmpty()) {
-            return false
-        }
+        if (args.isEmpty()) return false
         val subCommand = args[0]
         val warCommand = commands[subCommand] ?: return false
         val rest = args.drop(1)

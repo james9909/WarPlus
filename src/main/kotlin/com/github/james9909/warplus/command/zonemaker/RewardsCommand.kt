@@ -12,9 +12,7 @@ class RewardsCommand : ZonemakerCommand() {
     override val description = "Manage warzone rewards"
 
     override fun execute(plugin: WarPlus, sender: CommandSender, args: List<String>): Boolean {
-        if (args.size < 3) {
-            return false
-        }
+        if (args.size < 3) return false
         if (sender !is Player) {
             plugin.playerManager.sendMessage(sender, "Only in-game players may do that.")
             return true

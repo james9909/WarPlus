@@ -12,7 +12,7 @@ class ClassManager(private val plugin: WarPlus) {
     fun loadClasses(config: YamlConfiguration) {
         classes.clear()
         val classList = config.getConfigurationSection("classes") ?: return
-        for (className in classList.getKeys(false)) {
+        classList.getKeys(false).forEach { className ->
             plugin.logger.info("Loading class $className")
             addClass(
                 className,
@@ -24,9 +24,7 @@ class ClassManager(private val plugin: WarPlus) {
 
     fun loadClasses() {
         val file = File(plugin.dataFolder, "classes.yml")
-        if (!file.exists()) {
-            plugin.saveResource("classes.yml", true)
-        }
+        if (!file.exists()) plugin.saveResource("classes.yml", true)
         val config = YamlConfiguration.loadConfiguration(file)
         loadClasses(config)
     }
@@ -55,9 +53,9 @@ class ClassManager(private val plugin: WarPlus) {
         val file = File(plugin.dataFolder, "classes.yml")
         val config = YamlConfiguration()
         val classesSection = config.createSection("classes")
-        for ((_, warClass) in classes) {
-            val classSection = classesSection.createSection(warClass.name)
-            warClass.saveConfig(classSection)
+        classes.values.forEach {
+            val classSection = classesSection.createSection(it.name)
+            it.saveConfig(classSection)
         }
         config.save(file)
     }
@@ -68,11 +66,5 @@ class ClassManager(private val plugin: WarPlus) {
             return defaultClasses
         }
         return getClassNames()
-    }
-
-    companion object {
-        private fun defaultClasses(): List<WarClass> {
-            return listOf()
-        }
     }
 }

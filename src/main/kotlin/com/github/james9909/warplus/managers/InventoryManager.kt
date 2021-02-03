@@ -41,9 +41,7 @@ class InventoryManager(val plugin: WarPlus) {
 
     fun restoreInventoryFromFile(player: Player) {
         val playerFile = getPlayerFile(player)
-        if (!playerFile.exists()) {
-            return
-        }
+        if (!playerFile.exists()) return
         val config = YamlConfiguration.loadConfiguration(playerFile)
         val items = config.getList("inventory") ?: return
         val newItems = arrayOfNulls<ItemStack?>(items.size)

@@ -9,28 +9,16 @@ data class CascadingConfig(val config: ConfigurationSection, private val nested:
 
     fun <T> get(key: ConfigKey<T>): T =
         when {
-            config.contains(key.path) -> {
-                key.get(config)
-            }
-            nested != null -> {
-                nested.get(key)
-            }
-            else -> {
-                key.default
-            }
+            config.contains(key.path) -> key.get(config)
+            nested != null -> nested.get(key)
+            else -> key.default
         }
 
     fun <T> get(key: ConfigKey<T>, default: T): T =
         when {
-            config.contains(key.path) -> {
-                key.get(config, default)
-            }
-            nested != null -> {
-                nested.get(key, default)
-            }
-            else -> {
-                default
-            }
+            config.contains(key.path) -> key.get(config, default)
+            nested != null -> nested.get(key, default)
+            else -> default
         }
 
     fun <T> put(key: ConfigKey<T>, value: T) {
