@@ -238,7 +238,7 @@ class PlayerListener(val plugin: WarPlus) : Listener {
     fun onPlayerCommandPreprocess(event: PlayerCommandPreprocessEvent) {
         if (event.isCancelled) return
         val player = event.player
-        plugin.playerManager.getPlayerInfo(player.uniqueId) ?: return
+        plugin.playerManager.getParticipantInfo(player.uniqueId) ?: return
 
         // Admins can execute any command
         if (player.hasPermission("warplus.admin")) return
