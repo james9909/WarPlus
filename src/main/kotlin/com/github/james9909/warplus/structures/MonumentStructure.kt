@@ -58,4 +58,8 @@ class MonumentStructure(plugin: WarPlus, origin: Location, val name: String) : A
             )
         )
     }
+
+    override fun postBuild() {
+        blockLocation.block.type = Material.AIR
+    }
 }
