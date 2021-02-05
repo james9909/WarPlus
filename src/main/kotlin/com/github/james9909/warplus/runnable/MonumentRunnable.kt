@@ -9,14 +9,12 @@ import java.util.UUID
 import kotlin.math.min
 import kotlin.math.pow
 import kotlin.random.Random
-import kotlin.time.ExperimentalTime
 import org.bukkit.attribute.Attribute
 import org.bukkit.scheduler.BukkitRunnable
 
 class MonumentRunnable(private val plugin: WarPlus, private val zone: Warzone) : BukkitRunnable() {
     private val lastHealed = hashMapOf<UUID, Long>()
 
-    @ExperimentalTime
     override fun run() {
         if (!plugin.isEnabled) {
             this.cancel()
