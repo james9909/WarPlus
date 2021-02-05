@@ -6,7 +6,7 @@ on:
     - 'v*'
 
 jobs:
-  build:
+  build_and_upload_release:
     name: Upload Release Asset
     runs-on: ubuntu-latest
     steps:
