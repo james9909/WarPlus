@@ -24,6 +24,9 @@ warzone:
       item-drops: false
       monument-heal: 1
       monument-heal-chance: 0.2
+      monument-heal-radius: 6
+      monument-heal-cooldown: 1.0
+      monument-timer-interval: 10
       remove-entities-on-reset: true
       reset-on-empty: true
       capture-point-time: 20

@@ -61,6 +61,9 @@ val DEFAULT_WARZONE_CONFIG by lazy {
     config[WarzoneConfigType.MIN_TEAMS.path] = WarzoneConfigType.MIN_TEAMS.default
     config[WarzoneConfigType.MONUMENT_HEAL.path] = WarzoneConfigType.MONUMENT_HEAL.default
     config[WarzoneConfigType.MONUMENT_HEAL_CHANCE.path] = WarzoneConfigType.MONUMENT_HEAL_CHANCE.default
+    config[WarzoneConfigType.MONUMENT_HEAL_COOLDOWN.path] = WarzoneConfigType.MONUMENT_HEAL_COOLDOWN.default
+    config[WarzoneConfigType.MONUMENT_HEAL_RADIUS.path] = WarzoneConfigType.MONUMENT_HEAL_RADIUS.default
+    config[WarzoneConfigType.MONUMENT_TIMER_INTERVAL.path] = WarzoneConfigType.MONUMENT_TIMER_INTERVAL.default
     config[WarzoneConfigType.ITEM_DROPS.path] = WarzoneConfigType.ITEM_DROPS.default
     config[WarzoneConfigType.REMOVE_ENTITIES_ON_RESET.path] = WarzoneConfigType.REMOVE_ENTITIES_ON_RESET.default
     config[WarzoneConfigType.RESET_ON_EMPTY.path] = WarzoneConfigType.RESET_ON_EMPTY.default
