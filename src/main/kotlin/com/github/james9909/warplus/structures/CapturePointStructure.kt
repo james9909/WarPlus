@@ -193,18 +193,18 @@ class CapturePointStructure(
     override fun getStructure(): Array<Array<Array<Material>>> {
         val obsidian = Material.OBSIDIAN
         val stone = Material.SMOOTH_STONE
-        val air = Material.AIR
+        val none = Material.FIRE
         return arrayOf(
             arrayOf(
-                arrayOf(air, air, air, air, obsidian, air, air, air, air),
-                arrayOf(air, air, obsidian, obsidian, obsidian, obsidian, obsidian, air, air),
-                arrayOf(air, obsidian, obsidian, stone, stone, stone, obsidian, obsidian, air),
-                arrayOf(air, obsidian, stone, stone, stone, stone, stone, obsidian, air),
+                arrayOf(none, none, none, none, obsidian, none, none, none, none),
+                arrayOf(none, none, obsidian, obsidian, obsidian, obsidian, obsidian, none, none),
+                arrayOf(none, obsidian, obsidian, stone, stone, stone, obsidian, obsidian, none),
+                arrayOf(none, obsidian, stone, stone, stone, stone, stone, obsidian, none),
                 arrayOf(obsidian, obsidian, stone, stone, stone, stone, stone, obsidian, obsidian),
-                arrayOf(air, obsidian, stone, stone, stone, stone, stone, obsidian, air),
-                arrayOf(air, obsidian, obsidian, stone, stone, stone, obsidian, obsidian, air),
-                arrayOf(air, air, obsidian, obsidian, obsidian, obsidian, obsidian, air, air),
-                arrayOf(air, air, air, air, obsidian, air, air, air, air)
+                arrayOf(none, obsidian, stone, stone, stone, stone, stone, obsidian, none),
+                arrayOf(none, obsidian, obsidian, stone, stone, stone, obsidian, obsidian, none),
+                arrayOf(none, none, obsidian, obsidian, obsidian, obsidian, obsidian, none, none),
+                arrayOf(none, none, none, none, obsidian, none, none, none, none)
             )
         )
     }
