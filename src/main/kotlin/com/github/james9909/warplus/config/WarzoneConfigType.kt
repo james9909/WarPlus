@@ -19,5 +19,6 @@ class WarzoneConfigType private constructor() {
         val RESET_ON_EMPTY = booleanKey("reset-on-empty", true)
         val CAPTURE_POINT_TIME = integerKey("capture-point-time", 20)
         val SPAWN_PROTECTION_RADIUS = integerKey("spawn-protection-radius", 10)
+        val GLOW_FLAG_THIEVES = booleanKey("glow-flag-thieves", true)
     }
 }

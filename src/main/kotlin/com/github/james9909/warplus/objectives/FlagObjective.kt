@@ -4,6 +4,7 @@ import com.github.james9909.warplus.TeamKind
 import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.Warzone
 import com.github.james9909.warplus.config.TeamConfigType
+import com.github.james9909.warplus.config.WarzoneConfigType
 import com.github.james9909.warplus.extensions.clearPotionEffects
 import com.github.james9909.warplus.extensions.format
 import com.github.james9909.warplus.extensions.toLocation
@@ -17,6 +18,8 @@ import org.bukkit.entity.Item
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryAction
 import org.bukkit.inventory.ItemStack
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 
 fun createFlagObjective(plugin: WarPlus, warzone: Warzone, config: ConfigurationSection): FlagObjective {
     val flags = mutableListOf<FlagStructure>()
@@ -174,6 +177,9 @@ class FlagObjective(
         player.inventory.setItemInOffHand(null)
 
         player.clearPotionEffects()
+        if (warzone.warzoneSettings.get(WarzoneConfigType.GLOW_FLAG_THIEVES)) {
+            player.addPotionEffect(PotionEffect(PotionEffectType.GLOWING, Integer.MAX_VALUE, 1))
+        }
         warzone.broadcast("${player.name} stole team $team's flag")
         return false
     }
