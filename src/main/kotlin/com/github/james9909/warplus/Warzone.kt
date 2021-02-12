@@ -15,6 +15,7 @@ import com.github.james9909.warplus.extensions.color
 import com.github.james9909.warplus.extensions.format
 import com.github.james9909.warplus.extensions.get
 import com.github.james9909.warplus.extensions.pairs
+import com.github.james9909.warplus.managers.WarParticipant
 import com.github.james9909.warplus.objectives.BombObjective
 import com.github.james9909.warplus.objectives.CapturePointObjective
 import com.github.james9909.warplus.objectives.FlagObjective
@@ -932,13 +933,17 @@ class Warzone(
         return plugin.classManager.resolveClasses()
     }
 
+    fun setHelmet(player: Player, playerInfo: WarParticipant.Player) {
+        if (warzoneSettings.get(WarzoneConfigType.BLOCK_HEADS)) {
+            player.inventory.helmet = ItemStack(playerInfo.team.kind.material)
+        }
+    }
+
     fun equipClass(player: Player, warClass: WarClass, updatePlayerInfo: Boolean) {
         val playerInfo = plugin.playerManager.getPlayerInfo(player.uniqueId) ?: return
 
         warClass.giveToPlayer(player)
-        if (warzoneSettings.get(WarzoneConfigType.BLOCK_HEADS)) {
-            player.inventory.helmet = ItemStack(playerInfo.team.kind.material)
-        }
+        setHelmet(player, playerInfo)
 
         if (updatePlayerInfo) {
             playerInfo.warClass = warClass

@@ -174,6 +174,14 @@ class PlayerListener(val plugin: WarPlus) : Listener {
             return
         }
         event.isCancelled = playerInfo.team.warzone.onInventoryClick(player, event.action)
+        if (!event.isCancelled) {
+            // Restore the player's helmet on the next tick. This is the best solution to
+            // players double-clicking wool to remove it from their helmet as there's no good way
+            // to detect it.
+            plugin.server.scheduler.runTask(plugin) { ->
+                playerInfo.team.warzone.setHelmet(player, playerInfo)
+            }
+        }
     }
 
     @EventHandler
