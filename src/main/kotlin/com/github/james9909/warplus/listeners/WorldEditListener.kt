@@ -2,6 +2,7 @@ package com.github.james9909.warplus.listeners
 
 import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.WarzoneState
+import com.sk89q.worldedit.EditSession
 import com.sk89q.worldedit.bukkit.BukkitAdapter
 import com.sk89q.worldedit.event.extent.EditSessionEvent
 import com.sk89q.worldedit.extent.MaskingExtent
@@ -32,7 +33,7 @@ class FaweListener(private val plugin: WarPlus) {
     @Subscribe
     fun onEditSessionEvent(event: EditSessionEvent) {
         val world = event.world
-        if (world != null) {
+        if (world != null && event.stage == EditSession.Stage.BEFORE_CHANGE) {
             event.extent.addProcessor(
                 MaskingExtent(
                     event.extent,
