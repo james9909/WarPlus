@@ -69,6 +69,8 @@ val DEFAULT_WARZONE_CONFIG by lazy {
     config[WarzoneConfigType.RESET_ON_EMPTY.path] = WarzoneConfigType.RESET_ON_EMPTY.default
     config[WarzoneConfigType.CAPTURE_POINT_TIME.path] = WarzoneConfigType.CAPTURE_POINT_TIME.default
     config[WarzoneConfigType.SPAWN_PROTECTION_RADIUS.path] = WarzoneConfigType.SPAWN_PROTECTION_RADIUS.default
+    config[WarzoneConfigType.GLOW_FLAG_THIEVES.path] = WarzoneConfigType.GLOW_FLAG_THIEVES.default
+    config[WarzoneConfigType.RECORD_STATS.path] = WarzoneConfigType.RECORD_STATS.default
     config
 }
 

@@ -31,6 +31,8 @@ warzone:
       reset-on-empty: true
       capture-point-time: 20
       spawn-protection-radius: 10
+      glow-flag-thieves: true
+      record-stats: true
 team:
   default:
     config:
