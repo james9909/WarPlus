@@ -98,7 +98,8 @@ abstract class AbstractStructure(val plugin: WarPlus, val origin: Location) {
                 val blockYZ = blockY.getRelative(orientation.back.toBlockFace(), zOffset)
                 row.forEachIndexed { xOffset, material ->
                     val blockXYZ = blockYZ.getRelative(orientation.right.toBlockFace(), xOffset)
-                    if (material != Material.AIR) {
+                    if (material != Material.FIRE) {
+                        // Material.FIRE acts as NULL due to pains with Kotlin's type inferencing
                         blockXYZ.type = material
                     }
                 }
