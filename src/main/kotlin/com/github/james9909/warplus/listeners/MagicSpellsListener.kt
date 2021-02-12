@@ -96,7 +96,7 @@ class MagicSpellsListener(val plugin: WarPlus) : Listener {
                 event.isCancelled = true
             } else {
                 // Consider spell targeting as damaging
-                casterInfo.lastDamager.damager = caster
+                targetInfo.lastDamager.damager = caster
             }
         }
     }
