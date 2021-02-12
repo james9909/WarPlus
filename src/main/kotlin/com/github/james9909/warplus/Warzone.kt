@@ -1144,7 +1144,6 @@ class Warzone(
         statTracker?.warzoneId = id
 
         stopObjectives()
-        state = WarzoneState.IDLING
     }
 
     private fun sendFinalResults(

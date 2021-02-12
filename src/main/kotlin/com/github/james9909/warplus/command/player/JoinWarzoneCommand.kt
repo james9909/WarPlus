@@ -39,6 +39,10 @@ class JoinWarzoneCommand : PlayerCommand() {
             plugin.playerManager.sendMessage(sender, Message.WARZONE_EDITING)
             return true
         }
+        if (warzone.state == WarzoneState.RESETTING) {
+            plugin.playerManager.sendMessage(sender, "This warzone is currently resetting!")
+            return true
+        }
 
         warzone.addPlayer(sender)
         return true
