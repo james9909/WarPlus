@@ -22,7 +22,6 @@ import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.event.player.PlayerToggleSneakEvent
 import org.bukkit.inventory.ItemStack
-import org.bukkit.Material
 
 class PlayerListener(val plugin: WarPlus) : Listener {
 
