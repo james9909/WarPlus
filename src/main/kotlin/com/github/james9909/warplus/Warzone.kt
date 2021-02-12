@@ -92,7 +92,7 @@ class Warzone(
     val teams = HashMap<TeamKind, WarTeam>()
     val statTracker: StatTracker? = run {
         val dbm = plugin.databaseManager
-        if (dbm != null) {
+        if (dbm != null && warzoneSettings.get(WarzoneConfigType.RECORD_STATS)) {
             StatTracker(plugin.playerManager, dbm)
         } else {
             null
