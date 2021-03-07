@@ -2,6 +2,7 @@ package com.github.james9909.warplus.objectives
 
 import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.Warzone
+import com.github.james9909.warplus.config.WarzoneConfigType
 import com.github.james9909.warplus.extensions.format
 import com.github.james9909.warplus.extensions.toLocation
 import com.github.james9909.warplus.runnable.CapturePointRunnable
@@ -67,7 +68,7 @@ class CapturePointObjective(
 
     override fun start() {
         try {
-            timer.runTaskTimer(plugin, 0, CAPTURE_POINT_TIMER_INTERVAL_TICKS)
+            timer.runTaskTimer(plugin, 0, warzone.warzoneSettings.get(WarzoneConfigType.CAPTURE_POINT_TIMER_INTERVAL).toLong())
         } catch (e: IllegalStateException) {
             // Ignore the exception, this isn't harmful.
         }

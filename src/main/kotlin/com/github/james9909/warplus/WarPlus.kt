@@ -71,6 +71,7 @@ val DEFAULT_WARZONE_CONFIG by lazy {
     config[WarzoneConfigType.SPAWN_PROTECTION_RADIUS.path] = WarzoneConfigType.SPAWN_PROTECTION_RADIUS.default
     config[WarzoneConfigType.GLOW_FLAG_THIEVES.path] = WarzoneConfigType.GLOW_FLAG_THIEVES.default
     config[WarzoneConfigType.RECORD_STATS.path] = WarzoneConfigType.RECORD_STATS.default
+    config[WarzoneConfigType.MONUMENT_TIMER_INTERVAL.path] = WarzoneConfigType.MONUMENT_TIMER_INTERVAL.default
     config
 }
 
