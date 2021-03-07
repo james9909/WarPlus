@@ -5,6 +5,7 @@ import com.github.james9909.warplus.managers.WarParticipant
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
+import com.nisovin.magicspells.events.MagicSpellsLoadedEvent
 import com.nisovin.magicspells.events.SpellCastEvent
 import com.nisovin.magicspells.events.SpellTargetEvent
 import com.nisovin.magicspells.events.SpellTargetLocationEvent
@@ -120,5 +121,12 @@ class MagicSpellsListener(val plugin: WarPlus) : Listener {
         if (warzone.isSpawnBlock(realBlock) || warzone.onBlockPlace(event.caster, realBlock)) {
             event.isCancelled = true
         }
+    }
+
+    @EventHandler
+    fun onMagicSpellsLoaded(event: MagicSpellsLoadedEvent) {
+        plugin.logger.info("MagicSpells loaded: loading item drop names...")
+        plugin.itemNameManager.loadItemNames()
+        plugin.logger.info("Done loading item drop names!")
     }
 }
