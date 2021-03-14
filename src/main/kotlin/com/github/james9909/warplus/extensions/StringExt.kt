@@ -5,6 +5,8 @@ package com.github.james9909.warplus.extensions
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Location
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 
 class LocationFormatException(message: String) : IllegalArgumentException(message)
 
@@ -25,6 +27,23 @@ fun String.toLocation(): Location {
         return Location(world, x, y, z, yaw, pitch)
     } catch (e: NumberFormatException) {
         throw LocationFormatException("Invalid coordinates: $coords")
+    }
+}
+
+fun String.toPotionEffect(): PotionEffect? {
+    if (isEmpty()) return null
+    val parts = split(":")
+    val effect = PotionEffectType.getByName(parts[0]) ?: return null
+    return when (parts.size) {
+        1 -> {
+            PotionEffect(effect, 20, 1)
+        }
+        2 -> {
+            PotionEffect(effect, 20, parts[1].toInt())
+        }
+        else -> {
+            PotionEffect(effect, parts[2].toInt(), parts[1].toInt())
+        }
     }
 }
 

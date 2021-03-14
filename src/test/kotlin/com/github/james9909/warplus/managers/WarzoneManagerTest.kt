@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.fail
 import java.io.File
+import org.bukkit.potion.PotionEffectType
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class WarzoneManagerTest {
@@ -118,6 +119,10 @@ class WarzoneManagerTest {
             assert(origin.x == 10.0)
             assert(origin.y == 11.0)
             assert(origin.z == 12.0)
+            assert(potionEffects.size == 1)
+            assert(potionEffects[0].type == PotionEffectType.REGENERATION)
+            assert(potionEffects[0].duration == 160)
+            assert(potionEffects[0].amplifier == 1)
         }
 
         val reward = warzone.reward

@@ -5,8 +5,14 @@ import com.github.james9909.warplus.WarPlus
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
+import org.bukkit.potion.PotionEffect
 
-class MonumentStructure(plugin: WarPlus, origin: Location, val name: String) : AbstractStructure(plugin, origin) {
+class MonumentStructure(
+    plugin: WarPlus,
+    origin: Location,
+    val name: String,
+    val potionEffects: List<PotionEffect>
+) : AbstractStructure(plugin, origin) {
     override val prefix = "zone/monuments"
     override val corners by lazy {
         val topLeft = origin.block

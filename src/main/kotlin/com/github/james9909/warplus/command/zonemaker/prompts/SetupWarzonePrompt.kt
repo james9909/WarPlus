@@ -7,6 +7,7 @@ import com.github.james9909.warplus.WarzoneState
 import com.github.james9909.warplus.extensions.blockLocation
 import com.github.james9909.warplus.extensions.color
 import com.github.james9909.warplus.extensions.isFinite
+import com.github.james9909.warplus.objectives.defaultMonumentEffects
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import org.bukkit.Material
@@ -289,7 +290,7 @@ class SetupWarzonePrompt(val plugin: WarPlus, val player: Player, val warzone: W
         when (event.action) {
             Action.LEFT_CLICK_AIR, Action.LEFT_CLICK_BLOCK -> {
                 val origin = location.subtract(0.0, 1.0, 0.0).blockLocation()
-                text = when (val result = warzone.addMonumentObjective(origin, "Monument")) {
+                text = when (val result = warzone.addMonumentObjective(origin, "Monument", defaultMonumentEffects)) {
                     is Ok -> "Monument created! Change its name in the config."
                     is Err -> result.error.toString()
                 }
