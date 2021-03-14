@@ -27,8 +27,13 @@ enum class TeamKind(val material: Material, val chatColor: ChatColor) {
     RED(Material.RED_WOOL, ChatColor.RED),
     WHITE(Material.WHITE_WOOL, ChatColor.WHITE);
 
-    fun format(): String {
-        return "${chatColor}${name.toLowerCase()}${ChatColor.RESET}"
+    fun format(capitalize: Boolean = false): String {
+        val name = if (capitalize) {
+            name.toLowerCase().capitalize()
+        } else {
+            name.toLowerCase()
+        }
+        return "${chatColor}${name}${ChatColor.RESET}"
     }
 }
 
