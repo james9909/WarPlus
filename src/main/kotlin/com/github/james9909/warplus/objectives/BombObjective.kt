@@ -3,6 +3,7 @@ package com.github.james9909.warplus.objectives
 import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.Warzone
 import com.github.james9909.warplus.config.TeamConfigType
+import com.github.james9909.warplus.config.WarzoneConfigType
 import com.github.james9909.warplus.extensions.clearPotionEffects
 import com.github.james9909.warplus.extensions.format
 import com.github.james9909.warplus.extensions.toLocation
@@ -18,6 +19,8 @@ import org.bukkit.entity.Item
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryAction
 import org.bukkit.inventory.ItemStack
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 
 fun createBombObjective(plugin: WarPlus, warzone: Warzone, config: ConfigurationSection): BombObjective {
     val bombs = config.getMapList("locations").map { cpMap ->
@@ -67,6 +70,9 @@ class BombObjective(
         player.inventory.setItemInOffHand(null)
 
         player.clearPotionEffects()
+        if (warzone.warzoneSettings.get(WarzoneConfigType.GLOW_BOMB_CARRIERS)) {
+            player.addPotionEffect(PotionEffect(PotionEffectType.GLOWING, Integer.MAX_VALUE, 1))
+        }
         warzone.broadcast("${player.name} picked up bomb ${bomb.name}.")
         return false
     }
