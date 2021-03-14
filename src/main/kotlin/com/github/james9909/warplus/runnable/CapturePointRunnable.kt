@@ -6,6 +6,7 @@ import com.github.james9909.warplus.config.TeamConfigType
 import com.github.james9909.warplus.config.WarzoneConfigType
 import com.github.james9909.warplus.objectives.CapturePointObjective
 import com.github.james9909.warplus.structures.CapturePointState
+import org.bukkit.ChatColor
 import org.bukkit.block.BlockFace
 import org.bukkit.scheduler.BukkitRunnable
 
@@ -36,7 +37,7 @@ class CapturePointRunnable(private val plugin: WarPlus, private val zone: Warzon
                 if (state.controlTime == capturePointTime) {
                     val team = zone.teams[state.controller]!!
                     team.addPoint()
-                    zone.broadcast("Team $team gained 1 point for maintaining control of capture point ${cp.name}")
+                    zone.broadcast("${team.kind.format(true)}: +&a1 &7${cp.name}${ChatColor.RESET}")
 
                     // Detect win condition
                     if (team.score >= team.settings.get(TeamConfigType.MAX_SCORE)) {
