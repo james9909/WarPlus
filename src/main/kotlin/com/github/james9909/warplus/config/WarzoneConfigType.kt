@@ -21,6 +21,7 @@ class WarzoneConfigType private constructor() {
         val CAPTURE_POINT_TIMER_INTERVAL = integerKey("capture-point-timer-interval", 20)
         val SPAWN_PROTECTION_RADIUS = integerKey("spawn-protection-radius", 10)
         val GLOW_FLAG_THIEVES = booleanKey("glow-flag-thieves", true)
+        val GLOW_BOMB_CARRIERS = booleanKey("glow-bomb-carriers", true)
         val RECORD_STATS = booleanKey("record-stats", true)
     }
 }
