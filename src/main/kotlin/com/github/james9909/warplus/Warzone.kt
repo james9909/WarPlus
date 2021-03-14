@@ -70,6 +70,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause
 import org.bukkit.event.inventory.InventoryAction
 import org.bukkit.inventory.ItemStack
+import org.bukkit.potion.PotionEffect
 
 enum class WarzoneState {
     IDLING,
@@ -768,9 +769,9 @@ class Warzone(
         return objective.getMonumentAtLocation(location)
     }
 
-    fun addMonumentObjective(location: Location, name: String): Result<Unit, WarError> {
+    fun addMonumentObjective(location: Location, name: String, effects: List<PotionEffect>): Result<Unit, WarError> {
         val monumentStructure =
-            MonumentStructure(plugin, location, name)
+            MonumentStructure(plugin, location, name, effects)
         val result = validateStructureRegion(monumentStructure.region)
         when (result) {
             is Ok -> {

@@ -3,6 +3,7 @@ package com.github.james9909.warplus.command.zonemaker
 import com.github.james9909.warplus.WARPLUS_BASE_COMMAND
 import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.extensions.blockLocation
+import com.github.james9909.warplus.objectives.defaultMonumentEffects
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import org.bukkit.command.CommandSender
@@ -25,7 +26,7 @@ class AddMonumentCommand : ZonemakerCommand() {
         }
 
         val origin = sender.location.subtract(0.0, 1.0, 0.0).blockLocation()
-        val message = when (val result = warzone.addMonumentObjective(origin, args[0])) {
+        val message = when (val result = warzone.addMonumentObjective(origin, args[0], defaultMonumentEffects)) {
             is Ok -> "Monument ${args[0]} created!"
             is Err -> result.error.toString()
         }

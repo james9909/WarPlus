@@ -49,6 +49,7 @@ objectives:
     locations:
     - name: Monument1
       origin: flat:10.0,11.0,12.0,0.0,0.0
+      effects: regeneration:1:160
 portals:
   Portal1:
     origin: flat:0.0,0.0,0.0,0.0,0.0

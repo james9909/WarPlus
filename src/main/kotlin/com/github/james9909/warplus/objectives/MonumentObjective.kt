@@ -5,6 +5,7 @@ import com.github.james9909.warplus.Warzone
 import com.github.james9909.warplus.config.WarzoneConfigType
 import com.github.james9909.warplus.extensions.format
 import com.github.james9909.warplus.extensions.toLocation
+import com.github.james9909.warplus.extensions.toPotionEffect
 import com.github.james9909.warplus.runnable.MonumentRunnable
 import com.github.james9909.warplus.structures.MonumentStructure
 import org.bukkit.Location
@@ -12,18 +13,23 @@ import org.bukkit.block.Block
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 
 fun createMonumentObjective(plugin: WarPlus, warzone: Warzone, config: ConfigurationSection): MonumentObjective {
     val monuments: MutableList<MonumentStructure> = mutableListOf()
     config.getMapList("locations").forEach { monumentMap ->
         val name = monumentMap["name"] as String
         val origin = (monumentMap["origin"] as String).toLocation()
-        monuments.add(MonumentStructure(plugin, origin, name))
+        val potionEffects = (monumentMap["effects"] as? String)?.split(",")?.mapNotNull { pot -> pot.toPotionEffect() } ?: defaultMonumentEffects
+        monuments.add(MonumentStructure(plugin, origin, name, potionEffects))
     }
     return MonumentObjective(
         plugin, warzone, monuments
     )
 }
+
+val defaultMonumentEffects = listOf(PotionEffect(PotionEffectType.REGENERATION, WarzoneConfigType.MONUMENT_TIMER_INTERVAL.default, 1))
 
 class MonumentObjective(
     private val plugin: WarPlus,
@@ -70,7 +76,8 @@ class MonumentObjective(
         config.set("locations", monuments.map {
             mapOf(
                 "name" to it.name,
-                "origin" to it.origin.format()
+                "origin" to it.origin.format(),
+                "effects" to it.potionEffects.map { pot -> pot.format() }.joinToString(",")
             )
         })
     }
