@@ -22,16 +22,14 @@ warzone:
       max-health: 20
       min-teams: 1
       item-drops: false
-      monument-heal: 1
-      monument-heal-chance: 0.2
-      monument-heal-radius: 6
-      monument-heal-cooldown: 1.0
-      monument-timer-interval: 10
+      monument-effect-radius: 6
+      monument-timer-interval: 80
       remove-entities-on-reset: true
       reset-on-empty: true
       capture-point-time: 20
       spawn-protection-radius: 10
       glow-flag-thieves: true
+      glow-bomb-carriers: true
       record-stats: true
 team:
   default:
