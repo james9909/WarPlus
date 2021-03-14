@@ -19,6 +19,12 @@ class StatTracker(private val playerManager: PlayerManager, private val database
     private val killHistory = LinkedList<KillModel>()
     private val joinLog = hashMapOf<UUID, LinkedList<WarzoneJoinLog>>()
 
+    private fun modifyPlayerStat(uuid: UUID, func: (PlayerStatModel) -> Unit) {
+        playerStats[uuid] = playerStats.getOrElse(uuid, {
+            PlayerStatModel.default(uuid)
+        }).apply(func)
+    }
+
     fun addKill(attacker: UUID, defender: UUID, attackerClass: WarClass, defenderClass: WarClass) {
         killHistory.add(KillModel(
             warzoneId,
@@ -28,60 +34,22 @@ class StatTracker(private val playerManager: PlayerManager, private val database
             attackerClass.name,
             defenderClass.name
         ))
-        playerStats[attacker] = playerStats.getOrElse(attacker, {
-            PlayerStatModel.default(attacker)
-        }).apply {
-            kills += 1
-        }
+        modifyPlayerStat(attacker) { it.kills += 1 }
     }
 
-    fun addDeath(victim: UUID) {
-        playerStats[victim] = playerStats.getOrElse(victim, {
-            PlayerStatModel.default(victim)
-        }).apply {
-            deaths += 1
-        }
-    }
+    fun addDeath(victim: UUID) = modifyPlayerStat(victim) { it.deaths += 1 }
 
-    fun addHeal(healer: UUID, amount: Int) {
-        playerStats[healer] = playerStats.getOrElse(healer, {
-            PlayerStatModel.default(healer)
-        }).apply {
-            heals += amount
-        }
-    }
+    fun addHeal(healer: UUID, amount: Int) = modifyPlayerStat(healer) { it.heals += amount }
 
-    fun addFlagCapture(capturer: UUID) {
-        playerStats[capturer] = playerStats.getOrElse(capturer, {
-            PlayerStatModel.default(capturer)
-        }).apply {
-            flagCaptures += 1
-        }
-    }
+    fun addFlagCapture(capturer: UUID) = modifyPlayerStat(capturer) { it.flagCaptures += 1 }
 
-    fun addWin(player: UUID) {
-        playerStats[player] = playerStats.getOrElse(player, {
-            PlayerStatModel.default(player)
-        }).apply {
-            wins += 1
-        }
-    }
+    fun addBomb(carrier: UUID) = modifyPlayerStat(carrier) { it.bombs += 1 }
 
-    fun addLoss(player: UUID) {
-        playerStats[player] = playerStats.getOrElse(player, {
-            PlayerStatModel.default(player)
-        }).apply {
-            losses += 1
-        }
-    }
+    fun addWin(player: UUID) = modifyPlayerStat(player) { it.wins += 1 }
 
-    fun addMvp(player: UUID) {
-        playerStats[player] = playerStats.getOrElse(player, {
-            PlayerStatModel.default(player)
-        }).apply {
-            mvps += 1
-        }
-    }
+    fun addLoss(player: UUID) = modifyPlayerStat(player) { it.losses += 1 }
+
+    fun addMvp(player: UUID) = modifyPlayerStat(player) { it.mvps += 1 }
 
     fun maxStatsBy(team: TeamKind, key: (PlayerStatModel) -> Int): Pair<UUID, Int>? {
         val max = playerStats.filter {

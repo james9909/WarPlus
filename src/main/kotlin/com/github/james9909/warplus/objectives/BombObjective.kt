@@ -106,6 +106,7 @@ class BombObjective(
             playerTeam.warzone.broadcast("${player.name} blew up $victimTeam's spawn. Team $playerTeam scores one point.")
             player.world.spawnParticle(Particle.EXPLOSION_HUGE, player.location, 1)
             playerTeam.addPoint()
+            playerTeam.warzone.statTracker?.apply { addBomb(player.uniqueId) }
             bomb.build()
             bombCarriers.remove(player.uniqueId)
 

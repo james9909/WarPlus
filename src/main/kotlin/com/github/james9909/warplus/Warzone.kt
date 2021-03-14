@@ -495,7 +495,7 @@ class Warzone(
                         statTracker.addMvp(first)
                         Pair(plugin.server.getOfflinePlayer(first), second)
                     },
-                    statTracker?.maxStatsBy(team.kind) { it.flagCaptures }?.run {
+                    statTracker?.maxStatsBy(team.kind) { it.flagCaptures + it.bombs }?.run {
                         statTracker.addMvp(first)
                         Pair(plugin.server.getOfflinePlayer(first), second)
                     })

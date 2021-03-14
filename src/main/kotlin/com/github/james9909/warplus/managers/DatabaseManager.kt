@@ -58,6 +58,7 @@ class DatabaseManager(
                     `wins` INTEGER NOT NULL,
                     `losses` INTEGER NOT NULL,
                     `flag_captures` INTEGER NOT NULL,
+                    `bombs` INTEGER NOT NULL,
                     `mvps` INTEGER NOT NULL
                 )""".trimIndent()
                 )
@@ -182,7 +183,7 @@ class DatabaseManager(
     fun getPlayerStat(playerId: UUID): PlayerStatModel? {
         var data: PlayerStatModel? = null
         runSql { conn ->
-            conn.prepareStatement("SELECT `kills`, `deaths`, `heals`, `wins`, `losses`, `flag_captures`, `mvps` FROM `player_stats` WHERE `id` = ?").use { statement ->
+            conn.prepareStatement("SELECT `kills`, `deaths`, `heals`, `wins`, `losses`, `flag_captures`, `bombs`, `mvps` FROM `player_stats` WHERE `id` = ?").use { statement ->
                 statement.setBytes(1, playerId.toBytes())
                 val rs = statement.executeQuery()
                 if (rs.next()) {
@@ -194,7 +195,8 @@ class DatabaseManager(
                         rs.getInt(4),
                         rs.getInt(5),
                         rs.getInt(6),
-                        rs.getInt(7)
+                        rs.getInt(7),
+                        rs.getInt(8)
                     )
                 }
             }
