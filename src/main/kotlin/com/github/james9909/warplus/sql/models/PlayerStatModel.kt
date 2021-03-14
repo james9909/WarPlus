@@ -24,7 +24,7 @@ class PlayerStatModel(
         conn.prepareStatement(
             """
             INSERT OR IGNORE INTO `player_stats` (`id`, `kills`, `deaths`, `heals`, `wins`, `losses`, `flag_captures`, `bombs`, `mvps`)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             """.trimIndent()
         ).use { insert ->
             insert.setBytes(1, id.toBytes())

@@ -37,7 +37,7 @@ class CapturePointRunnable(private val plugin: WarPlus, private val zone: Warzon
                 if (state.controlTime == capturePointTime) {
                     val team = zone.teams[state.controller]!!
                     team.addPoint()
-                    zone.broadcast("${team.kind.format(true)}: +&a1 &7${cp.name}${ChatColor.RESET}")
+                    zone.broadcast("${team.kind.format(true)}${ChatColor.GRAY}: +${ChatColor.GREEN}1 ${ChatColor.GRAY}${cp.name}${ChatColor.RESET}")
 
                     // Detect win condition
                     if (team.score >= team.settings.get(TeamConfigType.MAX_SCORE)) {
