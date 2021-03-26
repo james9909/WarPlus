@@ -275,7 +275,7 @@ class TeamSpawnStructure(plugin: WarPlus, origin: Location, val kind: TeamKind, 
         }
     }
 
-    fun teleport(player: Player) {
+    fun spawnLocation(): Location {
         val spawnLocation = origin.clone()
 
         // Offset because the origin is in the ground
@@ -283,7 +283,11 @@ class TeamSpawnStructure(plugin: WarPlus, origin: Location, val kind: TeamKind, 
         // We want players to be looking straight ahead
         spawnLocation.pitch = 0F
 
+        return spawnLocation
+    }
+
+    fun teleport(player: Player) {
         player.velocity = Vector()
-        player.teleport(spawnLocation)
+        player.teleport(spawnLocation())
     }
 }
