@@ -9,6 +9,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
+import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.event.player.PlayerBucketEmptyEvent
@@ -19,6 +20,7 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerPickupArrowEvent
 import org.bukkit.event.player.PlayerQuitEvent
+import org.bukkit.event.player.PlayerRespawnEvent
 import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.event.player.PlayerToggleSneakEvent
 import org.bukkit.inventory.ItemStack
@@ -196,8 +198,8 @@ class PlayerListener(val plugin: WarPlus) : Listener {
         val playerInfo = plugin.playerManager.getPlayerInfo(player.uniqueId) ?: return
         if (!playerInfo.inSpawn) {
             if (playerInfo.team.spawns.any { spawn ->
-                spawn.contains(player.location)
-            }) {
+                    spawn.contains(player.location)
+                }) {
                 // Player attempting to sneak ONLY while in their team's spawn
                 plugin.playerManager.sendMessage(player, "Can't change class after exiting the spawn.")
             }
@@ -265,5 +267,35 @@ class PlayerListener(val plugin: WarPlus) : Listener {
         plugin.playerManager.getPlayerInfo(player.uniqueId) ?: return
 
         plugin.itemNameManager.applyItem(event.item.itemStack)
+    }
+
+    @EventHandler
+    fun onPlayerDeathEvent(event: PlayerDeathEvent) {
+        val player = event.entity
+        val playerInfo = plugin.playerManager.getPlayerInfo(player.uniqueId) ?: return
+
+        event.drops.clear()
+        plugin.logger.severe("Failed to prevent player death")
+        plugin.logger.severe("Last damager: ${playerInfo.lastDamager.damager?.name}")
+    }
+
+    @EventHandler
+    fun onPlayerRespawnEvent(event: PlayerRespawnEvent) {
+        // Backup in case we somehow fail to catch player death
+
+        val player = event.player
+        val playerInfo = plugin.playerManager.getPlayerInfo(player.uniqueId) ?: return
+
+        // Equip class
+        val warClass = playerInfo.warClass
+        if (warClass != null) {
+            playerInfo.team.warzone.equipClass(player, warClass, false)
+        }
+
+        // Pick a random spawn
+        val spawn = playerInfo.team.spawns.random()
+        event.respawnLocation = spawn.spawnLocation()
+
+        playerInfo.inSpawn = true
     }
 }
