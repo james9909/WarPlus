@@ -4,6 +4,7 @@ import com.github.james9909.warplus.config.CascadingConfig
 import com.github.james9909.warplus.config.TeamConfigType
 import com.github.james9909.warplus.config.WarConfigType
 import com.github.james9909.warplus.config.WarzoneConfigType
+import com.github.james9909.warplus.event.PlayerEquipClassEvent
 import com.github.james9909.warplus.event.WarzoneEndEvent
 import com.github.james9909.warplus.event.WarzoneJoinEvent
 import com.github.james9909.warplus.event.WarzoneLeaveEvent
@@ -970,6 +971,8 @@ class Warzone(
         if (updatePlayerInfo) {
             playerInfo.warClass = warClass
         }
+        val equipClassEvent = PlayerEquipClassEvent(player, this, warClass.name)
+        plugin.server.pluginManager.callEvent(equipClassEvent)
     }
 
     fun addPortal(portal: WarzonePortalStructure) {
