@@ -11,6 +11,7 @@ global:
   restore-player-location: true
   allowed-commands:
     - /help
+  freeze-after-death-duration: 1
 warzone:
   default:
     config:

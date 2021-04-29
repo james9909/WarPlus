@@ -17,5 +17,6 @@ class WarConfigType private constructor() {
         val DATABASE_DIALECT = enumKey("global.database.dialect", DatabaseDialect.SQLITE)
         val RESTORE_PLAYER_LOCATION = booleanKey("global.restore-player-location", true)
         val ALLOWED_WARZONE_COMMANDS = stringListKey("global.allowed-commands", listOf())
+        val FREEZE_AFTER_DEATH_DURATION = integerKey("global.freeze-after-death-duration", 20)
     }
 }

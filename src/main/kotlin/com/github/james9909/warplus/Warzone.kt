@@ -22,6 +22,7 @@ import com.github.james9909.warplus.objectives.FlagObjective
 import com.github.james9909.warplus.objectives.MonumentObjective
 import com.github.james9909.warplus.objectives.Objective
 import com.github.james9909.warplus.region.Region
+import com.github.james9909.warplus.runnable.FreezePlayerRunnable
 import com.github.james9909.warplus.stat.StatTracker
 import com.github.james9909.warplus.structures.BombStructure
 import com.github.james9909.warplus.structures.CapturePointStructure
@@ -324,8 +325,8 @@ class Warzone(
         ).restore(player)
     }
 
-    fun respawnPlayer(player: Player) {
-        val playerInfo = plugin.playerManager.getPlayerInfo(player.uniqueId) ?: return
+    fun respawnPlayer(player: Player): Location? {
+        val playerInfo = plugin.playerManager.getPlayerInfo(player.uniqueId) ?: return null
         resetPlayer(player)
         Bukkit.getScheduler().runTaskLater(plugin, { -> player.fireTicks = 0 }, 1)
         Bukkit.getScheduler().runTaskLater(plugin, { -> player.fireTicks = 0 }, 2)
@@ -342,6 +343,16 @@ class Warzone(
         spawn.teleport(player)
 
         playerInfo.inSpawn = true
+        return spawn.spawnLocation()
+    }
+
+    fun spawnPlayerFreezeTask(player: Player, location: Location) {
+        val task = FreezePlayerRunnable(
+            player,
+            location,
+            plugin.config.get(WarConfigType.FREEZE_AFTER_DEATH_DURATION).toLong()
+        )
+        task.runTaskTimer(plugin, 0, 2)
     }
 
     fun saveConfig() {
@@ -449,7 +460,8 @@ class Warzone(
             }
             team.lives -= 1
             team.spawns.forEach { it.updateSign(team) }
-            respawnPlayer(player)
+            val location = respawnPlayer(player) ?: return
+            spawnPlayerFreezeTask(player, location)
         }
     }
 
@@ -487,7 +499,11 @@ class Warzone(
         val maxPlayers = maxPlayers()
         teams.values.forEach { team ->
             val won = team.kind in winningTeams
-            val (econWinReward, econLossReward) = getEconRewards(team.settings.get(TeamConfigType.ECON_REWARD), numPlayers, maxPlayers)
+            val (econWinReward, econLossReward) = getEconRewards(
+                team.settings.get(TeamConfigType.ECON_REWARD),
+                numPlayers,
+                maxPlayers
+            )
             val teamPlayers = team.players.toList()
             val (mostKills, mostHeals, mostPoints) = if (teamPlayers.size >= team.settings.get(TeamConfigType.MIN_PLAYERS_FOR_MVP)) {
                 Triple(
@@ -1166,9 +1182,17 @@ class Warzone(
         mostPoints: Pair<OfflinePlayer, Int>?
     ) {
         val losers = teams.keys.filter { !winners.contains(it) }
-        plugin.playerManager.sendMessage(player, "&8&m----------------------------------------".color(), withPrefix = false)
+        plugin.playerManager.sendMessage(
+            player,
+            "&8&m----------------------------------------".color(),
+            withPrefix = false
+        )
         plugin.playerManager.sendMessage(player, "               &d&lWarzone Over".color(), withPrefix = false)
-        plugin.playerManager.sendMessage(player, "    &a&lWinner: ${winners.joinToString(", ") { it.format() }}        &c&lLoser: ${losers.joinToString(", ") { it.format() }}".color(), withPrefix = false)
+        plugin.playerManager.sendMessage(
+            player,
+            "    &a&lWinner: ${winners.joinToString(", ") { it.format() }}        &c&lLoser: ${losers.joinToString(", ") { it.format() }}".color(),
+            withPrefix = false
+        )
         plugin.playerManager.sendMessage(player, "&7 ".color(), withPrefix = false)
         if (mostKills != null || mostHeals != null || mostPoints != null) {
             val killsDisplay = mostKills?.run {
@@ -1180,12 +1204,28 @@ class Warzone(
             val pointsDisplay = mostPoints?.run {
                 "&f${first.name} &7[&4$second&7]"
             } ?: "Nobody"
-            plugin.playerManager.sendMessage(player, "  &bMost Kills: $killsDisplay &d|| &bMost Heals: $healsDisplay".color(), withPrefix = false)
-            plugin.playerManager.sendMessage(player, "            &bMost Points: &f$pointsDisplay".color(), withPrefix = false)
+            plugin.playerManager.sendMessage(
+                player,
+                "  &bMost Kills: $killsDisplay &d|| &bMost Heals: $healsDisplay".color(),
+                withPrefix = false
+            )
+            plugin.playerManager.sendMessage(
+                player,
+                "            &bMost Points: &f$pointsDisplay".color(),
+                withPrefix = false
+            )
             plugin.playerManager.sendMessage(player, "&7 ".color(), withPrefix = false)
         }
-        plugin.playerManager.sendMessage(player, "               &6You earned &a${'$'}$econReward".color(), withPrefix = false)
-        plugin.playerManager.sendMessage(player, "&8&m----------------------------------------".color(), withPrefix = false)
+        plugin.playerManager.sendMessage(
+            player,
+            "               &6You earned &a${'$'}$econReward".color(),
+            withPrefix = false
+        )
+        plugin.playerManager.sendMessage(
+            player,
+            "&8&m----------------------------------------".color(),
+            withPrefix = false
+        )
     }
 
     fun isFlagThief(player: Player): Boolean = (objectives["flags"] as? FlagObjective)?.isFlagThief(player) ?: false
