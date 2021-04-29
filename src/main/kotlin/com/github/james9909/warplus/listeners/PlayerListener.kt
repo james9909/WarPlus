@@ -4,8 +4,6 @@ import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.WarzoneState
 import com.github.james9909.warplus.config.WarzoneConfigType
 import com.github.james9909.warplus.managers.WarParticipant
-import com.github.james9909.warplus.util.NANOSECONDS_PER_SECOND
-import com.github.james9909.warplus.util.SECONDS_TIL_EXPIRATION
 import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler

@@ -355,7 +355,6 @@ class Warzone(
         task.runTaskTimer(plugin, 0, 2)
     }
 
-
     fun saveConfig() {
         val file = File("${plugin.dataFolder}/warzone-$name.yml")
         val config = YamlConfiguration()
