@@ -1,6 +1,5 @@
 package com.github.james9909.warplus.event
 
-import com.github.james9909.warplus.WarClass
 import com.github.james9909.warplus.Warzone
 import org.bukkit.entity.Player
 import org.bukkit.event.Event
