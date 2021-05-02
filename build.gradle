@@ -13,7 +13,7 @@ wrapper {
 }
 
 group 'com.github.james9909'
-version '1.16.4-0.1.0'
+version '1.16.5-0.1.0'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -42,7 +42,7 @@ idea {
 repositories {
     mavenCentral()
     jcenter()
-    maven { url = "https://hub.spigotmc.org/nexus/content/repositories/snapshots/" }
+    maven { url "https://papermc.io/repo/repository/maven-public/" }
     maven { url = "https://oss.sonatype.org/content/repositories/snapshots" }
     maven { url = "https://dl.bintray.com/michaelbull/maven" }
     maven { url = "https://jitpack.io" }
@@ -59,8 +59,8 @@ dependencies {
     compile "mysql:mysql-connector-java:5.1.13"
     compile "com.zaxxer:HikariCP:3.4.5"
     compileOnly ":MagicSpells-4.0-Beta-7"
-    compileOnly "com.intellectualsites.fawe:FAWE-Bukkit:1.16-462"
-    compileOnly "org.spigotmc:spigot-api:1.16.4-R0.1-SNAPSHOT"
+    compileOnly "com.intellectualsites.fawe:FAWE-Bukkit:1.16-637"
+    compileOnly 'com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT'
     compileOnly "com.github.MilkBowl:VaultAPI:1.7"
     testCompile "org.junit.jupiter:junit-jupiter:5.4.2"
     testCompile "com.github.seeseemelk:MockBukkit-v1.16:0.5.0"
