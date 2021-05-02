@@ -2,8 +2,11 @@ package com.github.james9909.warplus.listeners
 
 import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.WarzoneState
+import com.github.james9909.warplus.config.WarConfigType
 import com.github.james9909.warplus.config.WarzoneConfigType
+import com.github.james9909.warplus.extensions.get
 import com.github.james9909.warplus.managers.WarParticipant
+import com.github.james9909.warplus.util.NANOSECONDS_PER_SECOND
 import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -111,6 +114,12 @@ class PlayerListener(val plugin: WarPlus) : Listener {
         val team = playerInfo.team
         val inSpawn = team.spawns.any { it.contains(to) }
         if (playerInfo.inSpawn) {
+            val threshold = plugin.config.get(WarConfigType.FREEZE_AFTER_DEATH_DURATION)
+            if (System.nanoTime() - playerInfo.respawnTime < threshold * NANOSECONDS_PER_SECOND) {
+                event.isCancelled = true
+                return
+            }
+
             if (!inSpawn) {
                 // Player has exited the spawn
                 val warzone = team.warzone

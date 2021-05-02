@@ -19,7 +19,8 @@ sealed class WarParticipant {
         val state: PlayerState,
         var inSpawn: Boolean,
         var warClass: WarClass?,
-        val lastDamager: LastDamager
+        val lastDamager: LastDamager,
+        var respawnTime: Long = 0
     ) : WarParticipant()
 
     data class Spectator(val state: PlayerState, val warzone: Warzone) : WarParticipant()
