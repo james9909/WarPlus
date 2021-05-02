@@ -59,7 +59,7 @@ dependencies {
     compile "mysql:mysql-connector-java:5.1.13"
     compile "com.zaxxer:HikariCP:3.4.5"
     compileOnly ":MagicSpells-4.0-Beta-7"
-    compileOnly "com.intellectualsites.fawe:FAWE-Bukkit:1.16-462"
+    compileOnly "com.intellectualsites.fawe:FAWE-Bukkit:1.16-637"
     compileOnly 'com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT'
     compileOnly "com.github.MilkBowl:VaultAPI:1.7"
     testCompile "org.junit.jupiter:junit-jupiter:5.4.2"
