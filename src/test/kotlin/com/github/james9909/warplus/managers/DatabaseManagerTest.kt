@@ -5,13 +5,13 @@ import com.github.james9909.warplus.TeamKind
 import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.sql.SqliteConnectionFactory
 import com.github.michaelbull.result.Ok
-import java.io.File
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import java.io.File
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class DatabaseManagerTest {

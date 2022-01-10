@@ -2,9 +2,6 @@ package com.github.james9909.warplus.listeners
 
 import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.managers.WarParticipant
-import org.bukkit.event.EventHandler
-import org.bukkit.event.EventPriority
-import org.bukkit.event.Listener
 import com.nisovin.magicspells.events.MagicSpellsLoadedEvent
 import com.nisovin.magicspells.events.SpellCastEvent
 import com.nisovin.magicspells.events.SpellTargetEvent
@@ -12,6 +9,9 @@ import com.nisovin.magicspells.events.SpellTargetLocationEvent
 import com.nisovin.magicspells.spells.targeted.PulserSpell
 import org.bukkit.Location
 import org.bukkit.entity.Player
+import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
+import org.bukkit.event.Listener
 
 class MagicSpellsListener(val plugin: WarPlus) : Listener {
     @EventHandler(priority = EventPriority.HIGHEST)

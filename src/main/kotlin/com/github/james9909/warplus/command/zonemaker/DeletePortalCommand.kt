@@ -35,14 +35,14 @@ class DeletePortalCommand : ZonemakerCommand() {
         val warzoneNames = plugin.warzoneManager.getWarzoneNames()
         return when (args.size) {
             1 -> warzoneNames.filter {
-                it.startsWith(args[0].toLowerCase())
+                it.startsWith(args[0].lowercase())
             }
             2 -> plugin.warzoneManager.getWarzones().map { warzone ->
-                    warzone.getPortals().map { portal -> portal.name }
+                warzone.getPortals().map { portal -> portal.name }
             }.flatten()
-            .filter {
-                it.startsWith(args[1].toLowerCase())
-            }
+                .filter {
+                    it.startsWith(args[1].lowercase())
+                }
             else -> emptyList()
         }
     }

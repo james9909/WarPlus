@@ -27,8 +27,8 @@ class ClassCommand : PlayerCommand() {
             return true
         }
         val className = args[0]
-        val availableClasses = playerInfo.team.resolveClasses().map { it.toLowerCase() }
-        if (className.toLowerCase() !in availableClasses) {
+        val availableClasses = playerInfo.team.resolveClasses().map { it.lowercase() }
+        if (className.lowercase() !in availableClasses) {
             plugin.playerManager.sendMessage(sender, "Class $className is not enabled in this warzone")
             return true
         }

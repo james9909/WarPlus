@@ -14,7 +14,8 @@ class LastDamager(initialDamager: Player?) {
         get() {
             val damager = field
             if (damager != null &&
-                System.nanoTime() - timestamp < SECONDS_TIL_EXPIRATION * NANOSECONDS_PER_SECOND) {
+                System.nanoTime() - timestamp < SECONDS_TIL_EXPIRATION * NANOSECONDS_PER_SECOND
+            ) {
                 return damager
             }
             return null

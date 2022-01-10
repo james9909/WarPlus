@@ -12,7 +12,6 @@ import org.bukkit.block.Block
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
-import java.lang.IllegalStateException
 
 const val CAPTURE_POINT_TIMER_INTERVAL_TICKS = 20L
 
@@ -51,12 +50,15 @@ class CapturePointObjective(
     }
 
     override fun saveConfig(config: ConfigurationSection) {
-        config.set("locations", capturePoints.map {
-            mapOf(
-                "name" to it.name,
-                "origin" to it.origin.format()
-            )
-        })
+        config.set(
+            "locations",
+            capturePoints.map {
+                mapOf(
+                    "name" to it.name,
+                    "origin" to it.origin.format()
+                )
+            }
+        )
     }
 
     override fun reset() {

@@ -30,19 +30,19 @@ class ClassManager(private val plugin: WarPlus) {
     }
 
     fun addClass(name: String, warClass: WarClass) {
-        classes[name.toLowerCase()] = warClass
+        classes[name.lowercase()] = warClass
     }
 
     fun removeClass(name: String): Boolean {
-        return classes.remove(name.toLowerCase()) != null
+        return classes.remove(name.lowercase()) != null
     }
 
     fun getClass(name: String): WarClass? {
-        return classes[name.toLowerCase()]
+        return classes[name.lowercase()]
     }
 
     fun containsClass(name: String): Boolean {
-        return classes.containsKey(name.toLowerCase())
+        return classes.containsKey(name.lowercase())
     }
 
     fun getClassNames(): List<String> {

@@ -207,8 +207,9 @@ class PlayerListener(val plugin: WarPlus) : Listener {
         val playerInfo = plugin.playerManager.getPlayerInfo(player.uniqueId) ?: return
         if (!playerInfo.inSpawn) {
             if (playerInfo.team.spawns.any { spawn ->
-                    spawn.contains(player.location)
-                }) {
+                spawn.contains(player.location)
+            }
+            ) {
                 // Player attempting to sneak ONLY while in their team's spawn
                 plugin.playerManager.sendMessage(player, "Can't change class after exiting the spawn.")
             }
@@ -223,12 +224,12 @@ class PlayerListener(val plugin: WarPlus) : Listener {
             return
         }
 
-        val classes = playerInfo.team.resolveClasses().map { it.toLowerCase() }
+        val classes = playerInfo.team.resolveClasses().map { it.lowercase() }
         if (classes.isEmpty()) {
             return
         }
         val currentClass = playerInfo.warClass ?: return
-        val idx = classes.indexOf(currentClass.name.toLowerCase())
+        val idx = classes.indexOf(currentClass.name.lowercase())
         val nextClassName = if (idx + 1 < classes.size) classes[idx + 1] else classes[0]
         val nextClass = plugin.classManager.getClass(nextClassName) ?: return
         playerInfo.team.warzone.equipClass(player, nextClass, true)

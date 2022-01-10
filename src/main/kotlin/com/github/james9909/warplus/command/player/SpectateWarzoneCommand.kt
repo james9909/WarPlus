@@ -46,7 +46,7 @@ class SpectateWarzoneCommand : PlayerCommand() {
 
     override fun tab(plugin: WarPlus, sender: CommandSender, args: List<String>): List<String> {
         return plugin.warzoneManager.getWarzoneNames().filter {
-            it.startsWith(args[0].toLowerCase())
+            it.startsWith(args[0].lowercase())
         }
     }
 }

@@ -8,7 +8,6 @@ import com.github.james9909.warplus.extensions.clearPotionEffects
 import com.github.james9909.warplus.extensions.format
 import com.github.james9909.warplus.extensions.toLocation
 import com.github.james9909.warplus.structures.BombStructure
-import java.util.UUID
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Particle
@@ -21,6 +20,7 @@ import org.bukkit.event.inventory.InventoryAction
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
+import java.util.UUID
 
 fun createBombObjective(plugin: WarPlus, warzone: Warzone, config: ConfigurationSection): BombObjective {
     val bombs = config.getMapList("locations").map { cpMap ->
@@ -137,12 +137,15 @@ class BombObjective(
     }
 
     override fun saveConfig(config: ConfigurationSection) {
-        config.set("locations", bombs.map {
-            mapOf(
-                "name" to it.name,
-                "origin" to it.origin.format()
-            )
-        })
+        config.set(
+            "locations",
+            bombs.map {
+                mapOf(
+                    "name" to it.name,
+                    "origin" to it.origin.format()
+                )
+            }
+        )
     }
 
     override fun reset() {

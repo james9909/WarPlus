@@ -1,8 +1,8 @@
 package com.github.james9909.warplus.extensions
 
-import java.util.UUID
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import java.util.UUID
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class UUIDUtilsTest {

@@ -3,9 +3,9 @@ package com.github.james9909.warplus.sql.models
 import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.extensions.color
 import com.github.james9909.warplus.extensions.toBytes
+import org.bukkit.entity.Player
 import java.sql.Connection
 import java.util.UUID
-import org.bukkit.entity.Player
 
 class PlayerStatModel(
     var id: UUID,

@@ -26,7 +26,7 @@ fun createFlagObjective(plugin: WarPlus, warzone: Warzone, config: Configuration
     config.getMapList("locations").forEach { flagMap ->
         val teamKind: TeamKind
         try {
-            teamKind = TeamKind.valueOf((flagMap["team"] as String).toUpperCase())
+            teamKind = TeamKind.valueOf((flagMap["team"] as String).uppercase())
         } catch (e: IllegalArgumentException) {
             return@forEach
         }
@@ -185,12 +185,15 @@ class FlagObjective(
     }
 
     override fun saveConfig(config: ConfigurationSection) {
-        config.set("locations", flags.map {
-            mapOf(
-                "origin" to it.origin.format(),
-                "team" to it.kind.toString().toLowerCase()
-            )
-        })
+        config.set(
+            "locations",
+            flags.map {
+                mapOf(
+                    "origin" to it.origin.format(),
+                    "team" to it.kind.toString().lowercase()
+                )
+            }
+        )
     }
 
     override fun reset() {

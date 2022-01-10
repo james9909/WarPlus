@@ -26,7 +26,7 @@ class AddTeamFlagCommand : ZonemakerCommand() {
         }
         val kind: TeamKind
         try {
-            kind = TeamKind.valueOf(args[0].toUpperCase())
+            kind = TeamKind.valueOf(args[0].uppercase())
         } catch (e: IllegalArgumentException) {
             plugin.playerManager.sendMessage(sender, "Invalid team ${args[0]}")
             return true
@@ -48,7 +48,7 @@ class AddTeamFlagCommand : ZonemakerCommand() {
 
     override fun tab(plugin: WarPlus, sender: CommandSender, args: List<String>): List<String> {
         return when (args.size) {
-            1 -> TeamKind.values().map { it.name.toLowerCase() }
+            1 -> TeamKind.values().map { it.name.lowercase() }
             else -> emptyList()
         }
     }

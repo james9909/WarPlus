@@ -4,9 +4,9 @@ import com.github.james9909.warplus.WARPLUS_BASE_COMMAND
 import com.github.james9909.warplus.WarPlus
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
-import java.lang.NumberFormatException
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import java.lang.NumberFormatException
 
 class AdminStatsCommand : AdminCommand() {
     override val usageString = "/$WARPLUS_BASE_COMMAND adminstats <clear|view <player>|addheal <player> <amount>>"
@@ -14,7 +14,7 @@ class AdminStatsCommand : AdminCommand() {
 
     override fun execute(plugin: WarPlus, sender: CommandSender, args: List<String>): Boolean {
         if (args.isEmpty()) return false
-        when (args[0].toLowerCase()) {
+        when (args[0].lowercase()) {
             "clear" -> {
                 plugin.server.scheduler.runTaskAsynchronously(plugin) { _ ->
                     when (plugin.databaseManager?.dropTables()) {
