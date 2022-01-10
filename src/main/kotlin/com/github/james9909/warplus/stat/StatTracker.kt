@@ -26,14 +26,16 @@ class StatTracker(private val playerManager: PlayerManager, private val database
     }
 
     fun addKill(attacker: UUID, defender: UUID, attackerClass: WarClass, defenderClass: WarClass) {
-        killHistory.add(KillModel(
-            warzoneId,
-            Timestamp.from(Instant.now()),
-            attacker,
-            defender,
-            attackerClass.name,
-            defenderClass.name
-        ))
+        killHistory.add(
+            KillModel(
+                warzoneId,
+                Timestamp.from(Instant.now()),
+                attacker,
+                defender,
+                attackerClass.name,
+                defenderClass.name
+            )
+        )
         modifyPlayerStat(attacker) { it.kills += 1 }
     }
 
@@ -54,7 +56,7 @@ class StatTracker(private val playerManager: PlayerManager, private val database
     fun maxStatsBy(team: TeamKind, key: (PlayerStatModel) -> Int): Pair<UUID, Int>? {
         val max = playerStats.filter {
             playerManager.getPlayerInfo(it.key)?.team?.kind == team
-        }.maxBy { entry ->
+        }.maxByOrNull { entry ->
             key(entry.value)
         }
         if (max != null && key(max.value) > 0) {
@@ -67,13 +69,15 @@ class StatTracker(private val playerManager: PlayerManager, private val database
         if (!joinLog.containsKey(player)) {
             joinLog[player] = LinkedList()
         }
-        joinLog[player]!!.add(WarzoneJoinLog(
-            warzoneId,
-            player,
-            team,
-            Timestamp.from(Instant.now()),
-            null
-        ))
+        joinLog[player]!!.add(
+            WarzoneJoinLog(
+                warzoneId,
+                player,
+                team,
+                Timestamp.from(Instant.now()),
+                null
+            )
+        )
     }
 
     fun addLeave(player: UUID) {

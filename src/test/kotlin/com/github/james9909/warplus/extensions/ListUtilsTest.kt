@@ -10,13 +10,13 @@ class ListUtilsTest {
         val list = listOf("a", "b", "c", "d")
         assert(
             list.pairs().toList()
-            ==
-            listOf(Pair("a", "b"), Pair("a", "c"), Pair("a", "d"), Pair("b", "c"), Pair("b", "d"), Pair("c", "d"))
+                ==
+                    listOf(Pair("a", "b"), Pair("a", "c"), Pair("a", "d"), Pair("b", "c"), Pair("b", "d"), Pair("c", "d"))
         )
         assert(
             listOf<Int>().pairs().toList()
-            ==
-            listOf<Pair<Int, Int>>()
+                ==
+                    listOf<Pair<Int, Int>>()
         )
     }
 }

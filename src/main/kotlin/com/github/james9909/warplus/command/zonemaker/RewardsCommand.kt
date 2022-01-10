@@ -22,7 +22,7 @@ class RewardsCommand : ZonemakerCommand() {
             plugin.playerManager.sendMessage(sender, "That warzone doesn't exist.")
             return true
         }
-        val reward = when (args[1].toLowerCase()) {
+        val reward = when (args[1].lowercase()) {
             "win" -> warzone.reward.winReward
             "loss" -> warzone.reward.lossReward
             "mvp" -> warzone.reward.mvpReward
@@ -31,7 +31,7 @@ class RewardsCommand : ZonemakerCommand() {
                 return true
             }
         }
-        when (args[2].toLowerCase()) {
+        when (args[2].lowercase()) {
             "add" -> {
                 val item = sender.inventory.itemInMainHand
                 if (item.type == Material.AIR) {

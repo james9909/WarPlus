@@ -224,12 +224,15 @@ class TeamSpawnStructure(plugin: WarPlus, origin: Location, val kind: TeamKind, 
     private val signBlock by lazy {
         when (style) {
             SpawnStyle.INVISIBLE -> null
-            SpawnStyle.FLAT -> origin.block
-                .getRelative(origin.getInterCardinalDirection().toBlockFace(), 2)
-            SpawnStyle.SMALL -> origin.block
-                .getRelative(origin.getInterCardinalDirection().toBlockFace(), 1)
-            SpawnStyle.LARGE -> origin.block
-                .getRelative(origin.getInterCardinalDirection().toBlockFace(), 2)
+            SpawnStyle.FLAT ->
+                origin.block
+                    .getRelative(origin.getInterCardinalDirection().toBlockFace(), 2)
+            SpawnStyle.SMALL ->
+                origin.block
+                    .getRelative(origin.getInterCardinalDirection().toBlockFace(), 1)
+            SpawnStyle.LARGE ->
+                origin.block
+                    .getRelative(origin.getInterCardinalDirection().toBlockFace(), 2)
         }?.getRelative(BlockFace.UP, 1)
     }
     private val interCardinalDirection = origin.getInterCardinalDirection()
@@ -252,7 +255,7 @@ class TeamSpawnStructure(plugin: WarPlus, origin: Location, val kind: TeamKind, 
         signBlock?.apply {
             try {
                 val sign = state as org.bukkit.block.Sign
-                sign.setLine(0, "Team ${kind.name.toLowerCase()}")
+                sign.setLine(0, "Team ${kind.name.lowercase()}")
                 sign.setLine(1, "${team.size()}/${team.maxPlayers()} players")
                 sign.setLine(2, "${team.score}/${team.maxScore()} points")
                 when (val lives = team.lives) {

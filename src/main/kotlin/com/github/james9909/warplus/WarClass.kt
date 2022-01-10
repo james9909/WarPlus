@@ -60,7 +60,8 @@ data class WarClass(
             }
         }
         giveToPlayer(
-            player, offhand, itemMap, ArmorSet(
+            player, offhand, itemMap,
+            ArmorSet(
                 armor[3],
                 armor[2],
                 armor[1],

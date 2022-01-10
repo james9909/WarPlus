@@ -5,10 +5,10 @@ import com.github.james9909.warplus.DEFAULT_WARZONE_CONFIG
 import com.github.james9909.warplus.FileError
 import com.github.james9909.warplus.IllegalTeamKindError
 import com.github.james9909.warplus.IllegalWarzoneError
-import com.github.james9909.warplus.WarReward
 import com.github.james9909.warplus.TeamKind
 import com.github.james9909.warplus.WarError
 import com.github.james9909.warplus.WarPlus
+import com.github.james9909.warplus.WarReward
 import com.github.james9909.warplus.WarTeam
 import com.github.james9909.warplus.Warzone
 import com.github.james9909.warplus.config.CascadingConfig
@@ -27,10 +27,10 @@ import com.github.james9909.warplus.structures.WarzonePortalStructure
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
-import java.io.File
 import org.bukkit.Location
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.YamlConfiguration
+import java.io.File
 
 class WarzoneManager(val plugin: WarPlus) {
     private val warzones = mutableMapOf<String, Warzone>()
@@ -108,15 +108,19 @@ class WarzoneManager(val plugin: WarPlus) {
             name = name,
             region = region,
             teamSettings = CascadingConfig(
-                teamSettings, CascadingConfig(
-                    teamDefaultConfig, CascadingConfig(
+                teamSettings,
+                CascadingConfig(
+                    teamDefaultConfig,
+                    CascadingConfig(
                         DEFAULT_TEAM_CONFIG
                     )
                 )
             ),
             warzoneSettings = CascadingConfig(
-                zoneSettings, CascadingConfig(
-                    warzoneDefaultConfig, CascadingConfig(
+                zoneSettings,
+                CascadingConfig(
+                    warzoneDefaultConfig,
+                    CascadingConfig(
                         DEFAULT_WARZONE_CONFIG
                     )
                 )
@@ -145,7 +149,7 @@ class WarzoneManager(val plugin: WarPlus) {
                         TeamSpawnStructure(
                             plugin,
                             spawnLocation.toLocation(),
-                            TeamKind.valueOf(teamName.toUpperCase()),
+                            TeamKind.valueOf(teamName.uppercase()),
                             cascadingTeamSettings.get(TeamConfigType.SPAWN_STYLE)
                         )
                     spawns.add(spawn)
@@ -173,7 +177,7 @@ class WarzoneManager(val plugin: WarPlus) {
 
             val teamKind: TeamKind
             try {
-                teamKind = TeamKind.valueOf(teamName.toUpperCase())
+                teamKind = TeamKind.valueOf(teamName.uppercase())
             } catch (e: IllegalArgumentException) {
                 return Err(
                     IllegalTeamKindError(teamName)
@@ -244,11 +248,11 @@ class WarzoneManager(val plugin: WarPlus) {
     }
 
     fun getWarzone(name: String): Warzone? {
-        return this.warzones[name.toLowerCase()]
+        return this.warzones[name.lowercase()]
     }
 
     fun addWarzone(warzone: Warzone) {
-        this.warzones[warzone.name.toLowerCase()] = warzone
+        this.warzones[warzone.name.lowercase()] = warzone
     }
 
     fun getWarzoneByLocation(location: Location): Warzone? {
@@ -265,7 +269,7 @@ class WarzoneManager(val plugin: WarPlus) {
     }
 
     fun unloadWarzone(name: String): Boolean {
-        val warzone = warzones[name.toLowerCase()]
+        val warzone = warzones[name.lowercase()]
         if (warzone != null) {
             warzone.unload()
             warzones.remove(name)
@@ -275,7 +279,7 @@ class WarzoneManager(val plugin: WarPlus) {
     }
 
     fun deleteWarzone(warzone: Warzone): Boolean {
-        this.warzones.remove(warzone.name.toLowerCase())
+        this.warzones.remove(warzone.name.lowercase())
         return warzone.delete()
     }
 }

@@ -38,8 +38,10 @@ private enum class TOOL(val display: String) {
     BOMB("Bombs")
 }
 
-class SetupWarzonePrompt(val plugin: WarPlus, val player: Player, val warzone: Warzone) : Prompt,
-    ConversationAbandonedListener, Listener {
+class SetupWarzonePrompt(val plugin: WarPlus, val player: Player, val warzone: Warzone) :
+    Prompt,
+    ConversationAbandonedListener,
+    Listener {
     private var text = "Enter \"done\" to finish editing."
     private var teamKind: TeamKind? = null
     lateinit var conversation: Conversation
@@ -90,7 +92,7 @@ class SetupWarzonePrompt(val plugin: WarPlus, val player: Player, val warzone: W
     private fun handleTeam(input: String): Prompt {
         val team = input.split(" ")[1].trim()
         try {
-            teamKind = TeamKind.valueOf(team.toUpperCase())
+            teamKind = TeamKind.valueOf(team.uppercase())
             text = "Team set to $team"
         } catch (e: IllegalArgumentException) {
             text = "Invalid team kind $team"
@@ -226,7 +228,7 @@ class SetupWarzonePrompt(val plugin: WarPlus, val player: Player, val warzone: W
 
                 val origin = player.location.subtract(0.0, 1.0, 0.0).blockLocation()
                 text = when (val result = warzone.addTeamSpawn(origin, currTeamKind)) {
-                    is Ok -> "Spawn for team ${currTeamKind.name.toLowerCase()} created!"
+                    is Ok -> "Spawn for team ${currTeamKind.name.lowercase()} created!"
                     is Err -> result.error.toString()
                 }
             }
@@ -264,7 +266,7 @@ class SetupWarzonePrompt(val plugin: WarPlus, val player: Player, val warzone: W
 
                 val origin = location.subtract(0.0, 1.0, 0.0).blockLocation()
                 text = when (val result = warzone.addFlagObjective(origin, team.kind)) {
-                    is Ok -> "Flag for team ${currTeamKind.name.toLowerCase()} created!"
+                    is Ok -> "Flag for team ${currTeamKind.name.lowercase()} created!"
                     is Err -> result.error.toString()
                 }
             }

@@ -73,13 +73,16 @@ class MonumentObjective(
     }
 
     override fun saveConfig(config: ConfigurationSection) {
-        config.set("locations", monuments.map {
-            mapOf(
-                "name" to it.name,
-                "origin" to it.origin.format(),
-                "effects" to it.potionEffects.map { pot -> pot.format() }.joinToString(",")
-            )
-        })
+        config.set(
+            "locations",
+            monuments.map {
+                mapOf(
+                    "name" to it.name,
+                    "origin" to it.origin.format(),
+                    "effects" to it.potionEffects.map { pot -> pot.format() }.joinToString(",")
+                )
+            }
+        )
     }
 
     override fun reset() = monuments.forEach {

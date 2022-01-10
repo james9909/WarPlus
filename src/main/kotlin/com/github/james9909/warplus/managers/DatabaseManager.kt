@@ -49,7 +49,8 @@ class DatabaseManager(
         return runSql { conn ->
             conn.createStatement().use { statement ->
                 statement.executeUpdate("CREATE TABLE IF NOT EXISTS `players` (`uuid` BINARY(16) NOT NULL, PRIMARY KEY (`uuid`))")
-                statement.executeUpdate("""
+                statement.executeUpdate(
+                    """
                 CREATE TABLE IF NOT EXISTS `player_stats` (
                     `id` BINARY(16) PRIMARY KEY,
                     `kills` INTEGER NOT NULL,
@@ -60,19 +61,23 @@ class DatabaseManager(
                     `flag_captures` INTEGER NOT NULL,
                     `bombs` INTEGER NOT NULL,
                     `mvps` INTEGER NOT NULL
-                )""".trimIndent()
                 )
-                statement.executeUpdate("""
+                    """.trimIndent()
+                )
+                statement.executeUpdate(
+                    """
                 CREATE TABLE IF NOT EXISTS `warzones` (
                     `id` INTEGER PRIMARY KEY,
                     `name` TEXT,
                     `start_time` DATETIME NOT NULL,
                     `end_time` DATETIME,
                     `winner` TEXT
-                )""".trimIndent()
+                )
+                    """.trimIndent()
                 )
                 statement.executeUpdate("CREATE INDEX IF NOT EXISTS `pk_warzones_id` on `warzones`(`id`)")
-                statement.executeUpdate("""
+                statement.executeUpdate(
+                    """
                 CREATE TABLE IF NOT EXISTS `warzone_join_logs` (
                      `warzone_id` INT NOT NULL,
                      `player_id` BINARY(16) NOT NULL,
@@ -81,11 +86,13 @@ class DatabaseManager(
                      `leave_time` DATETIME,
                      FOREIGN KEY (`player_id`) REFERENCES `players`(`uuid`),
                      FOREIGN KEY (`warzone_id`) REFERENCES `warzones`(`id`)
-                )""".trimIndent()
+                )
+                    """.trimIndent()
                 )
                 statement.executeUpdate("CREATE INDEX IF NOT EXISTS `warzone_join_logs_player_fk` on `warzone_join_logs`(`player_id`)")
                 statement.executeUpdate("CREATE INDEX IF NOT EXISTS `warzone_join_logs_warzone_fk` on `warzone_join_logs`(`warzone_id`)")
-                statement.executeUpdate("""
+                statement.executeUpdate(
+                    """
                 CREATE TABLE IF NOT EXISTS kills (
                     `date` DATETIME NOT NULL,
                     `warzone_id` INT NOT NULL,
@@ -95,7 +102,8 @@ class DatabaseManager(
                     `defender_class` VARCHAR(16) NOT NULL,
                     FOREIGN KEY (`attacker_id`) REFERENCES `players`(`uuid`),
                     FOREIGN KEY (`defender_id`) REFERENCES `players`(`uuid`)
-                )""".trimIndent()
+                )
+                    """.trimIndent()
                 )
                 statement.executeUpdate("CREATE INDEX IF NOT EXISTS `kills_attacker_fk` on `kills`(`attacker_id`)")
                 statement.executeUpdate("CREATE INDEX IF NOT EXISTS `kills_defender_fk` on `kills`(`defender_id`)")
@@ -165,7 +173,7 @@ class DatabaseManager(
                 if (rs.next()) {
                     val winners = rs.getString(5)
                     val parsedWinners = winners?.split(",")?.map {
-                        TeamKind.valueOf(it.toUpperCase())
+                        TeamKind.valueOf(it.uppercase())
                     }
                     data = WarzoneModel(
                         id,

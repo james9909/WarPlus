@@ -29,9 +29,9 @@ enum class TeamKind(val material: Material, val chatColor: ChatColor) {
 
     fun format(capitalize: Boolean = false): String {
         val name = if (capitalize) {
-            name.toLowerCase().capitalize()
+            name.lowercase().replaceFirstChar { it.uppercaseChar() }
         } else {
-            name.toLowerCase()
+            name.lowercase()
         }
         return "${chatColor}${name}${ChatColor.RESET}"
     }
@@ -141,7 +141,7 @@ class WarTeam(
     }
 
     fun getScoreboardName(): String {
-        val fullName = "${warzone.name}_${kind.name.toLowerCase()}"
+        val fullName = "${warzone.name}_${kind.name.lowercase()}"
         return "wp_${fullName.hashCode()}"
     }
 

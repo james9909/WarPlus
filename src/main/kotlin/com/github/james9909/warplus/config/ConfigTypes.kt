@@ -37,6 +37,6 @@ fun stringListKey(path: String, default: List<String>): ConfigKey<List<String>> 
 
 inline fun <reified E : Enum<E>> enumKey(path: String, default: E): ConfigKey<E> {
     return ConfigKey({ config, _, _ ->
-        enumValueOf(config.getString(path)?.toUpperCase() ?: default.toString())
+        enumValueOf(config.getString(path)?.uppercase() ?: default.toString())
     }, path, default)
 }

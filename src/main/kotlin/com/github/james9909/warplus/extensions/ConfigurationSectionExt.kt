@@ -57,7 +57,7 @@ fun handleEnchants(itemMeta: ItemMeta, path: ConfigurationSection) {
             return@forEach
         }
 
-        val key = NamespacedKey.minecraft(split[0].toLowerCase())
+        val key = NamespacedKey.minecraft(split[0].lowercase())
         val level = split[1].toIntOrNull()
         if (level == null) {
             println("Invalid level: ${split[1]}")
@@ -98,7 +98,7 @@ fun ConfigurationSection.toItemStack(): ItemStack? {
         println("No type specified for $name")
         return null
     }
-    val item: ItemStack = materialMap[typeStr.toLowerCase()]?.run {
+    val item: ItemStack = materialMap[typeStr.lowercase()]?.run {
         ItemStack(this, getInt("amount", 1))
     } ?: run {
         if (typeStr.startsWith("ms:")) {

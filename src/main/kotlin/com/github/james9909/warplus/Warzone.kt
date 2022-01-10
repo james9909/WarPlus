@@ -46,15 +46,6 @@ import com.nisovin.magicspells.mana.ManaChangeReason
 import com.sk89q.worldedit.bukkit.BukkitAdapter
 import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.regions.CuboidRegion
-import java.io.File
-import java.math.RoundingMode
-import java.text.DecimalFormat
-import kotlin.math.abs
-import kotlin.math.ceil
-import kotlin.math.max
-import kotlin.math.pow
-import kotlin.math.sqrt
-import kotlin.random.Random
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.GameMode
@@ -72,6 +63,15 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause
 import org.bukkit.event.inventory.InventoryAction
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect
+import java.io.File
+import java.math.RoundingMode
+import java.text.DecimalFormat
+import kotlin.math.abs
+import kotlin.math.ceil
+import kotlin.math.max
+import kotlin.math.pow
+import kotlin.math.sqrt
+import kotlin.random.Random
 
 enum class WarzoneState {
     IDLING,
@@ -118,13 +118,13 @@ class Warzone(
 
     fun addTeam(team: WarTeam) = teams.put(team.kind, team)
 
-    fun minPlayers(): Int = teams.values.sumBy { it.settings.get(TeamConfigType.MIN_PLAYERS) }
+    fun minPlayers(): Int = teams.values.sumOf { it.settings.get(TeamConfigType.MIN_PLAYERS) }
 
-    fun maxPlayers(): Int = teams.values.sumBy { it.settings.get(TeamConfigType.MAX_PLAYERS) }
+    fun maxPlayers(): Int = teams.values.sumOf { it.settings.get(TeamConfigType.MAX_PLAYERS) }
 
     fun contains(location: Location): Boolean = region.contains(location)
 
-    fun numPlayers(): Int = teams.values.sumBy { it.size() }
+    fun numPlayers(): Int = teams.values.sumOf { it.size() }
 
     private fun canStart(): Boolean {
         val sufficientTeams = teams.values.map { team ->
@@ -274,8 +274,8 @@ class Warzone(
         portals.forEach { it.value.updateBlocks() }
 
         // Equip default class
-        val defaultClass = team.settings.get(TeamConfigType.DEFAULT_CLASS).toLowerCase()
-        val possibleClasses = team.resolveClasses().map { it.toLowerCase() }
+        val defaultClass = team.settings.get(TeamConfigType.DEFAULT_CLASS).lowercase()
+        val possibleClasses = team.resolveClasses().map { it.lowercase() }
         val className = if (defaultClass in possibleClasses) {
             // Equip specified with the default-class setting
             defaultClass
@@ -361,7 +361,7 @@ class Warzone(
         config.set("team-settings", teamSettings.config)
         val teamsSection = config.createSection("teams")
         teams.toSortedMap().values.forEach {
-            val teamSection = teamsSection.createSection(it.kind.name.toLowerCase())
+            val teamSection = teamsSection.createSection(it.kind.name.lowercase())
             it.saveConfig(teamSection)
         }
 
@@ -508,7 +508,8 @@ class Warzone(
                     statTracker?.maxStatsBy(team.kind) { it.flagCaptures + it.bombs }?.run {
                         statTracker.addMvp(first)
                         Pair(plugin.server.getOfflinePlayer(first), second)
-                    })
+                    }
+                )
             } else {
                 Triple(null, null, null)
             }
@@ -572,11 +573,13 @@ class Warzone(
                 val weapon = attacker.inventory.itemInMainHand
                 val weaponName = if (weapon.hasItemMeta() && weapon.itemMeta!!.hasDisplayName()) {
                     "${weapon.itemMeta!!.displayName}${ChatColor.RESET}"
-                } else if (weapon.type == Material.AIR) {
-                    "hand"
-                } else {
-                    weapon.type.toString()
-                }.toLowerCase().replace('_', ' ')
+                } else (
+                    if (weapon.type == Material.AIR) {
+                        "hand"
+                    } else {
+                        weapon.type.toString()
+                    }
+                    ).lowercase().replace('_', ' ')
                 "$formattedAttacker's $weaponName killed $formattedDefender"
             }
             broadcast(message)
@@ -965,12 +968,12 @@ class Warzone(
     }
 
     fun addPortal(portal: WarzonePortalStructure) {
-        portals[portal.name.toLowerCase()] = portal
+        portals[portal.name.lowercase()] = portal
         portalsByLocation[portal.origin.blockLocation().format(direction = false)] = portal
     }
 
     fun removePortal(portal: WarzonePortalStructure) {
-        portals.remove(portal.name.toLowerCase())
+        portals.remove(portal.name.lowercase())
         portalsByLocation.remove(portal.origin.blockLocation().format(direction = false))
     }
 
@@ -979,7 +982,7 @@ class Warzone(
     }
 
     fun getPortalByName(name: String): WarzonePortalStructure? {
-        return portals[name.toLowerCase()]
+        return portals[name.lowercase()]
     }
 
     fun getPortals(): List<WarzonePortalStructure> {

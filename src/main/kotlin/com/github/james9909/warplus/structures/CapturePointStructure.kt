@@ -126,7 +126,7 @@ class CapturePointStructure(
     }
 
     fun calculateStrength(zone: Warzone) {
-        val majority = activeTeams.maxBy { it.value }
+        val majority = activeTeams.maxByOrNull { it.value }
         val totalPower = activeTeams.values.sum()
 
         when (val currState = state) {

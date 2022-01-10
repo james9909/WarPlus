@@ -51,22 +51,28 @@ class ClassManagerTest {
         classManager.getClass("ranger")?.let {
             assert(it.armor == ArmorSet(null, ItemStack(Material.CHAINMAIL_CHESTPLATE), null, null))
             assert(it.classchest == null)
-            assert(it.items == hashMapOf(
-                0 to ItemStack(Material.BOW),
-                1 to ItemStack(Material.ARROW, 64)
-            ))
+            assert(
+                it.items == hashMapOf(
+                    0 to ItemStack(Material.BOW),
+                    1 to ItemStack(Material.ARROW, 64)
+                )
+            )
         }
         classManager.getClass("tank")?.let {
-            assert(it.armor == ArmorSet(
-                null,
-                ItemStack(Material.DIAMOND_CHESTPLATE),
-                ItemStack(Material.DIAMOND_LEGGINGS),
-                ItemStack(Material.DIAMOND_BOOTS)
-            ))
+            assert(
+                it.armor == ArmorSet(
+                    null,
+                    ItemStack(Material.DIAMOND_CHESTPLATE),
+                    ItemStack(Material.DIAMOND_LEGGINGS),
+                    ItemStack(Material.DIAMOND_BOOTS)
+                )
+            )
             assert(it.classchest == null)
-            assert(it.items == hashMapOf(
-                0 to ItemStack(Material.WOODEN_SWORD)
-            ))
+            assert(
+                it.items == hashMapOf(
+                    0 to ItemStack(Material.WOODEN_SWORD)
+                )
+            )
         }
     }
 }

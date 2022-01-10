@@ -12,7 +12,7 @@ import java.io.File
 val materialMap by lazy {
     val materialMap = mutableMapOf<String, Material>()
     for (material in Material.values()) {
-        materialMap[material.name.toLowerCase()] = material
+        materialMap[material.name.lowercase()] = material
     }
     materialMap
 }
@@ -81,7 +81,7 @@ class ItemNameManager(private val plugin: WarPlus) {
 
     private fun loadItemNames(config: ConfigurationSection) {
         config.getKeys(false).forEach { materialName ->
-            val material = materialMap[materialName.toLowerCase()]
+            val material = materialMap[materialName.lowercase()]
             if (material != null) {
                 val section = config.getConfigurationSection(materialName)!!
                 val itemMod = ItemModification.fromConfig(section)

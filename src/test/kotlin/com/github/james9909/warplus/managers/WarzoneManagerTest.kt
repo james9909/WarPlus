@@ -14,12 +14,12 @@ import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.unwrap
 import org.bukkit.Material
 import org.bukkit.configuration.file.YamlConfiguration
+import org.bukkit.potion.PotionEffectType
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.fail
 import java.io.File
-import org.bukkit.potion.PotionEffectType
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class WarzoneManagerTest {

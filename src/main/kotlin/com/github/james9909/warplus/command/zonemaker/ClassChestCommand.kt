@@ -58,7 +58,7 @@ class ClassChestCommand : ZonemakerCommand() {
             }
             2 -> {
                 plugin.classManager.getClassNames().filter {
-                    it.startsWith(args[1].toLowerCase())
+                    it.startsWith(args[1].lowercase())
                 }
             }
             else -> emptyList()

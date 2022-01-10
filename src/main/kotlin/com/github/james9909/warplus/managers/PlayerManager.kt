@@ -1,8 +1,8 @@
 package com.github.james9909.warplus.managers
 
-import com.github.james9909.warplus.WarTeam
 import com.github.james9909.warplus.WarClass
 import com.github.james9909.warplus.WarPlus
+import com.github.james9909.warplus.WarTeam
 import com.github.james9909.warplus.Warzone
 import com.github.james9909.warplus.util.LastDamager
 import com.github.james9909.warplus.util.Message

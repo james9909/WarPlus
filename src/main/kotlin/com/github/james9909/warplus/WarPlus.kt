@@ -131,7 +131,7 @@ class WarPlus : JavaPlugin {
         allowedCommands.clear()
         allowedCommands.add("/$WARPLUS_BASE_COMMAND")
         config.get(WarConfigType.ALLOWED_WARZONE_COMMANDS).forEach {
-            allowedCommands.add(it.trim().toLowerCase())
+            allowedCommands.add(it.trim().lowercase())
         }
 
         setupDatabase()
@@ -241,7 +241,7 @@ class WarPlus : JavaPlugin {
     }
 
     fun canExecuteCommand(command: String): Boolean {
-        val args = command.toLowerCase().split(" ")
+        val args = command.lowercase().split(" ")
         if (args.isNotEmpty() && allowedCommands.contains(args[0])) {
             return true
         }

@@ -4,8 +4,8 @@ import com.github.james9909.warplus.WarPlus
 import com.github.james9909.warplus.Warzone
 import com.github.james9909.warplus.config.WarzoneConfigType
 import com.github.james9909.warplus.objectives.MonumentObjective
-import kotlin.math.pow
 import org.bukkit.scheduler.BukkitRunnable
+import kotlin.math.pow
 
 class MonumentRunnable(private val plugin: WarPlus, private val zone: Warzone) : BukkitRunnable() {
     override fun run() {

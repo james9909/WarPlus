@@ -70,7 +70,7 @@ class AddPortalCommand : ZonemakerCommand() {
     override fun tab(plugin: WarPlus, sender: CommandSender, args: List<String>): List<String> {
         return when (args.size) {
             1 -> plugin.warzoneManager.getWarzoneNames().filter {
-                it.startsWith(args[0].toLowerCase())
+                it.startsWith(args[0].lowercase())
             }
             else -> emptyList()
         }
